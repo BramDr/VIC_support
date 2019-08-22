@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# But not these files...
+!*.R
+!README.md
+!LICENSE.txt
+!.gitignore
+
+# ...even if they are in subdirectories
+!*/
