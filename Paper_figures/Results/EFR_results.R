@@ -75,7 +75,7 @@ bar.plot = ggplot(data = time.wide) +
   scale_y_continuous(name = bquote("Withdrawal ["*km^3*"]")) +
   scale_fill_manual(name = "", breaks = c("nefr", "hefr", "efr"), 
                     labels = c("No EFRs", "EFRs\nfor streamflow", "EFRs\nfor streamflow\nand baseflow"),
-                    values = c(rgb(0.6,0.6,1), rgb(1,0.6,1), rgb(1,0.6,0.6))) +
+                    values = c(rgb(0.5,0.5,1), rgb(1,0.5,1), rgb(1,0.5,0.5))) +
   theme_bw() +
   ggtitle(label = "(a) Global\n     water\n     withdrawal") +
   theme(legend.position = "bottom",
