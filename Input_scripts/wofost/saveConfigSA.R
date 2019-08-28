@@ -40,9 +40,9 @@ for(x in 1:length(lons)){
     desc.out = paste0(
 "
 ** WOFOST PARAMETER CONFIGURATION FILE for use with WOFOST Version 5.0, June 1990
-** Based on VIC input file (Nijssen et al., 2001)
 ** Used for VIC-WOFOST sensitivity analysis
-** Global
+** Latitude: ", lats[y], " N
+** Longitude: ", lons[x], " E
 "
     )
     
@@ -70,9 +70,9 @@ for(x in 1:length(lons)){
     desc.out = paste0(
       "
 ** WOFOST FORCING CONFIGURATION FILE for use with WOFOST Version 5.0, June 1990
-** Based on WFDEI forcing data (Weedon et al., 2014)
 ** Used for VIC-WOFOST sensitivity analysis
-** Global
+** Latitude: ", lats[y], " N
+** Longitude: ", lons[x], " E
 "
     )
     
@@ -84,11 +84,9 @@ for(x in 1:length(lons)){
     }
     writeLines(text = desc.out, con = file.out)
     
-    for(year in years){
-      crop.file = crop.files[z]
-      line.out = paste0(getwd(), "/", force.file, " ", year, " ", year + 1, " ", lats[y], " ", lons[x])
-      
-      write(x = line.out, file = file.out, append = T)
-    }
+	crop.file = crop.files[z]
+	line.out = paste0(getwd(), "/", force.file, " ", years[1], " ", years[length(years)], " ", lats[y], " ", lons[x])
+	
+	write(x = line.out, file = file.out, append = T)
   }
 }

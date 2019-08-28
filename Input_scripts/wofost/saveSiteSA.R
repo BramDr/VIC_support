@@ -27,7 +27,7 @@ porosity = bulk_dens / soil_dens
 RDMSOL = (depth[,,1] + depth[,,2]) * 100
 IFUNRN = RDMSOL * 0
 SSMAX = RDMSOL * 0
-WAV = init_moist[,,1] + init_moist[,,2]
+WAV = (init_moist[,,1] + init_moist[,,2]) * 0.1
 ZTI = (RDMSOL >= 0) * 999
 NOTINF = RDMSOL * 0
 SSI = RDMSOL * 0
@@ -51,7 +51,7 @@ for(x in 1:length(lons)){
       next
     }
     
-    file.out = paste0(dir.out, "site_", lats[y], "N_", lons[x], "E", ".site")
+    file.out = paste0(dir.out, "site_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
     
     desc.out = paste0(
@@ -67,13 +67,13 @@ for(x in 1:length(lons)){
 "
 ** site water inputs
 IFUNRN = ", format(IFUNRN[x,y], digits = 3, nsmall = 3) , "			!  Is infiltration rainfall dependent? [flag; 1 = yes, 0 = no]
-SSMAX  = ", format(SSMAX[x,y], digits = 3, nsmall = 3) , "			!  Maximum surface water storage [mm]
-WAV    = ", format(WAV[x,y], digits = 3, nsmall = 3) , "		!  Initial soil water storage [mm]
-ZTI    = ", format(ZTI[x,y], digits = 3, nsmall = 3) , "	!  Water table depth [cm]
+SSMAX  = ", format(SSMAX[x,y], digits = 3, nsmall = 3) , "			!  Maximum surface water storage [cm]
+WAV    = ", format(WAV[x,y], digits = 3, nsmall = 3) , "		!  Initial soil water storage [cm]
+ZTI    = ", format(ZTI[x,y], digits = 3, nsmall = 3) , "		!  Water table depth [cm]
 RDMSOL = ", format(RDMSOL[x,y], digits = 3, nsmall = 3) , "		!  Maximum rooting depth [cm]
-NOTINF = ", format(NOTINF[x,y], digits = 3, nsmall = 3) , "			!  Fraction of water not infiltrating [mm / mm]
-SSI    = ", format(SSI[x,y], digits = 3, nsmall = 3) , "			!  Initial surface water storage [mm]
-SMLIM  = ", format(SMLIM[x,y], digits = 3, nsmall = 3) , "			!  Maximum initial soil water storage [mm water / mm soil]
+NOTINF = ", format(NOTINF[x,y], digits = 3, nsmall = 3) , "			!  Fraction of water not infiltrating [cm / cm]
+SSI    = ", format(SSI[x,y], digits = 3, nsmall = 3) , "			!  Initial surface water storage [cm]
+SMLIM  = ", format(SMLIM[x,y], digits = 3, nsmall = 3) , "			!  Maximum initial soil water storage [cm water / cm soil]
 CO2    = ", format(CO2[x,y], nsmall = 0) , "			!  CO2 concentration [ppm]
 "
     )

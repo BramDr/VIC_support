@@ -61,7 +61,7 @@ for(x in 1:length(lons)){
       next
     }
     
-    file.out = paste0(dir.out, "soil_", lats[y], "N_", lons[x], "E", ".NEW")
+    file.out = paste0(dir.out, "soil_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
     
     desc.out = paste0(
