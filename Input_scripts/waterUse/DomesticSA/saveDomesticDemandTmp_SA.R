@@ -6,7 +6,7 @@ rm(list = ls())
 coef.file = "COEF_PLACEHOLDER"
 gdp.file = "Input/country_GDP_interpolated_global.csv"
 country.file = "Input/country_6min_global.RDS"
-dom.file = "DOM_PLACEHOLDER"
+dom.tmp = "TMP_PLACEHOLDER"
 years = 1979:2016
 
 # Load
