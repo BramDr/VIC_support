@@ -3,10 +3,10 @@ library(raster)
 rm(list = ls())
 
 # Input
-coef.file = "COEF_TEMPLATE"
+coef.file = "COEF_PLACEHOLDER"
 gdp.file = "Input/country_GDP_interpolated_global.csv"
 country.file = "Input/country_6min_global.RDS"
-dom.file = "TMP_TEMPLATE"
+dom.file = "DOM_PLACEHOLDER"
 years = 1979:2016
 
 # Load

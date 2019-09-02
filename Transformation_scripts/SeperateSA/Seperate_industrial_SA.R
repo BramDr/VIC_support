@@ -13,6 +13,7 @@ fit.out = "Output/country_industrial_global_fitting_MC"
 iso = read.csv(file = iso.file, stringsAsFactors = F)
 gdp = read.csv(gdp.file, stringsAsFactors = F)
 gva = read.csv(gva.file, stringsAsFactors = F)
+pop = read.csv(pop.file, stringsAsFactors = F)
 with = read.csv(with.file, stringsAsFactors = F)
 
 gva = merge(gva, gdp, by = c("Country_number", "Year"))
@@ -20,7 +21,7 @@ gva$Gva = gva$Gdp * (gva$GvaPGdp / 100)
 gva = gva[,c("Country_number", "Year", "Gva")]
 
 # Setup
-itirations = 1000
+itirations = 100
 
 data = merge(gva, with, by = c("Country_number", "Year"))
 data = merge(data, pop, by = c("Country_number", "Year"))
@@ -44,7 +45,6 @@ for(itiration in 1:itirations){
       sel = c(sel, sd$row)
       isel = c(isel, sd$row)
     } else {
-      set.seed(23021992)
       ss = sample(x = 1:nrow(sd), size = ceiling(nrow(sd) / 2))
       iss = 1:nrow(sd)
       iss = iss[!iss %in% ss]

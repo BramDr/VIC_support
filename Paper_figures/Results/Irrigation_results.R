@@ -56,6 +56,8 @@ region.number$Region[region.number$Region == "Asia"] = "(d) Asia"
 region.number$Region[region.number$Region == "Europe"] = "(e) Europe"
 region.number$Region[region.number$Region == "Oceania"] = "(f) Oceania"
 
+region.number = region.number[order(region.number$Region),]
+
 sk.years = c(1980, 1990, 1995, 2000, 2010)
 sk.irr = c(2112, 2425, 2504, 2605, 2817)
 sk.irr.time = data.frame(years = sk.years, value = sk.irr)

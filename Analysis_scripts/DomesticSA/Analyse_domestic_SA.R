@@ -10,7 +10,7 @@ fit.out = "Output/country_domestic_global_MC"
 iso = read.csv(file = iso.file, stringsAsFactors = F)
 
 # Setup
-itirations = 1000
+itirations = 100
 
 # Calculate
 for(itiration in 1:itirations) {
@@ -129,9 +129,6 @@ for(itiration in 1:itirations) {
       sr.global = c(sr.global, coef$Subregion_number[i])
     }
   }
-  
-  print(unique(sr.region))
-  print(unique(sr.global))
   
   # Save
   write.csv(x = coef, file = paste0(fit.out, "_", itiration, ".csv"), row.names = F)

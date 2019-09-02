@@ -15,7 +15,7 @@ pop = read.csv(pop.file, stringsAsFactors = F)
 with = read.csv(with.file, stringsAsFactors = F)
 
 # Setup
-itirations = 1000
+itirations = 100
 
 data = merge(gdp, with, by = c("Country_number", "Year"))
 data = merge(data, pop, by = c("Country_number", "Year"))
