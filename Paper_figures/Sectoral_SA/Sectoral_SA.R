@@ -67,7 +67,7 @@ dom.plot = ggplot(data = plot.data) +
   geom_line(mapping = aes(x = year, y = dom.total, lty = "Total dataset")) + 
   geom_ribbon(mapping = aes(x = year, ymin = dom.min, ymax = dom.max, fill = "Uncertainty band"), alpha = 0.3) +
   scale_x_continuous(name = "Year") + 
-  scale_y_continuous(name = bquote("Withdrawal ["*km^3*"]"), limits = c(0,NA)) + 
+  scale_y_continuous(name = bquote("Demand ["*km^3*"]"), limits = c(0,NA)) + 
   scale_fill_manual("",values="grey12") + 
   scale_linetype_manual("", values = 1) + 
   ggtitle("(a) Domestic") + 

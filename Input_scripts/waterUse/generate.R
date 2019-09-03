@@ -1,120 +1,88 @@
-library(fields)
 library(ncdf4)
+library(fields)
 rm(list = ls())
 
 # Input
-in.dir = "Input/"
-out.dir = "Output/"
-years = 1979:2016
+receiving.id.file = "Saves/receiving_id.RDS"
+nreceiving.file = "Saves/Nreceiving.RDS"
+receiving.file = "Saves/receiving.RDS"
+wu.out = "Output/wu_params_global.nc"
 
 # Load
-in.files = list.files(in.dir, patter = ".RDS", full.names = T)
+receiving = readRDS(receiving.file)
+receiving.id = readRDS(receiving.id.file)
+Nreceiving = readRDS(nreceiving.file)
 
-# Setup
-res = 0.5
-lons = seq(
-  from = -180 + res / 2,
-  to = 180 - res / 2,
-  by = res
-)
-lats = seq(
-  from = -90 + res / 2,
-  to = 90 - res / 2,
-  by = res
-)
+lons = seq(from = -179.75, to = 179.75, by = 0.5)
+lats = seq(from = -89.75, to = 89.75, by = 0.5)
+nwureceiving = 1:dim(receiving)[3]
 
-lon.dim = ncdim_def(
+# Create
+dim.lon = ncdim_def(
   name = "lon",
   units = "degrees_east",
   vals = lons,
-  longname = "longitude of cell centre"
+  longname = "longitude of grid cell center"
 )
-lat.dim = ncdim_def(
+dim.lat = ncdim_def(
   name = "lat",
   units = "degrees_north",
   vals = lats,
-  longname = "latitude of cell centre"
+  longname = "latitude of grid cell center"
+)
+dim.receiving = ncdim_def(
+  name = "wu_receiving",
+  units = "#",
+  vals = nwureceiving,
+  longname = "Dam class"
 )
 
-# Calculate and save
-for(in.file in in.files){
-  print(paste0("Working on file ", basename(in.file)))
-  
-  sector = ""
-  type = ""
-  if(length(grep(x = in.file, "manufacturing")) > 0){
-    sector = "manufacturing"
-    sec = "man"
-  }
-  if(length(grep(x = in.file, "domestic")) > 0){
-    sector = "domestic"
-    sec = "dom"
-  }
-  if(length(grep(x = in.file, "energy")) > 0){
-    sector = "energy"
-    sec = "ene"
-  }
-  if(length(grep(x = in.file, "livestock")) > 0){
-    sector = "livestock"
-    sec = "liv"
-  }
-  if(length(grep(x = in.file, "demand")) > 0){
-    type = "demand"
-    ty = "demand"
-  }
-  if(length(grep(x = in.file, "groundwater")) > 0){
-    type = "groundwater fraction"
-    ty = "ground"
-  }
-  if(length(grep(x = in.file, "consumption")) > 0){
-    type = "consumption fraction"
-    ty = "consump"
-  }
-  
-  data = readRDS(in.file)
+var.Nreceiving = ncvar_def(
+  name = "Nreceiving",
+  units = "#",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "Number of receiving cells",
+  compression = 9
+)
+var.receiving = ncvar_def(
+  name = "receiving",
+  units = "#",
+  dim = list(dim.lon, dim.lat, dim.receiving),
+  missval = -1,
+  longname = "Receiving cell ID",
+  compression = 9
+)
+var.receiving_id = ncvar_def(
+  name = "receiving_id",
+  units = "years AD",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "ID used to identify receiving cell",
+  compression = 9
+)
 
-  for(z in 1:length(years)){
-    year = years[z]
-    
-    out.name = paste0(sec, "_", ty, "_6hourly_", year, ".nc")
-    out.sdir = paste0("/",sec, "_", ty, "_6hourly/")
-    out.file = paste0(out.dir, out.sdir, out.name)
-    
-    times = seq(
-      from = as.Date(paste0(year,"-01-01")),
-      to = as.Date(paste0(year, "-12-31")),
-      by = "month",
-      origin = "1900-01-01"
-    )
-    
-    time.dim = ncdim_def(
-      name = "time",
-      units = "days since 1970-01-01",
-      vals = as.numeric(times), 
-      unlim = T,
-      calendar = "standard"
-    )
-    
-    var = ncvar_def(
-      name = "demand",
-      units = "mm",
-      dim = list(lon.dim, lat.dim, time.dim),
-      missval = -1,
-      longname = paste0(sector, " water ", type),
-      prec = "double",
-      compression = 9
-    )
-    
-    dir.create(dirname(out.file), showWarnings = F)
-    nc = nc_create(out.file, list(var))
-    
-    if(length(dim(data)) == 3){
-    ncvar_put(nc, var$name, data[,,((z - 1) * 12 + 1):(z * 12)] / 4)
-    } else {
-      for(m in 1:12) {
-        ncvar_put(nc, var$name, data / 4, start = c(1,1,m), count = c(-1,-1,1)) 
-      }
-    }
-    nc_close(nc)
-  }
-}
+nc = nc_create(
+  wu.out,
+  list(
+    var.Nreceiving,
+    var.receiving,
+    var.receiving_id
+  )
+)
+nc_close(nc)
+
+# Write
+nc = nc_open(wu.out, write = T)
+ncatt_put(
+  nc = nc,
+  varid = 0,
+  attname = "Description",
+  attval = "Water-use parameters for VIC. Created by Bram Droppers"
+)
+
+ncvar_put(nc, var.Nreceiving, Nreceiving)
+ncvar_put(nc, var.receiving, receiving)
+ncvar_put(nc, var.receiving_id, receiving.id)
+
+nc_close(nc)

@@ -57,6 +57,10 @@ Frenken, K., & Gillet, V. (2012). Irrigation water requirement and water withdra
 [WATCH forcing data ERA interim v5](http://www.eu-watch.org/data_availability):
 Weedon,  G.P.,  Balsamo,  G.,  Bellouin,  N.,  Gomes,  S.,  Best,  M.J.  and  Viterbo,  P.,  2014.  The  WFDEI meteorological  forcing  data  set:  WATCH  Forcing  Data  methodology  applied  to  ERA-Interim reanalysis data. Water Resources Research
 
+**Global delta map**  
+[Global Delta Map](http://www.globaldeltarisk.net/data.html):
+Z.D. Tessler, C.J. Vörösmarty, M. Grossberg, I. Gladkova, H. Aizenman, J.P.M. Syvitski, E. Foufoula-Georgiou. Profiling Risk and Sustainability in Coastal Deltas of the World. Science 349(6248), 638-643 (2015) doi:10.1126/science.aab3574.
+
 **River discharge data**  
 [Global Runoff Data Centre database](https://www.bafg.de/GRDC/EN/02_srvcs/21_tmsrs/riverdischarge_node.html)
 
