@@ -8,6 +8,7 @@ with.file = "Input/IndPerCountry.csv"
 gva.file = "Input/country_GVA_global.csv"
 gdp.file = "Input/country_GDP_global.csv"
 fit.out = "Output/country_industrial_global_fitting_MC"
+total.out = "Output/country_industrial_global_fitting_total.csv"
 
 # load
 iso = read.csv(file = iso.file, stringsAsFactors = F)
@@ -21,6 +22,7 @@ gva$Gva = gva$Gdp * (gva$GvaPGdp / 100)
 gva = gva[,c("Country_number", "Year", "Gva")]
 
 # Setup
+set.seed(23021992)
 itirations = 100
 
 data = merge(gva, with, by = c("Country_number", "Year"))
@@ -61,3 +63,5 @@ for(itiration in 1:itirations){
   # Save
   write.csv(x = data.fit, file = paste0(fit.out, "_", itiration, ".csv"), row.names = F)
 }
+
+write.csv(x = data, file = total.out, row.names = F)

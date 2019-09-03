@@ -7,6 +7,7 @@ pop.file = "Input/country_population_global.csv"
 with.file = "Input/DomPerCountry.csv"
 gdp.file = "Input/country_GDP_global.csv"
 fit.out = "Output/country_domestic_global_fitting_MC"
+total.out = "Output/country_domestic_global_fitting_total.csv"
 
 # Load
 iso = read.csv(file = iso.file, stringsAsFactors = F)
@@ -15,6 +16,7 @@ pop = read.csv(pop.file, stringsAsFactors = F)
 with = read.csv(with.file, stringsAsFactors = F)
 
 # Setup
+set.seed(23021992)
 itirations = 100
 
 data = merge(gdp, with, by = c("Country_number", "Year"))
@@ -55,3 +57,5 @@ for(itiration in 1:itirations){
   # Save
   write.csv(x = data.fit, file = paste0(fit.out, "_", itiration, ".csv"), row.names = F)
 }
+
+write.csv(x = data, file = total.out, row.names = F)
