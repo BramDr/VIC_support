@@ -3,10 +3,10 @@ library(plyr)
 rm(list = ls())
 
 # Input
-area.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Input/MIRCA2000_cell_area.asc"
-fao.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Input/FAO_crop_characteristics.csv"
-cc.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cropping_calendars_corrected2.csv"
-cc.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cropping_calendars_corrected3.csv"
+area.file = "Input/MIRCA2000_cell_area.asc"
+fao.file = "Input/FAO_crop_characteristics.csv"
+cc.file = "Saves/MIRCA2000_cropping_calendars_corrected2.csv"
+cc.out = "Saves/MIRCA2000_cropping_calendars_corrected3.csv"
 
 # Load
 cc = read.csv(file = cc.file, header = TRUE, stringsAsFactors = F)

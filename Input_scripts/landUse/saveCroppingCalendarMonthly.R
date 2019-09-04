@@ -3,9 +3,9 @@ library(plyr)
 rm(list = ls())
 
 # Input
-fao.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Input/FAO_crop_characteristics.csv"
-cc.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cropping_calendars_corrected.csv"
-cc.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cropping_calendars_corrected2.csv"
+fao.file = "Input/FAO_crop_characteristics.csv"
+cc.file = "Saves/MIRCA2000_cropping_calendars_corrected.csv"
+cc.out = "Saves/MIRCA2000_cropping_calendars_corrected2.csv"
 
 # Load
 cc = read.csv(file = cc.file, header = TRUE, stringsAsFactors = F)

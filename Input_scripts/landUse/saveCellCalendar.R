@@ -3,10 +3,10 @@ library(plyr)
 rm(list = ls())
 
 # Input
-cc.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cropping_calendars_corrected3.csv"
-cc.paddy.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_paddy.csv"
-cc.irr.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_irrigation.csv"
-cc.rain.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_rainfed.csv"
+cc.file = "Saves/MIRCA2000_cropping_calendars_corrected3.csv"
+cc.paddy.out = "Saves/MIRCA2000_cell_calendars_paddy.csv"
+cc.irr.out = "Saves/MIRCA2000_cell_calendars_irrigation.csv"
+cc.rain.out = "Saves/MIRCA2000_cell_calendars_rainfed.csv"
 
 # Load
 cc = read.csv(file = cc.file, header = TRUE, stringsAsFactors = F)
@@ -90,7 +90,7 @@ cc.paddy = merge(cc.paddy, fixed.paddy)
 cc.paddy = merge(cc.paddy, fixed.paddy2)
 paddy.cols = colnames(cc.paddy) %in% c("Cc", "root_depth.1", "root_depth.2", "root_frac.1", "root_frac.2", "RGL", "rarc", "rad_atten", "overstory", "trunk_ratio", "wind_atten", "wind_h", "rmin")
 cc.paddy[,paddy.cols] = cc.paddy[,paddy.cols] / cc.paddy$Cv
-cc.paddy$overstory = round(cc.paddy$overstory, digits = 0)
+cc.paddy$overstory = floor(cc.paddy$overstory)
 
 cc.paddy[,paste0("albedo.",1:12)] = cc.paddy[,paste0("albedo.",1:12)] + ((1 - cc.paddy[,paste0("Fcanopy.",1:12)]) * 0.2) #bare soil
 
@@ -102,7 +102,7 @@ cc.irr = merge(cc.irr, fixed.irr)
 cc.irr = merge(cc.irr, fixed.irr2)
 irr.cols = colnames(cc.irr) %in% c("Cc", "root_depth.1", "root_depth.2", "root_frac.1", "root_frac.2", "RGL", "rarc", "rad_atten", "overstory", "trunk_ratio", "wind_atten", "wind_h", "rmin")
 cc.irr[,irr.cols] = cc.irr[,irr.cols] / cc.irr$Cv
-cc.irr$overstory = round(cc.irr$overstory, digits = 0)
+cc.irr$overstory = floor(cc.irr$overstory)
 cc.irr[,paste0("albedo.",1:12)] = cc.irr[,paste0("albedo.",1:12)] + ((1 - cc.irr[,paste0("Fcanopy.",1:12)]) * 0.2) #bare soil
 
 cc.rain = merge(fc.rain, LAI.rain)
@@ -113,7 +113,7 @@ cc.rain = merge(cc.rain, fixed.rain)
 cc.rain = merge(cc.rain, fixed.rain2)
 rain.cols = colnames(cc.rain) %in% c("Cc", "root_depth.1", "root_depth.2", "root_frac.1", "root_frac.2", "RGL", "rarc", "rad_atten", "overstory", "trunk_ratio", "wind_atten", "wind_h", "rmin")
 cc.rain[,rain.cols] = cc.rain[,rain.cols] / cc.rain$Cv
-cc.rain$overstory = round(cc.rain$overstory, digits = 0)
+cc.rain$overstory = floor(cc.rain$overstory)
 cc.rain[,paste0("albedo.",1:12)] = cc.rain[,paste0("albedo.",1:12)] + ((1 - cc.rain[,paste0("Fcanopy.",1:12)]) * 0.2) #bare soil
 
 # Save

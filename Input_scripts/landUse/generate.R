@@ -49,8 +49,9 @@ add.data.monthly = function(name, nc.orig, nc.new, data.paddy, data.irr, data.ra
           next
         }
         
-        for(z in 1:dim(data.old)[3])
-        data.old[x,y,z,] = c(1,1,1,1,1,1,1,1,1,1,1,0)
+        for(z in 1:dim(data.old)[3]) {
+          data.old[x,y,z,] = c(1,1,1,1,1,1,1,1,1,1,1,1)
+        }
       }
     }
     
@@ -82,6 +83,10 @@ add.data.root = function(name, nc.orig, nc.new, data.paddy, data.irr, data.rain)
     name2 = "root_fract"
     idx = 2
   }
+  if(name == "root_frac.3"){
+    name2 = "root_fract"
+    idx = 3
+  }
   if(name == "root_depth.1"){
     name2 = "root_depth"
     idx = 1
@@ -89,6 +94,10 @@ add.data.root = function(name, nc.orig, nc.new, data.paddy, data.irr, data.rain)
   if(name == "root_depth.2"){
     name2 = "root_depth"
     idx = 2
+  }
+  if(name == "root_depth.3"){
+    name2 = "root_depth"
+    idx = 3
   }
   
   data.old = ncvar_get(nc.old, name2)
@@ -184,5 +193,81 @@ add.data.monthly("veg_rough", nc.old, nc, param.paddy, param.irr, param.rain)
 add.data.monthly("albedo", nc.old, nc, param.paddy, param.irr, param.rain)
 add.data.monthly("Fcanopy", nc.old, nc, param.paddy, param.irr, param.rain)
 
+ncvar_put(nc, "root_fract", array(0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len)), start = c(1,1,3,1), count = c(-1,-1,1,-1))
+ncvar_put(nc, "root_depth", array(0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len)), start = c(1,1,3,1), count = c(-1,-1,1,-1))
+
 nc_close(nc.old)
+nc_close(nc)
+
+
+## check and adjust root fractions
+nc = nc_open(filename = vegetation.out)
+Cv.check = ncvar_get(nc, nc$var$Cv)
+root.frac.check = ncvar_get(nc, nc$var$root_fract)
+root.depth.check = ncvar_get(nc, nc$var$root_depth)
+nc_close(nc)
+
+root.frac.new = root.frac.check
+root.depth.new = root.depth.check
+for(x in 1:dim(Cv.check)[1]){
+  for(y in 1:dim(Cv.check)[2]){
+    for(v in 1:(dim(Cv.check)[3] - 1)){
+      if(is.na(Cv.check[x,y,v])){
+        next
+      }
+      
+      if(Cv.check[x,y,v] > 0){
+        root.frac.sum = sum(root.frac.new[x,y,,v])
+        root.depth.sum = sum(root.depth.new[x,y,,v])
+        if(root.frac.sum <= 0 || root.depth.sum <= 0){
+          root.frac.new[x,y,1,v] = max(root.frac.check[,,1,v], na.rm = T)
+          root.frac.new[x,y,2,v] = max(root.frac.check[,,2,v], na.rm = T)
+          root.frac.new[x,y,3,v] = max(root.frac.check[,,3,v], na.rm = T)
+          root.depth.new[x,y,1,v] = max(root.depth.check[,,1,v], na.rm = T)
+          root.depth.new[x,y,2,v] = max(root.depth.check[,,2,v], na.rm = T)
+          root.depth.new[x,y,3,v] = max(root.depth.check[,,3,v], na.rm = T)
+        }
+        
+        root.frac.sum = sum(root.frac.new[x,y,,v])
+        root.depth.sum = sum(root.depth.new[x,y,,v])
+        if(root.frac.sum != 1 || root.depth.sum != 1){
+          root.frac.new[x,y,,v] = root.frac.check[x,y,,v] / root.frac.sum
+          root.depth.new[x,y,,v] = root.depth.check[x,y,,v] / root.depth.sum
+        }
+      }
+    }
+  }
+}
+
+nc = nc_open(filename = vegetation.out, write = T)
+ncvar_put(nc, nc$var$root_fract, root.frac.new)
+ncvar_put(nc, nc$var$root_depth, root.depth.new)
+nc_close(nc)
+
+## check and adjust canopy coverage
+nc = nc_open(filename = vegetation.out)
+Cv.check = ncvar_get(nc, nc$var$Cv)
+fcanopy.check = ncvar_get(nc, nc$var$fcanopy)
+nc_close(nc)
+
+fcanopy.new = fcanopy.check
+for(x in 1:dim(Cv.check)[1]){
+  for(y in 1:dim(Cv.check)[2]){
+    for(v in 1:(dim(Cv.check)[3] - 1)){
+      if(is.na(Cv.check[x,y,v])){
+        next
+      }
+      
+      if(Cv.check[x,y,v] > 0){
+        sel = fcanopy.check[x,y,,v] < 0.00011
+        if(sum(sel) > 0){
+          fcanopy.new[x,y,sel,v] = 0.00011
+        }
+      }
+    }
+  }
+}
+
+nc = nc_open(filename = vegetation.out, write = T)
+ncvar_put(nc, nc$var$fcanopy, fcanopy.new)
 nc_close(nc)

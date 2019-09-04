@@ -41,7 +41,10 @@ for(in.file in in.files){
   print(paste0("Working on file ", basename(in.file)))
   
   sector = ""
+  sec = ""
   type = ""
+  ty = ""
+  adjust = 1
   if(length(grep(x = in.file, "manufacturing")) > 0){
     sector = "manufacturing"
     sec = "man"
@@ -61,17 +64,19 @@ for(in.file in in.files){
   if(length(grep(x = in.file, "demand")) > 0){
     type = "demand"
     ty = "demand"
+    adjust = 0.25
   }
   if(length(grep(x = in.file, "groundwater")) > 0){
-    type = "groundwater fraction"
+    type = "groundwater_fraction"
     ty = "ground"
   }
   if(length(grep(x = in.file, "consumption")) > 0){
-    type = "consumption fraction"
+    type = "consumption_fraction"
     ty = "consump"
   }
   
   data = readRDS(in.file)
+  data = data * adjust
 
   for(z in 1:length(years)){
     year = years[z]
@@ -96,7 +101,7 @@ for(in.file in in.files){
     )
     
     var = ncvar_def(
-      name = "demand",
+      name = type,
       units = "mm",
       dim = list(lon.dim, lat.dim, time.dim),
       missval = -1,
@@ -109,10 +114,10 @@ for(in.file in in.files){
     nc = nc_create(out.file, list(var))
     
     if(length(dim(data)) == 3){
-    ncvar_put(nc, var$name, data[,,((z - 1) * 12 + 1):(z * 12)] / 4)
+      ncvar_put(nc, var$name, data[,,((z - 1) * 12 + 1):(z * 12)])
     } else {
       for(m in 1:12) {
-        ncvar_put(nc, var$name, data / 4, start = c(1,1,m), count = c(-1,-1,1)) 
+        ncvar_put(nc, var$name, data, start = c(1,1,m), count = c(-1,-1,1)) 
       }
     }
     nc_close(nc)

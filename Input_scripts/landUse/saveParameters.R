@@ -3,14 +3,14 @@ library(ncdf4)
 rm(list = ls())
 
 # Input
-mask.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Input/domain_global.nc"
-loc.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Input/MIRCA2000_cropping_calendars_30min.txt"
-cc.paddy.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_paddy.csv"
-cc.irr.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_irrigation.csv"
-cc.rain.file = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/MIRCA2000_cell_calendars_rainfed.csv"
-paddy.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/parameters_paddy.RDS"
-irr.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/parameters_irrigated.RDS"
-rain.out = "/home/bram/VIC-WUR_support/Input_scripts/landUse/Saves/parameters_rainfed.RDS"
+mask.file = "Input/domain_global.nc"
+loc.file = "Input/MIRCA2000_cropping_calendars_30min.txt"
+cc.paddy.file = "Saves/MIRCA2000_cell_calendars_paddy.csv"
+cc.irr.file = "Saves/MIRCA2000_cell_calendars_irrigation.csv"
+cc.rain.file = "Saves/MIRCA2000_cell_calendars_rainfed.csv"
+paddy.out = "Saves/parameters_paddy.RDS"
+irr.out = "Saves/parameters_irrigated.RDS"
+rain.out = "Saves/parameters_rainfed.RDS"
 
 # Load
 nc = nc_open(mask.file)
