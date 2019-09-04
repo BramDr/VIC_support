@@ -2,8 +2,11 @@
 # VIC Model Constants
 #######################################################################
 
+# Dams
 DAM_ALPHA			0.85
 DAM_BETA			0.6
 DAM_GAMMA			5
+
+# Irrigation
 Ksat_expt			0.33
-Wfc_fract			0.7
+Wfc_fract			0.8

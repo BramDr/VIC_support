@@ -1,0 +1,130 @@
+#######################################################################
+# VIC Model Parameters
+#######################################################################
+
+#######################################################################
+# Time Options
+#######################################################################
+MODEL_STEPS_PER_DAY     4               # number of model time steps in 24 hour period
+SNOW_STEPS_PER_DAY      4               # number of snow model time steps in 24 hour period
+RUNOFF_STEPS_PER_DAY    12              # number of runoff time steps in 24 hour period
+ROUT_STEPS_PER_DAY		24				# number of routing time steps in 24 hour period
+
+STARTYEAR               1979            # year model simulation starts
+STARTMONTH              1               # month model simulation starts
+STARTDAY                1               # day model simulation starts
+ENDYEAR                 2016
+ENDMONTH                12
+ENDDAY                  31
+BASEFLOW                NIJSSEN2001     # ARNO = columns 5-8 are the standard VIC baseflow parameters; NIJSSEN2001 = columns 5-8 of soil file are baseflow parameters from Nijssen et al (2001) 
+
+#######################################################################
+# Simulation Options
+#######################################################################
+FULL_ENERGY             	FALSE          		# TRUE = calculate energy balance; FALSE = calculate water balance; Default = FALSE
+CLOSE_ENERGY				FALSE				# TRUE = close energy balance; Default = FALSE
+FROZEN_SOIL             	FALSE          		# TRUE = calculate frozen soils;  Default = FALSE
+EXP_TRANS					FALSE				# TRUE = exponential thermal nodes in soil;  Default = FALSE
+SNOW_BAND					FALSE          		# TRUE = calculate snow bands;  Default = FALSE
+MATRIC						FALSE				# TRUE = calculate matric potential;  Default = FALSE
+
+# Plugins (routing)
+ROUTING						TRUE				# TRUE = calculate routing; Default = FALSE
+DECOMPOSITION				BASIN				# RANDOM, BASIN or FILE; Default = RANDOM
+EFR							FALSE				# TRUE = calculate enviromental flow requirements;  Default = FALSE
+DAMS						FALSE				# TRUE = calculate dam operation;  Default = FALSE
+WATERUSE					TRUE				# TRUE = calculate water use;  Default = FALSE
+IRRIGATION					TRUE				# TRUE = calculate irrigation;  Default = FALSE
+
+#######################################################################
+# Domain Files and Info
+#######################################################################
+DOMAIN          				/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/domain_global.nc
+DOMAIN_TYPE    	LAT     		lat
+DOMAIN_TYPE    	LON     		lon
+DOMAIN_TYPE    	MASK    		mask
+DOMAIN_TYPE    	AREA    		area
+DOMAIN_TYPE    	FRAC    		frac
+DOMAIN_TYPE    	YDIM    		lat
+DOMAIN_TYPE    	XDIM    		lon
+
+#######################################################################
+# Forcing Files and Info
+# netcdf forcing files will be of the form: FILE.YYYY.nc
+#######################################################################
+# FORCE_TYPE	TYPE			VARIABLE NAME		FILE
+# Metreorological forcing
+FORCE_TYPE    	AIR_TEMP		tas					/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/tas_6hourly_WFDEI/tas_6hourly_WFDEI_
+FORCE_TYPE    	PREC			pr					/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/pr_6hourly_WFDEI/pr_6hourly_WFDEI_
+FORCE_TYPE    	PRESSURE		psurf    			/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/psurf_6hourly_WFDEI/psurf_6hourly_WFDEI_
+FORCE_TYPE    	SWDOWN			swdown				/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/swdown_6hourly_WFDEI/swdown_6hourly_WFDEI_
+FORCE_TYPE    	LWDOWN			lwdown				/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/lwdown_6hourly_WFDEI/lwdown_6hourly_WFDEI_
+FORCE_TYPE    	VP				vp					/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/vp_6hourly_WFDEI/vp_6hourly_WFDEI_
+FORCE_TYPE    	WIND			wind				/lustre/backup/WUR/ESG/data/MODEL_DATA/VIC/FORCING/VICWUR/WATCH/6hourly/wind_6hourly_WFDEI/wind_6hourly_WFDEI_
+
+# PLUGIN_FORCE_TYPE	TYPE				VARIABLE NAME			FREQ	FILE
+# Discharge forcing
+#PLUGIN_FORCE_TYPE	FORCING_DISCHARGE	discharge				STEP	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/discharge_6hourly/discharge_6hourly_
+# Environmental flow forcing
+#PLUGIN_FORCE_TYPE	EFR_DISCHARGE		discharge				DAY		/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/efr_discharge_6hourly/efr_discharge_6hourly_
+#PLUGIN_FORCE_TYPE	EFR_BASEFLOW		baseflow				DAY		/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/efr_baseflow_6hourly/efr_baseflow_6hourly_
+# Water use forcing
+#PLUGIN_FORCE_TYPE	MUN_DEMAND			demand					MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/dom_demand_6hourly/dom_demand_6hourly_
+#PLUGIN_FORCE_TYPE	MUN_GROUNDWATER		groundwater_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/dom_ground_6hourly/dom_ground_6hourly_
+#PLUGIN_FORCE_TYPE	MUN_CONSUMPTION		consumption_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/dom_consump_6hourly/dom_consump_6hourly_
+#PLUGIN_FORCE_TYPE	LIV_DEMAND			demand					MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/liv_demand_6hourly/liv_demand_6hourly_
+#PLUGIN_FORCE_TYPE	LIV_GROUNDWATER		groundwater_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/liv_ground_6hourly/liv_ground_6hourly_
+#PLUGIN_FORCE_TYPE	LIV_CONSUMPTION		consumption_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/liv_consump_6hourly/liv_consump_6hourly_
+#PLUGIN_FORCE_TYPE	MAN_DEMAND			demand					MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/man_demand_6hourly/man_demand_6hourly_
+#PLUGIN_FORCE_TYPE	MAN_GROUNDWATER		groundwater_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/man_ground_6hourly/man_ground_6hourly_
+#PLUGIN_FORCE_TYPE	MAN_CONSUMPTION		consumption_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/man_consump_6hourly/man_consump_6hourly_
+#PLUGIN_FORCE_TYPE	ENE_DEMAND			demand					MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/ene_demand_6hourly/ene_demand_6hourly_
+#PLUGIN_FORCE_TYPE	ENE_GROUNDWATER		groundwater_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/ene_ground_6hourly/ene_ground_6hourly_
+#PLUGIN_FORCE_TYPE	ENE_CONSUMPTION		consumption_fraction	MONTH	/lustre/nobackup/WUR/ESG/dropp001/VICdata/forcing/global/ene_consump_6hourly/ene_consump_6hourly_
+
+#######################################################################
+# Land Surface Files and Info
+#######################################################################
+CONSTANTS						/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/VIC_constants_low.txt
+PARAMETERS        				/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/VIC_params_MIRCA2000_global.nc
+ROUTING_PARAMETERS				/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/rout_params_global.nc
+WATERUSE_PARAMETERS				/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/wu_params_global.nc
+IRRIGATION_PARAMETERS			/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/irr_params_MIRCA2000_global.nc
+DAMS_PARAMETERS					/lustre/nobackup/WUR/ESG/dropp001/VICdata/parameters/global/dam_params_global.nc
+
+FCAN_SRC						FROM_VEGLIB
+POTENTIAL_IRRIGATION			TRUE
+
+#######################################################################
+# Output Options
+#######################################################################
+RESULT_DIR						/lustre/nobackup/WUR/ESG/dropp001/VICdata/output/global
+OUTFILE							fluxes_global_NDAM_NEFR_PIRR
+
+OUT_FORMAT						NETCDF4
+COMPRESS						9
+AGGFREQ							NYEARS	1
+
+## VIC
+# fluxes
+OUTVAR							OUT_DISCHARGE
+OUTVAR							OUT_BASEFLOW
+
+## IRRIGATION
+# states
+OUTVAR							OUT_SHORTAGE
+OUTVAR							OUT_REQUIREMENT
+
+## WATER-USE
+# fluxes
+OUTVAR							OUT_AV_GW_SECT
+OUTVAR							OUT_AV_SURF_SECT
+OUTVAR							OUT_AV_REM_SECT
+OUTVAR							OUT_AV_DAM_SECT
+OUTVAR							OUT_DE_GW_SECT
+OUTVAR							OUT_DE_SURF_SECT
+OUTVAR							OUT_DE_REM_SECT
+OUTVAR							OUT_WI_GW_SECT
+OUTVAR							OUT_WI_SURF_SECT
+OUTVAR							OUT_WI_REM_SECT
+OUTVAR							OUT_WI_DAM_SECT
