@@ -6,7 +6,7 @@ rm(list = ls())
 coef.file = "Input/country_domestic_global.csv"
 gdp.file = "Input/country_GDP_interpolated_global.csv"
 country.file = "Input/country_6min_global.RDS"
-dom.file = "Saves/domestic_demand_global_tmp.RDS"
+dom.tmp = "Saves/domestic_demand_global_tmp.RDS"
 years = 1979:2016
 
 # Load

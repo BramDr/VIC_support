@@ -8,16 +8,40 @@ dom.dir = "./Input/"
 ind.dir = "./Input/"
 dom.total.file = "./Input/domestic_demand_global_total.RDS"
 ind.total.file = "./Input/industrial_demand_global_total.RDS"
+dom.this.file = "./Input/domestic_demand_global.RDS"
+ind.this.file = "./Input/industrial_demand_global.RDS"
+area.file = "./Input/domain_global.nc"
 plot.out = "./Output/sectoral_split_validation.pdf"
 
 # Load
-dom.files = list.files(dom.dir, pattern = "domestic", full.names = T)
-ind.files = list.files(ind.dir, pattern = "industrial", full.names = T)
+dom.files = list.files(dom.dir, pattern = "domestic.*MC", full.names = T)
+ind.files = list.files(ind.dir, pattern = "industrial.*MC", full.names = T)
 dom.total = readRDS(dom.total.file)
 ind.total = readRDS(ind.total.file)
+dom.this = readRDS(dom.this.file)
+ind.this = readRDS(ind.this.file)
+
+nc = nc_open(area.file)
+area = ncvar_get(nc, nc$var$area)
+nc_close(nc)
 
 # Setup
 years = 1979:2016
+
+dom.total.data = apply(X = dom.total, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
+ind.total.data = apply(X = ind.total, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
+
+for(z in 1:dim(dom.this)[3]){
+  dom.this[,,z] = dom.this[,,z] * area * 1e-3 * 365
+  ind.this[,,z] = ind.this[,,z] * area * 1e-3 * 365
+}
+
+dom.this.data = apply(X = dom.this, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
+ind.this.data = apply(X = ind.this, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
+
+dom.this.data = aggregate(x = dom.this.data, list(rep(years, each = 12)), FUN = mean)[,2]
+ind.this.data = aggregate(x = ind.this.data, list(rep(years, each = 12)), FUN = mean)[,2]
+
 dom.data = data.frame(year = years)
 ind.data = data.frame(year = years)
 for(i in 1:length(dom.files)){
@@ -38,12 +62,10 @@ for(i in 1:length(ind.files)){
   colnames(ind.data)[ncol(ind.data)] = i
 }
 
-dom.total.data = apply(X = dom.total, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
-ind.total.data = apply(X = ind.total, MARGIN = 3, FUN = sum, na.rm = T) * 1e-9
-
 # Calculate
 #dom.mean = apply(X = dom.data[,2:ncol(dom.data)], MARGIN = 1, mean)
 dom.mean = dom.total.data
+dom.current = dom.this.data
 dom.min = apply(X = dom.data[,2:ncol(dom.data)], MARGIN = 1, sd)
 dom.max = apply(X = dom.data[,2:ncol(dom.data)], MARGIN = 1, sd)
 dom.min = dom.mean - dom.min
@@ -51,25 +73,27 @@ dom.max = dom.mean + dom.max
 
 #ind.mean = apply(X = ind.data[,2:ncol(ind.data)], MARGIN = 1, mean)
 ind.mean = ind.total.data
+ind.current = ind.this.data
 ind.min = apply(X = ind.data[,2:ncol(ind.data)], MARGIN = 1, sd)
 ind.max = apply(X = ind.data[,2:ncol(ind.data)], MARGIN = 1, sd)
 ind.min = ind.mean - ind.min
 ind.max = ind.mean + ind.max
 
 plot.data = data.frame(year = years, 
-                       dom.total = dom.mean, dom.min = dom.min, dom.max = dom.max,
-                       ind.total = ind.mean, ind.min = ind.min, ind.max = ind.max)
+                       dom.total = dom.mean, dom.min = dom.min, dom.max = dom.max, dom.this = dom.current,
+                       ind.total = ind.mean, ind.min = ind.min, ind.max = ind.max, ind.this = ind.current)
 
 mean((dom.mean - dom.min) / dom.mean)
 mean((ind.mean - ind.min) / ind.mean)
 
 dom.plot = ggplot(data = plot.data) + 
   geom_line(mapping = aes(x = year, y = dom.total, lty = "Total dataset")) + 
+  geom_line(mapping = aes(x = year, y = dom.this, lty = "This study")) + 
   geom_ribbon(mapping = aes(x = year, ymin = dom.min, ymax = dom.max, fill = "Uncertainty band"), alpha = 0.3) +
   scale_x_continuous(name = "Year") + 
   scale_y_continuous(name = bquote("Demand ["*km^3*"]"), limits = c(0,NA)) + 
   scale_fill_manual("",values="grey12") + 
-  scale_linetype_manual("", values = 1) + 
+  scale_linetype_manual("", values = c(2,1)) + 
   ggtitle("(a) Domestic") + 
   theme_bw() +
   theme(
@@ -82,11 +106,12 @@ plot(dom.plot)
 
 ind.plot = ggplot(data = plot.data) + 
   geom_line(mapping = aes(x = year, y = ind.total, lty = "Total dataset")) + 
+  geom_line(mapping = aes(x = year, y = ind.this, lty = "This study")) + 
   geom_ribbon(mapping = aes(x = year, ymin = ind.min, ymax = ind.max, fill = "Uncertainty band"), alpha = 0.3) +
   scale_x_continuous(name = "Year") + 
   scale_y_continuous(name = " ", limits = c(0,NA)) + 
   scale_fill_manual("",values="grey12") + 
-  scale_linetype_manual("", values = 1) + 
+  scale_linetype_manual("", values = c(2,1)) + 
   ggtitle("(b) Industrial") + 
   theme_bw() +
   theme(
