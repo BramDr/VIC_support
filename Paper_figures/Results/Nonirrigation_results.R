@@ -28,8 +28,8 @@ time = rbind(isimip.time, watch.time)
 time = rbind(time, vic.time)
 
 levels(time$variable)
-time$variable = factor(time$variable, labels = c("(a) Domestic", "(b) Industrial", "(c) Livestock"), 
-                       levels = c("adomww", "aindww", "aliveww"))
+time$variable = factor(time$variable, labels = c("(a) Domestic", "(b) Industrial", "(c) Livestock", "(a) Potential Domestic", "(b) Potential Industrial", "(c) Potential Livestock"), 
+                       levels = c("adomww", "aindww", "aliveww", "pdomww", "pindww", "plivww"))
 time$year = as.numeric(time$year)
 time = time[time$year >= 1980 & time$year <= 2005,]
 time$value = as.numeric(time$value) * 1e-9
@@ -80,6 +80,21 @@ reported.shape = c(16,17)
 names(reported.shape) = shape.reported
 
 # Calculate
+## Domestic range
+sel = time$region == 0 & time$model == "vic-wur" & time$variable == "(a) Domestic" & time$year >= 1980 & time$year <= 2005
+min(time$value[sel])
+max(time$value[sel])
+
+## Industrial range
+sel = time$region == 0 & time$model == "vic-wur" & time$variable == "(b) Industrial" & time$year >= 1980 & time$year <= 2005
+min(time$value[sel])
+max(time$value[sel])
+
+## Livestock range
+sel = time$region == 0 & time$model == "vic-wur" & time$variable == "(c) Livestock" & time$year >= 1980 & time$year <= 2005
+min(time$value[sel])
+max(time$value[sel])
+
 ## Domestic slope
 sel = time$region == 0 & time$model == "vic-wur" & time$variable == "(a) Domestic" & time$year >= 1980 & time$year <= 2000
 slope.time = time[sel,]
@@ -112,38 +127,47 @@ mean(sk.diff)
 gg.plots = list()
 for(var in c("(a) Domestic", "(b) Industrial", "(c) Livestock")){
   sel = time$variable == var
+  if(var == "(a) Domestic"){
+     sel2 = time$variable == "(a) Potential Domestic"
+  } else if (var == "(b) Industrial"){
+    sel2 = time$variable == "(b) Potential Industrial"
+  } else if (var == "(c) Livestock"){
+    sel2 = time$variable == "(c) Potential Livestock"
+  }
   
-  gg.plot = ggplot(data = time[sel,], 
-                   mapping = aes(x = year, y = value)) +
-    geom_line(mapping = aes(colour = model)) +
+  gg.plot = ggplot() +
+    geom_line(data = time[sel,], mapping = aes(x = year, y = value, colour = model, linetype = "Actual (without EFR)")) +
+    geom_line(data = time[sel2,], mapping = aes(x = year, y = value, colour = model, linetype = "Potential")) +
     ggtitle(label = var) +
     scale_y_continuous(limits = c(0,NA), name = bquote("Withdrawn ["*km^3*"]")) + 
     facet_wrap(~Region, nrow = 6, scales = "free_y", strip.position = "left") +
     scale_x_continuous(name = "Year") + 
     scale_color_manual(name = "Impact model", values = model.colors) +
     scale_shape_manual(name = "Reported", values = reported.shape, labels = names(reported.shape)) + 
+    scale_linetype_manual(name = "Type", values = c(1,2)) +
     theme_bw() +
     theme(legend.position = "bottom",
+          legend.direction = "vertical",
           panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(),
           plot.title = element_text(size=12))
   
   if(var == "(a) Domestic"){
-    gg.plot = gg.plot + geom_point(mapping = aes(y = value_dom, shape = reported)) +
+    gg.plot = gg.plot + geom_point(data = time[sel,], mapping = aes(x = year, y = value_dom, shape = reported)) +
       scale_x_continuous(name = " ")
   } else if(var == "(b) Industrial"){
-    gg.plot = gg.plot + geom_point(mapping = aes(y = value_ind, shape = reported)) +
+    gg.plot = gg.plot + geom_point(data = time[sel,], mapping = aes(x = year, y = value_ind, shape = reported)) +
       scale_y_continuous(limits = c(0,NA), name = " ") + 
       theme(strip.background = element_blank(),
             strip.text = element_blank())
   } else if(var == "(c) Livestock"){
-    gg.plot = gg.plot + geom_point(mapping = aes(y = value_live, shape = reported)) +
+    gg.plot = gg.plot + geom_point(data = time[sel,], mapping = aes(x = year, y = value_live, shape = reported)) +
       scale_x_continuous(name = " ") +
       scale_y_continuous(limits = c(0,NA), name = " ") + 
       theme(strip.background = element_blank(),
             strip.text = element_blank())
   }
-  
+  plot(gg.plot)
   gg.plots[[length(gg.plots) + 1]] = gg.plot
 }
 
