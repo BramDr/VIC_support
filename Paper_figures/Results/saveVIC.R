@@ -22,7 +22,7 @@ nc_close(nc)
 # Setup
 month.days = c(31,28,31,30,31,30,31,31,30,31,30,31)
 compare.vars = c("pirrww", "airrww", "adomww", "amanww", "aeleww", "aliveww", "aindww")
-compare.sect = c(1,1,2,3,4,5,6)
+compare.sect = c(5,5,1,3,2,4,6)
 compare.efr = c("", "_efr", "_hefr")
 compare.models = c("vic-wur")
 model = "vic-wur"
