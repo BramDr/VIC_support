@@ -1,10 +1,13 @@
-# VIC-WUR_support
+# README
 Supporting documentation and scripts for VIC-WUR. Inputs are missing for confidentiality reasons.
-- Transformation scrips are used to transform input dataset to appropriate formats for use in other scripst.
-- Analysis scripts are used to analyse water-use input. This is used to generate global grid-based estimates of water-use demands.
-- Input scripts are used to generate the input files required by VIC-WUR.
+
+  * **Transformation** scrips are used to transform input dataset to appropriate formats for use in other scripst.
+  * **Analysis scripts** are used to analyse water-use input. This is used to generate global grid-based estimates of water-use demands.
+  * **Input scripts** are used to generate the input files required by VIC-WUR.
 
 ## Inputs
+Inputs needed to run the scripts (including possible sources and references).
+
 **Global country borders shapefile with UN coding**  
 [TM_WORLD_BORDERS-3.0](https://thematicmapping.org/downloads/world_borders.php)  
 
@@ -36,7 +39,7 @@ Van Vliet, M. T., Wiberg, D., Leduc, S., & Riahi, K. (2016). Power-generation sy
 
 **Global gridded livestock maps**  
 [FAO Gridded Livestock of the World maps](http://www.fao.org/livestock-systems/en/):
-Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., Vanwambeke, S.O., Wint, G.R. and Robinson, T.P. (2018). Global livestock distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010 (GLW 3). Nature Scientific Data 5:180227 doi: 10.1038/sdata.2018.227.
+Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., Vanwambeke, S.O., Wint, G.R. and Robinson, T.P. (2018). Global livestock distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010 (GLW 3). Nature Scientific Data 5:180227 doi:10.1038/sdata.2018.227.
 
 **Dam (including location, capacity and function)**  
 [Global Reservoir and Dam database v1.1](http://globaldamwatch.org/grand/):
