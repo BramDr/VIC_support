@@ -4,10 +4,10 @@ rm(list = ls())
 
 # Input
 function.script = "generateFunctions.R"
-vegetation.file = "Input/VIC_params_global.nc"
+vegetation.file = "../../../Data/Primary/VIC/VIC_params_global.nc"
 Cc.monthly.file = "Saves/CcMonthly_30min_global.RDS"
 Cv.monthly.file = "Saves/CvMonthly_30min_global.RDS"
-vegetation.out = "Output/VIC_params_MIRCA2000_full_global.nc"
+vegetation.out = "../../../Output/Parameters/global/VIC_params_MIRCA2000_full_global.nc"
 
 # Load
 source(function.script)

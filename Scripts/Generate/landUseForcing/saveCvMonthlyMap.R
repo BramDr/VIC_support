@@ -5,7 +5,7 @@ rm(list = ls())
 
 # Input
 Cc.monthly.file = "Saves/CcMonthly_30min_global.RDS"
-Cv.fixed.file = "Input/VIC_params_global.nc"
+Cv.fixed.file = "../../../Data/Primary/VIC/VIC_params_global.nc"
 Cv.monthly.out = "Saves/CvMonthly_30min_global.RDS"
 
 # Load

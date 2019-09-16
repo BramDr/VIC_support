@@ -3,10 +3,10 @@ library(fields)
 rm(list = ls())
 
 # Input
-cell.area.file = "MIRCA2000/MIRCA2000_cell_area.asc"
-crop.calendar.file = "MIRCA2000/MIRCA2000_cropping_calendars_30min.txt"
+cell.area.file = "../../../Data/Primary/MIRCA2000/Cell area grid/cell_area_ha_30mn.asc"
+crop.calendar.file = "../../../Data/Primary/MIRCA2000/Growing periods listed/cropping_calendars_30min.txt"
+crop.area.file = "../../../Data/Primary/MIRCA2000/maximum_cropped_area_grid/max_cropped_area_total_annual_ha_30mn.asc"
 Cc.monthly.out = "Saves/CcMonthly_30min_global.RDS"
-crop.area.file = "MIRCA2000/MIRCA2000_maximum_cropping_area_30min.asc"
 
 # Load
 subcrop.calendar = read.csv(file = crop.calendar.file, sep = "\t", stringsAsFactors = F)

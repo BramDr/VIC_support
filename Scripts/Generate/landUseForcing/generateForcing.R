@@ -6,7 +6,7 @@ rm(list = ls())
 # Input
 Cc.monthly.file = "Saves/CcMonthly_30min_global.RDS"
 Cv.monthly.file = "Saves/CvMonthly_30min_global.RDS"
-out.dir = "Output/"
+out.dir = "../../../Output/Forcing/global/"
 
 # Load
 Cc.monthly = readRDS(Cc.monthly.file)

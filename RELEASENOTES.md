@@ -6,6 +6,9 @@ Release notes for the VIC-WUR supporting documentation.
 
 ----
 ### Latest
+
+1. Added scripts related to variable land-use forcing (based on MIRCA2000).
+
 Includes minor changes that impact the results to a limited degree.
 
 1. Removed paper related scripts/documents. These have been moved to [this GitHub repository](https://github.com/bramdr/papers). Currently only VIC-WUR related scripts/documents are included in this repository.
