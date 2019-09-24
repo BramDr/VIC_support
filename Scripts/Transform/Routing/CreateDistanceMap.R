@@ -4,14 +4,11 @@ rm(list = ls())
 
 # Input
 distance.file <- "../../../Data/Primary/VIC/RVIC_input_global.nc"
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 distance.out <- "../../../Data/Transformed/Routing/distance_30min_global.RDS"
 
 # Load
-nc <- nc_open(filename = mask.file)
-mask <- ncvar_get(nc = nc, "mask")
-nc_close(nc = nc)
-image.plot(mask)
+mask <- readRDS(mask.file)
 
 nc <- nc_open(filename = distance.file)
 distance <- ncvar_get(nc = nc, "flow_distance")
@@ -27,7 +24,7 @@ for (x in 1:dim(mask)[1]) {
       distance[x, y] <- max(distance[, y], na.rm = T)
 
       if (is.infinite(distance[x, y])) {
-        distance[x, y] <- mean(distance, na.rm = T)
+        distance[x, y] <- mean(distance[is.finite(distance)], na.rm = T)
       }
     }
   }

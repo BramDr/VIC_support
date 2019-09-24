@@ -129,12 +129,12 @@ man.adj2[man.adj2 < 0] <- 0
 ene.adj <- ene
 for (x in 1:dim(man)[1]) {
   for (y in 1:dim(man)[2]) {
-    if(is.na(man[x,y,1])){
+    if (is.na(man[x, y, 1])) {
       next
     }
     for (z in 1:dim(man)[3]) {
-      if(man[x,y,z] < 0){
-        ene.adj[x,y,z] = abs(man[x,y,z])
+      if (man[x, y, z] < 0) {
+        ene.adj[x, y, z] <- abs(man[x, y, z])
       }
     }
   }
@@ -167,8 +167,8 @@ for (i in 1:length(cells)) {
     ene.adj[x, y, ] <- enes.c
   }
 }
-image.plot(man.adj[,,1])
-image.plot(ene.adj[,,1])
+image.plot(man.adj[, , 1])
+image.plot(ene.adj[, , 1])
 
 # Save
 dir.create(dirname(man.out))

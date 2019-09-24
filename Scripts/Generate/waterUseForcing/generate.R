@@ -54,6 +54,7 @@ for (in.file in in.files) {
   sec <- ""
   type <- ""
   ty <- ""
+  units <- "mm"
   adjust <- 1
   if (length(grep(x = in.file, "manufacturing")) > 0) {
     sector <- "manufacturing"
@@ -79,10 +80,12 @@ for (in.file in in.files) {
   if (length(grep(x = in.file, "Groundwater")) > 0) {
     type <- "groundwater_fraction"
     ty <- "ground"
+    units <- "fraction"
   }
-  if (length(grep(x = in.file, "Gonsumption")) > 0) {
+  if (length(grep(x = in.file, "Consumption")) > 0) {
     type <- "consumption_fraction"
     ty <- "consump"
+    units <- "fraction"
   }
 
   data <- readRDS(in.file)
@@ -111,7 +114,7 @@ for (in.file in in.files) {
 
     var <- ncvar_def(
       name = type,
-      units = "mm",
+      units = units,
       dim = list(lon.dim, lat.dim, time.dim),
       missval = -1,
       longname = paste0(sector, " water ", type),

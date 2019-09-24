@@ -4,14 +4,11 @@ rm(list = ls())
 
 # Input
 direction.file <- "../../../Data/Primary/VIC/RVIC_input_global.nc"
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 downstream.out <- "../../../Data/Transformed/Routing/downstream_30min_global.RDS"
 
 # Load
-nc <- nc_open(filename = mask.file)
-mask <- ncvar_get(nc = nc, "mask")
-nc_close(nc = nc)
-image.plot(mask)
+mask <- readRDS(mask.file)
 
 nc <- nc_open(filename = direction.file)
 direction <- ncvar_get(nc = nc, "flow_direction")
@@ -44,7 +41,11 @@ direction.to.index <- function(direction) {
 downstream <- array(NA, dim = c(dim(direction), 2))
 for (x in 1:dim(direction)[1]) {
   for (y in 1:dim(direction)[2]) {
-    if (is.na(direction[x, y]) || is.na(mask[x, y])) {
+    if (is.na(mask[x, y])) {
+      next
+    }
+
+    if (is.na(direction[x, y])) {
       direction[x, y] <- 9
     }
 

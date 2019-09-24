@@ -5,18 +5,14 @@ rm(list = ls())
 
 # Input
 distance.file <- "../../../Data/Transformed/Routing/distance_30min_global.RDS"
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 uh.runoff.file <- "../../../Data/Primary/Lohmann1996/UH_runoff.txt"
 uh.inflow.out <- "Saves/UH_inflow.RDS"
 uh.runoff.out <- "Saves/UH_runoff.RDS"
 
 # Load
 distance <- readRDS(distance.file)
-
-nc <- nc_open(filename = mask.file)
-mask <- ncvar_get(nc = nc, "mask")
-nc_close(nc = nc)
-image.plot(mask)
+mask <- readRDS(mask.file)
 
 uh.runoff <- read.table(file = uh.runoff.file, header = T, sep = "\t")
 

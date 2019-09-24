@@ -93,7 +93,7 @@ colnames(livestock.ho) <- c("lon", "lat", "animals")
 colnames(livestock.pg) <- c("lon", "lat", "animals")
 
 # Calculate
-livestock <- data.frame(lat = rep(lats, each = length(lons)), lon = rep(lons, length(lats)))
+livestock <- data.frame(lon = rep(lons, length(lats)), lat = rep(lats, each = length(lons)))
 livestock$rownames <- 1:nrow(livestock)
 
 numbers <- apply(

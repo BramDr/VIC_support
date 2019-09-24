@@ -23,6 +23,9 @@ downstream.id <- array(NA, dim = c(dim(downstream)[1], dim(downstream)[2]))
 id.counter <- 1
 for (x in 1:dim(downstream)[1]) {
   for (y in 1:dim(downstream)[2]) {
+    if (is.na(downstream[x, y, 1])) {
+      next
+    }
     downstream.id[x, y] <- id.counter
     id.counter <- id.counter + 1
   }
@@ -32,6 +35,9 @@ image.plot(downstream.id)
 downstream.nc <- array(NA, dim = dim(downstream.id))
 for (x in 1:dim(downstream)[1]) {
   for (y in 1:dim(downstream)[2]) {
+    if (is.na(downstream[x, y, 1])) {
+      next
+    }
     downstream.cell <- downstream[x, y, ]
     downstream.nc[x, y] <- downstream.id[downstream.cell[1], downstream.cell[2]]
   }

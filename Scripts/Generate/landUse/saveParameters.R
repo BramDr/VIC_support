@@ -3,7 +3,7 @@ library(ncdf4)
 rm(list = ls())
 
 # Input
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 loc.file <- "../../../Data/Primary/MIRCA2000/Growing periods listed/cropping_calendars_30min.txt"
 cc.paddy.file <- "Saves/MIRCA2000_cell_calendars_paddy.csv"
 cc.irr.file <- "Saves/MIRCA2000_cell_calendars_irrigation.csv"
@@ -13,9 +13,7 @@ irr.out <- "Saves/parameters_irrigated.RDS"
 rain.out <- "Saves/parameters_rainfed.RDS"
 
 # Load
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
+mask <- readRDS(mask.file)
 mask <- t(mask[, ncol(mask):1])
 image.plot(mask)
 

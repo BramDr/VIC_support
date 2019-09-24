@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 dom.tmp <- "Saves/domesticDemandPC_30min_global.RDS"
 temp.dir <- "../../../../Data/Transformed/WFDEI/"
-mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../../Data/Transformed/Routing/mask_30min_global.RDS"
 area.file <- "../../../../Data/Transformed/Routing/area_30min_global.RDS"
 pop.file <- "../../../../Data/Transformed/Population/population_30min_global.RDS"
 dom.out <- "Saves/domesticDemand_30min_global.RDS"
@@ -15,15 +15,12 @@ years <- 1979:2016
 dom.agg <- readRDS(dom.tmp)
 pop <- readRDS(pop.file)
 area <- readRDS(area.file)
+mask <- readRDS(mask.file)
 
 tmon.files <- list.files(temp.dir, pattern = "monthly_", full.names = T)
 tyear.files <- list.files(temp.dir, pattern = "yearly_", full.names = T)
 tyear.max.files <- list.files(temp.dir, pattern = "yearlyMonthmax_", full.names = T)
 tyear.min.files <- list.files(temp.dir, pattern = "yearlyMonthmin_", full.names = T)
-
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
 
 # Setup
 getNearest <- function(x, y, z, data) {

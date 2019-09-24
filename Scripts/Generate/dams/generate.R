@@ -7,13 +7,11 @@ gdam.file <- "Saves/globalDamsMerge.csv"
 ldam.file <- "Saves/localDamsMerge.csv"
 gdam.service.file <- "Saves/globalDamsService.RDS"
 ldam.service.file <- "Saves/localDamsService.RDS"
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 dams.out <- "../../../Output/Parameters/global/dam_params_global.nc"
 
 # Load
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
+mask <- readRDS(mask.file)
 
 ldams <- read.csv(ldam.file, stringsAsFactors = F)
 gdams <- read.csv(gdam.file, stringsAsFactors = F)

@@ -4,7 +4,7 @@ rm(list = ls())
 
 # Input
 path.domain <- "../../../Data/Primary/VIC/domain_global.nc"
-dir.out <- "../../../Output/Parameters/global/"
+dir.out <- "../../../Output/Parameters/"
 
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
@@ -42,7 +42,7 @@ image.plot(mask.combine)
 
 # Save
 if (combine) {
-  newname <- paste0(dir.out, "domain_", paste0(points$name, collapse = ""), ".nc")
+  newname <- paste0(dir.out, "/", paste0(points$name, collapse = ""), "/", "domain_", paste0(points$name, collapse = ""), ".nc")
 
   x.index <- which(!is.nan(apply(mask.combine, c(1), mean, na.rm = T)))
   y.index <- which(!is.nan(apply(mask.combine, c(2), mean, na.rm = T)))
@@ -60,7 +60,7 @@ if (combine) {
   nc_close(nc)
 } else {
   for (i in 1:nrow(points)) {
-    newname <- paste0(dir.out, "domain_", points$name[i], ".nc")
+    newname <- paste0(dir.out, "/", points$name[i], "/", "domain_", points$name[i], ".nc")
 
     x.index <- which(!is.nan(apply(mask[, , i], c(1), mean, na.rm = T)))
     y.index <- which(!is.nan(apply(mask[, , i], c(2), mean, na.rm = T)))

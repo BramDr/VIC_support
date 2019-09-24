@@ -4,16 +4,13 @@ rm(list = ls())
 
 # Input
 ene.file <- "../../../../Data/Transformed/Energy/energyWithdrawal_location.csv"
-mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../../Data/Transformed/Routing/mask_30min_global.RDS"
 area.file <- "../../../../Data/Transformed/Routing/area_30min_global.RDS"
 dem.out <- "Saves/energyDemand_30min_global.RDS"
 years <- 1979:2016
 
 # Load
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
-
+mask <- readRDS(mask.file)
 area <- readRDS(area.file)
 ene <- read.csv(ene.file)
 

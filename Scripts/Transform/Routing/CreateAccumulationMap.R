@@ -15,6 +15,10 @@ area <- readRDS(area.file)
 accumulation <- array(0, dim = dim(area))
 for (x in 1:dim(area)[1]) {
   for (y in 1:dim(area)[2]) {
+    if (is.na(downstream[x, y, 1])) {
+      next
+    }
+
     cur <- c(x, y)
     nex <- downstream[x, y, ]
 

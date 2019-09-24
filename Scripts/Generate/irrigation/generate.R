@@ -3,7 +3,7 @@ library(fields)
 rm(list = ls())
 
 # Input
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 gw.file <- "../../../Data/Transformed/Irrigation/irrigationGroundwaterFraction_30min_global.RDS"
 eff.file <- "../../../Data/Transformed/Irrigation/irrigationEfficiency_30min_global.RDS"
 irr.param.out <- "../../../Output/Parameters/global/irr_params_MIRCA2000_global.nc"
@@ -15,10 +15,7 @@ irr.pond <- c(0, 1)
 # Load
 groundwater <- readRDS(gw.file)
 eff <- readRDS(eff.file)
-
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
+mask <- readRDS(mask.file)
 
 # Setup
 get.nearest <- function(x, y, data) {

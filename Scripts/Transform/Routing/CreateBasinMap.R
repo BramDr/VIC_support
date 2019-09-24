@@ -13,6 +13,10 @@ basin <- array(NA, dim = dim(downstream)[1:2])
 id.counter <- 0
 for (x in 1:dim(downstream)[1]) {
   for (y in 1:dim(downstream)[2]) {
+    if (is.na(downstream[x, y, 1])) {
+      next
+    }
+
     cur <- c(x, y)
     nex <- downstream[x, y, ]
     river <- list()

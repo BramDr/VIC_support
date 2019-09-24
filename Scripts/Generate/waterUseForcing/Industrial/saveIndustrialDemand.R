@@ -4,7 +4,7 @@ rm(list = ls())
 
 # Input
 ind.tmp <- "Saves/industrialDemandSpread_30min_global.RDS"
-mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
+mask.file <- "../../../../Data/Transformed/Routing/mask_30min_global.RDS"
 area.file <- "../../../../Data/Transformed/Routing/area_30min_global.RDS"
 ind.out <- "Saves/industrialDemand_30min_global.RDS"
 years <- 1979:2016
@@ -12,10 +12,7 @@ years <- 1979:2016
 # Load
 ind.agg <- readRDS(ind.tmp)
 area <- readRDS(area.file)
-
-nc <- nc_open(mask.file)
-mask <- ncvar_get(nc, "mask")
-nc_close(nc)
+mask <- readRDS(mask.file)
 
 # Calculate
 ind.int <- ind.agg
