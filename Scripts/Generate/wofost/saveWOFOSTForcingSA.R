@@ -3,9 +3,9 @@ library(fields)
 rm(list = ls())
 
 # Input
-mask.file <- "../../Data/Primary/VIC/domain_global.nc"
-mask.file <- "../../Data/Primary/WFDEI/"
-force.out <- "../../Data/WOFOST/Forcing/global/"
+mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+force.dir <- "../../../Data/Transformed/WFDEI/"
+force.out <- "../../../Data/WOFOST/Forcing/global/"
 
 # Load
 nc <- nc_open(mask.file)
@@ -25,31 +25,31 @@ for (x in 1:length(lons)) {
       next
     }
 
-    file.out <- paste0(dir.out, "force_WFDEI_", lats[y], "N_", lons[x], "E", ".txt")
+    file.out <- paste0(force.out, "force_WFDEI_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
 
     desc.out <- paste0(
       "
-      ** WOFOST FORCING FILE for use with WOFOST Version 5.0, June 1990
-      ** Based on WFDEI forcing data (Weedon et al., 2014)
-      ** Latitude: ", lats[y], " N
-      ** Longitude: ", lons[x], " E
-      ** 
-      ** station number:               (ID)
-      ** year:                         (year)
-      ** day:                          (day-of-year)
-      ** irradiation                   (kJ m-2 d-1)
-      ** minimum temperature           (degrees Celsius)
-      ** maximum temperature           (degrees Celsius)
-      ** early morning vapour pressure (kPa)
-      ** mean wind speed (height: 2 m) (m s-1)
-      ** precipitation                 (mm d-1)
+** WOFOST FORCING FILE for use with WOFOST Version 5.0, June 1990
+** Based on WFDEI forcing data (Weedon et al., 2014)
+** Latitude: ", lats[y], " N
+** Longitude: ", lons[x], " E
+** 
+** station number:               (ID)
+** year:                         (year)
+** day:                          (day-of-year)
+** irradiation                   (kJ m-2 d-1)
+** minimum temperature           (degrees Celsius)
+** maximum temperature           (degrees Celsius)
+** early morning vapour pressure (kPa)
+** mean wind speed (height: 2 m) (m s-1)
+** precipitation                 (mm d-1)
       "
     )
 
     depr.out <- paste0(
       "
-      ", lats[y], " ", lons[x], " -1 -1 -1           ! lat   lon   elevation   A   B"
+", lats[y], " ", lons[x], " -1 -1 -1           ! lat   lon   elevation   A   B"
     )
 
     dir.create(dirname(file.out), showWarnings = F, recursive = T)
@@ -103,7 +103,7 @@ for (year in years) {
         next
       }
 
-      file.out <- paste0(dir.out, "force_WFDEI_", lats[y], "N_", lons[x], "E", ".txt")
+      file.out <- paste0(force.out, "force_WFDEI_", lats[y], "N_", lons[x], "E", ".txt")
 
       out.data <- data.frame(
         station = station,
