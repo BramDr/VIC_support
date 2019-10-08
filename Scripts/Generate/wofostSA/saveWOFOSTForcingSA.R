@@ -17,7 +17,7 @@ nc_close(nc)
 # Setup
 years <- 1979:2016
 
-# Calculate
+# Calculate & Save
 ## Initialize files
 for (x in 1:length(lons)) {
   for (y in 1:length(lats)) {

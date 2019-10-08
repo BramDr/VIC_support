@@ -26,7 +26,7 @@ soil.files <- list.files(soil.dir, full.names = T)
 soil.files <- grep(x = soil.files, pattern = "EC3", value = T)
 out.files <- paste0(output.dir, "output_", lats[y], "N_", lons[x], "E", ".txt")
 
-# Calculate
+# Calculate & Save
 for (x in 1:length(lons)) {
   for (y in 1:length(lats)) {
     if (is.na(mask[x, y]) || mask[x, y] == 0) {
@@ -34,7 +34,7 @@ for (x in 1:length(lons)) {
     }
 
     # Parameters
-    file.out <- paste0(configuration.param.out, "param_config_", lats[y], "N_", lons[x], "E", ".txt")
+    file.out <- paste0(configuration.param.out, "param_config_SA_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
 
     desc.out <- paste0(

@@ -18,7 +18,7 @@ nc_close(nc)
 force.files <- list.files(force.dir, full.names = T)
 years <- 1979:2016
 
-# Calculate
+# Calculate & Save
 for (x in 1:length(lons)) {
   for (y in 1:length(lats)) {
     if (is.na(mask[x, y]) || mask[x, y] == 0) {
@@ -26,7 +26,7 @@ for (x in 1:length(lons)) {
     }
     
     # Forcing
-    file.out <- paste0(configuration.force.out, "forcing_config_", lats[y], "N_", lons[x], "E", ".txt")
+    file.out <- paste0(configuration.force.out, "forcing_config_SA_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
 
     desc.out <- paste0(
