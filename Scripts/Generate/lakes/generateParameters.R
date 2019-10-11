@@ -3,12 +3,12 @@ library(fields)
 rm(list = ls())
 
 # Input
-lakes.file = "Saves/hydrolake_lake_chars.csv"
+lakes.file = "Saves/hydrolake_test_chars.csv"
 area.file = "../../../Data/Primary/VIC/domain_global.nc"
 domain.template = "../../../Data/Primary/VIC/domain_global.nc"
 param.template = "../../../Data/Primary/VIC/VIC_params_global.nc"
-domain.out = "../../../Data/VIC/Parameters/global/domain_hydrolake_global.nc"
-param.out = "../../../Data/VIC/Parameters/global/VIC_params_hydrolake_global.nc"
+domain.out = "../../../Data/VIC/Parameters/global/domain_hydrolake_test_global.nc"
+param.out = "../../../Data/VIC/Parameters/global/VIC_params_hydrolake_test_global.nc"
 
 # Load
 nc = nc_open(area.file)
@@ -61,7 +61,9 @@ dir.create(dirname(domain.out))
 file.copy(from = domain.template, to = domain.out, overwrite = TRUE)
 
 nc = nc_open(filename = domain.out, write = TRUE)
-ncvar_put(nc = nc, varid = nc$var$mask, vals = Nlake > 0)
+mask = ncvar_get(nc = nc, varid = nc$var$mask)
+mask[is.na(mask)] = 0
+ncvar_put(nc = nc, varid = nc$var$mask, vals = Nlake > 0 & mask > 0)
 nc_close(nc = nc)
 
 ## Parameters

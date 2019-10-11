@@ -3,7 +3,7 @@ rm(list = ls())
 # Input
 hydrolake.file = "../../../Data/Primary/HydroLakes/HydroLAKES.csv"
 selection.file = "../../../Data/Primary/HydroLakes/PClake_selection.csv"
-char.out = "Saves/hydrolake_lake_chars.csv"
+char.out = "Saves/hydrolake_test_chars.csv"
 
 # Load
 hydrolake = read.csv(hydrolake.file, stringsAsFactors = F)
@@ -12,6 +12,8 @@ selection = read.csv(selection.file, sep = ";", stringsAsFactors = F)
 # Setup
 lakes = hydrolake[hydrolake$Hylak_id %in% selection$Hylak_ID,]
 lakes = lakes[complete.cases(lakes),]
+
+lakes = lakes[sample(x = 1:nrow(lakes), size = 300),]
 
 # Calculate
 chars = data.frame(ID = numeric(), sourceID = numeric(), depth = numeric(), area = numeric(), elevation = numeric(), lon = numeric(), lat = numeric())
