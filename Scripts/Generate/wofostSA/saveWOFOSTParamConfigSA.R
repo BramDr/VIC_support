@@ -24,7 +24,6 @@ management.files <- list.files(management.dir, full.names = T)
 site.files <- list.files(site.dir, full.names = T)
 soil.files <- list.files(soil.dir, full.names = T)
 soil.files <- grep(x = soil.files, pattern = "EC3", value = T)
-out.files <- paste0(output.dir, "output_", lats[y], "N_", lons[x], "E", ".txt")
 
 # Calculate & Save
 for (x in 1:length(lons)) {
@@ -33,7 +32,6 @@ for (x in 1:length(lons)) {
       next
     }
 
-    # Parameters
     file.out <- paste0(configuration.param.out, "param_config_SA_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
 
@@ -49,6 +47,7 @@ for (x in 1:length(lons)) {
     management.file <- management.files[1]
     site.file <- site.files[1]
     soil.file <- soil.files[1]
+	out.files <- paste0(getwd(), "/", output.dir, "output_", lats[y], "N_", lons[x], "E", ".txt")
 
     dir.create(dirname(file.out), showWarnings = F, recursive = T)
     if (file.exists(file.out)) {
@@ -59,12 +58,11 @@ for (x in 1:length(lons)) {
     for (z in 1:length(crop.files)) {
       crop.file <- crop.files[z]
       
-      crop.name <- gsub(x = basename(crop.file), pattern = "crop_patterns_", replacement = "")
+      crop.name <- gsub(x = basename(crop.file), pattern = "crop_params_", replacement = "")
       crop.name <- gsub(x = basename(crop.name), pattern = ".txt", replacement = "")
       out.file <- gsub(x = out.files, pattern = "output_", replacement = paste0("output_", crop.name, "_"))
       
       line.out <- paste0(getwd(), "/ ", crop.file, " ", soil.file, " ", management.file, " ", site.file, " 01-03 0 ", out.file)
-
       write(x = line.out, file = file.out, append = T)
     }
   }

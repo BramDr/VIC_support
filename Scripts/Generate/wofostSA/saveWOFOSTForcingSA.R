@@ -4,10 +4,15 @@ rm(list = ls())
 
 # Input
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+elev.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
 force.dir <- "../../../Data/Transformed/WFDEI/"
 force.out <- "../../../Data/WOFOST/Forcing/global/"
 
 # Load
+nc <- nc_open(elev.file)
+elev <- ncvar_get(nc, nc$var$elev)
+nc_close(nc)
+
 nc <- nc_open(mask.file)
 mask <- ncvar_get(nc, nc$var$mask)
 lats <- nc$dim$lat$vals
@@ -49,7 +54,7 @@ for (x in 1:length(lons)) {
 
     depr.out <- paste0(
       "
-", lats[y], " ", lons[x], " -1 -1 -1           ! lat   lon   elevation   A   B"
+", lons[x], " ", lats[y], " ", elev[x,y], " ", 0.4885 - 0.0052 * lats[y], " ", 0.1563 + 0.0074 * lats[y], "           ! lon   lat   elevation   A   B"
     )
 
     dir.create(dirname(file.out), showWarnings = F, recursive = T)

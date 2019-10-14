@@ -25,7 +25,6 @@ for (x in 1:length(lons)) {
       next
     }
     
-    # Forcing
     file.out <- paste0(configuration.force.out, "forcing_config_SA_", lats[y], "N_", lons[x], "E", ".txt")
     print(basename(file.out))
 
@@ -38,7 +37,7 @@ for (x in 1:length(lons)) {
 "
     )
 
-    force.file <- grep(x = force.files, pattern = paste0(lats[y], "N_", lons[x], "E"), value = T)
+    force.file <- paste0(force.dir, "force_WFDEI_", lats[y], "N_", lons[x], "E", ".txt")
 
     dir.create(dirname(file.out), showWarnings = F, recursive = T)
     if (file.exists(file.out)) {
@@ -47,7 +46,6 @@ for (x in 1:length(lons)) {
     writeLines(text = desc.out, con = file.out)
 
     line.out <- paste0(getwd(), "/", force.file, " ", years[1], " ", years[length(years)], " ", lats[y], " ", lons[x])
-
     write(x = line.out, file = file.out, append = T)
   }
 }
