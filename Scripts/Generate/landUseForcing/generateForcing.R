@@ -58,8 +58,8 @@ for(z in 1:length(years)){
   
   print(paste0("Working on year ", year))
   
-  out.name = paste0("coverage_MIRCA2000_monthly_", year, ".nc")
-  out.sdir = paste0("/coverage_MIRCA2000_monthly/")
+  out.name = paste0("coverage_monthly_MIRCA2000_", year, ".nc")
+  out.sdir = paste0("/coverage_monthly_MIRCA2000/")
   out.file = paste0(out.dir, out.sdir, out.name)
   
   times = seq(
