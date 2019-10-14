@@ -7,6 +7,8 @@ Release notes for the VIC-WUR supporting documentation.
 ----
 ### Latest
 
+1. Added scripts related to co2 forcing (based on ISIMIP).
+
 ### Version 1.1.0
 Includes minor changes that affect the results to a limited degree, specifically: routing flow distance, industrial water demand, livestock water demand.
 
