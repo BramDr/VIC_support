@@ -180,7 +180,7 @@ PutVegVars = function (file, Nveg) {
 }
 
 # Add lake parameters
-PutLakeVars = function (file, lakes, area, Nlake) {
+PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.layer.depth = 0.5) {
   # Open
   nc = nc_open(filename = file)
   Cv = ncvar_get(nc, "Cv")
@@ -212,10 +212,16 @@ PutLakeVars = function (file, lakes, area, Nlake) {
         rpercent[x,y,z] = 0.2
         mindepth[x,y,z] = 0.5
         numnod_profile[x,y,z] = 10
-        numnod[x,y,z] = ceiling(lakes$depth[i] * 2)
-        depth_in[x,y,z] = lakes$depth[i]
-        basin_depth[x,y,z] = lakes$depth[i]
         basin_area[x,y,z] = lakes$fraction[i]
+        if (lakes$depth[i] < max.surface.depth) {
+          numnod[x,y,z] = 1
+          depth_in[x,y,z] = lakes$depth[i]
+          basin_depth[x,y,z] = lakes$depth[i]
+        } else {
+          numnod[x,y,z] = 1 + ceiling((lakes$depth[i] - max.surface.depth) / max.layer.depth)
+          depth_in[x,y,z] = lakes$depth[i]
+          basin_depth[x,y,z] = lakes$depth[i] 
+        }
         break
       }
     }
