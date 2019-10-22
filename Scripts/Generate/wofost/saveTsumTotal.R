@@ -4,11 +4,17 @@ rm(list = ls())
 
 # Input
 temp.file = "../../../Data/Transformed/WFDEI/tas_daily_WFDEI_1979.nc"
+param.file = "../../../Data/Primary/VIC/VIC_params_global.nc"
 cc.file = "../../../Data/Primary/MIRCA2000/Growing periods listed/cropping_calendars_30min.txt"
 
 # Load
 cc <- read.table(file = cc.file, header = TRUE, stringsAsFactors = F)
 cc$rowname <- 1:nrow(cc)
+
+nc = nc_open(param.file)
+elev.band = ncvar_get(nc, nc$var$elevation)
+frac.band = ncvar_get(nc, nc$var$AreaFract)
+nc_close(nc)
 
 nc = nc_open(temp.file)
 temp = ncvar_get(nc, nc$var$tas)
@@ -19,9 +25,16 @@ time = as.Date(format.Date(time, "%Y-%m-%d"))
 nc_close(nc)
 
 # Setup
-cc.sel = cc[cc$crop %in% c(28),]
-maize.tsum = c(900, 1000)
+## Temperature adjustments
+elev.adj = elev.band[,,1] - apply(X = elev.band * frac.band, MARGIN = c(1,2), FUN = sum, na.rm = T)
+temp.adj = elev.adj * -0.0065 # lapse rate
+
+## Crop calendar
+cc.sel = cc[cc$crop %in% c(27),]
+#cc.sel = cc[cc$lat == 28.25 & cc$lon == 110.25,]
+#cc.sel = cc.sel[cc.sel$start == 11,]
 maize.tbase = data.frame(temperature = c(0,6,30,35), increase = c(0,0,24,24))
+rice.tbase = data.frame()
 
 get.tincrease = function(temp, sensitivity){
   ti = c()
@@ -63,34 +76,34 @@ get.tincrease = function(temp, sensitivity){
 #image.plot(apply(temp, c(1,2), sum))
 
 ## GROWING DAYS
-sday = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
-eday = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
-gdays = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
-for(i in 1:nrow(cc.sel)){
-  x = which(lons == cc.sel$lon[i])
-  y = which(lats == cc.sel$lat[i])
-  
-  if(cc.sel$start[i] < cc.sel$end[i]) {
-    start = as.Date(paste0("1979-", cc.sel$start[i], "-15"))
-    end = as.Date(paste0("1979-", cc.sel$end[i], "-20"))
-    
-    grow.time = seq.Date(start, end, by = "day")
-  } else {
-    start = as.Date(paste0("1979-", cc.sel$start[i], "-15"))
-    end = as.Date(paste0("1980-", cc.sel$end[i], "-20"))
-    
-    grow.time = seq.Date(start, end, by = "day")
-    grow.time = as.Date(paste0("1979-", format.Date(grow.time, "%m-%d")))
-  }
-  z = which(time %in% grow.time)
-  
-  sday[x,y,cc.sel$subcrop[i]] = as.numeric(format.Date(start, "%m"))
-  eday[x,y,cc.sel$subcrop[i]] = as.numeric(format.Date(end, "%m"))
-  gdays[x,y,cc.sel$subcrop[i]] = length(z)
-}
-image.plot(sday[,,1])
-image.plot(eday[,,1])
-image.plot(gdays[,,1])
+# sday = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
+# eday = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
+# gdays = array(NA, dim = c(dim(temp)[1:2], max(cc.sel$subcrop)))
+# for(i in 1:nrow(cc.sel)){
+#   x = which(lons == cc.sel$lon[i])
+#   y = which(lats == cc.sel$lat[i])
+#   
+#   if(cc.sel$start[i] < cc.sel$end[i]) {
+#     start = as.Date(paste0("1979-", cc.sel$start[i], "-15"))
+#     end = as.Date(paste0("1979-", cc.sel$end[i], "-20"))
+#     
+#     grow.time = seq.Date(start, end, by = "day")
+#   } else {
+#     start = as.Date(paste0("1979-", cc.sel$start[i], "-15"))
+#     end = as.Date(paste0("1980-", cc.sel$end[i], "-20"))
+#     
+#     grow.time = seq.Date(start, end, by = "day")
+#     grow.time = as.Date(paste0("1979-", format.Date(grow.time, "%m-%d")))
+#   }
+#   z = which(time %in% grow.time)
+#   
+#   sday[x,y,cc.sel$subcrop[i]] = as.numeric(format.Date(start, "%m"))
+#   eday[x,y,cc.sel$subcrop[i]] = as.numeric(format.Date(end, "%m"))
+#   gdays[x,y,cc.sel$subcrop[i]] = length(z)
+# }
+# image.plot(sday[,,1])
+# image.plot(eday[,,1])
+# image.plot(gdays[,,1])
 
 ## TSUMS
 nodata = array(0, dim = dim(temp)[1:2])
@@ -113,7 +126,7 @@ for(i in 1:nrow(cc.sel)){
   }
   z = which(time %in% grow.time)
   
-  t = temp[x,y,z]
+  t = temp[x,y,z] + temp.adj[x,y]
   
   if(length(na.omit(t)) == 0){
     nodata[x,y] = 1
@@ -126,4 +139,5 @@ for(i in 1:nrow(cc.sel)){
 }
 image.plot(nodata)
 image.plot(tsum[,,1], zlim = c(0,5000))
-image.plot(tsum[,,1] <= 1000)
+#image.plot(tsum[,,1] <= 1000)
+
