@@ -3,12 +3,12 @@ library(fields)
 rm(list = ls())
 
 # Input
-lakes.file = "Saves/hydrolake_test_chars.csv"
+lakes.file = "Saves/hydrolake_AnnetteJanssen_chars.csv"
 area.file = "../../../Data/Primary/VIC/domain_global.nc"
 domain.template = "../../../Data/Primary/VIC/domain_global.nc"
 param.template = "../../../Data/Primary/VIC/VIC_params_global.nc"
 domain.out = "../../../Data/VIC/Parameters/global/domain_hydrolake_test_global.nc"
-param.out = "../../../Data/VIC/Parameters/global/VIC_params_hydrolake_test_global.nc"
+param.out = "../../../Data/VIC/Parameters/global/VIC_params_hydrolake_AnnetteJanssen_global.nc"
 
 # Load
 nc = nc_open(area.file)

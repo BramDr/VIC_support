@@ -2,15 +2,15 @@ rm(list = ls())
 
 # Input
 hydrolake.file = "../../../Data/Primary/HydroLakes/HydroLAKES.csv"
-selection.file = "../../../Data/Primary/HydroLakes/PClake_selection.csv"
-char.out = "Saves/hydrolake_chars.csv"
+selection.file = "../../../Data/Primary/HydroLakes/HydrolakeSelection_AnnetteJanssen.txt"
+char.out = "Saves/hydrolake_AnnetteJanssen_chars.csv"
 
 # Load
 hydrolake = read.csv(hydrolake.file, stringsAsFactors = F)
 selection = read.csv(selection.file, sep = ";", stringsAsFactors = F)
 
 # Setup
-lakes = hydrolake[hydrolake$Hylak_id %in% selection$Hylak_ID,]
+lakes = hydrolake[hydrolake$Hylak_id %in% selection[,1],]
 lakes = lakes[complete.cases(lakes),]
 
 # Calculate

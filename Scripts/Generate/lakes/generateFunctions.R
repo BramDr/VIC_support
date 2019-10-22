@@ -99,83 +99,80 @@ AddLakeVars = function (file) {
 # Add vegetation parameters
 PutVegVars = function (file, Nveg) {
   # Open
-  nc = nc_open(filename = file)
-  nc_close(nc = nc)
-  
-  # Alloc
-  Cv = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  wind_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  wind_h = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  rmin = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  rarc = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  rad_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  RGL = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  trunk_ratio = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  overstory = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  root_fract = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len, nc$dim$veg_class$len))
-  root_depth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len, nc$dim$veg_class$len))
-  LAI = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len, nc$dim$veg_class$len))
-  displacement = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len, nc$dim$veg_class$len))
-  veg_rough = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len, nc$dim$veg_class$len))
-  albedo = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len, nc$dim$veg_class$len))
-  
-  for(x in 1:dim(Cv)[1]){
-    for(y in 1:dim(Cv)[2]){
-      if(is.na(Nveg[x,y]) || Nveg[x,y] <= 0){
-        next
-      }
-      
-      for(z in 1:dim(Cv)[3]){
-        if(z <= Nveg[x,y]){
-          Cv[x,y,z] = 1 / Nveg[x,y]
-        } else {
-          Cv[x,y,z] = 0
-        }
-      }
-      
-      wind_atten[x,y,] = 0.5
-      wind_h[x,y,] = 2
-      rmin[x,y,] = 100
-      rarc[x,y,] = 25
-      rad_atten[x,y,] = 0.5
-      RGL[x,y,] = 100
-      trunk_ratio[x,y,] = 0.2
-      overstory[x,y,] = 0
-      
-      for(l in 1:dim(root_fract)[3]){
-        for(v in 1:dim(root_fract)[4]){
-          if(!(l == dim(root_fract)[3])){
-            root_fract[x,y,l,v] = 0.5
-            root_depth[x,y,l,v] = 0.3
-          }
-        }
-      }
-      
-      LAI[x,y,,] = 5
-      displacement[x,y,,] = 1
-      veg_rough[x,y,,] = 1
-      albedo[x,y,,] = 0.2
-    }
-  }
-  
-  # Write
   nc = nc_open(filename = file, write = TRUE)
   ncvar_put(nc, nc$var$Nveg, Nveg)
-  ncvar_put(nc, nc$var$Cv, Cv)
-  ncvar_put(nc, nc$var$wind_atten, wind_atten)
-  ncvar_put(nc, nc$var$wind_h, wind_h)
-  ncvar_put(nc, nc$var$rmin, rmin)
-  ncvar_put(nc, nc$var$rarc, rarc)
-  ncvar_put(nc, nc$var$rad_atten, rad_atten)
-  ncvar_put(nc, nc$var$RGL, RGL)
-  ncvar_put(nc, nc$var$trunk_ratio, trunk_ratio)
-  ncvar_put(nc, nc$var$overstory, overstory)
-  ncvar_put(nc, nc$var$root_fract, root_fract)
-  ncvar_put(nc, nc$var$root_depth, root_depth)
-  ncvar_put(nc, nc$var$LAI, LAI)
-  ncvar_put(nc, nc$var$displacement, displacement)
-  ncvar_put(nc, nc$var$veg_rough, veg_rough)
-  ncvar_put(nc, nc$var$albedo, albedo)
+  
+  for (v in 1:nc$dim$veg_class$len) {
+    print(paste0("Working on veg idx ", v))
+    # Alloc
+    Cv = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    wind_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    wind_h = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    rmin = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    rarc = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    rad_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    RGL = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    trunk_ratio = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    overstory = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
+    root_fract = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len))
+    root_depth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len))
+    LAI = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
+    displacement = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
+    veg_rough = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
+    albedo = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
+    
+    for(x in 1:dim(Cv)[1]){
+      for(y in 1:dim(Cv)[2]){
+        if(is.na(Nveg[x,y]) || Nveg[x,y] <= 0){
+          next
+        }
+        
+        if(Nveg[x,y] > 0){
+          Cv[x,y] = 1 / Nveg[x,y]
+        } else {
+          Cv[x,y] = 0
+        }
+        
+        wind_atten[x,y] = 0.5
+        wind_h[x,y] = 2
+        rmin[x,y] = 100
+        rarc[x,y] = 25
+        rad_atten[x,y] = 0.5
+        RGL[x,y] = 100
+        trunk_ratio[x,y] = 0.2
+        overstory[x,y] = 0
+        
+        for(l in 1:dim(root_fract)[3]){
+          if(!(l == dim(root_fract)[3])){
+            root_fract[x,y,l] = 0.5
+            root_depth[x,y,l] = 0.3
+          }
+        }
+        
+        LAI[x,y,] = 5
+        displacement[x,y,] = 1
+        veg_rough[x,y,] = 1
+        albedo[x,y,] = 0.2
+      }
+    }
+    
+    # Write
+    ncvar_put(nc, nc$var$Cv, Cv, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$wind_atten, wind_atten, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$wind_h, wind_h, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$rmin, rmin, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$rarc, rarc, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$rad_atten, rad_atten, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$RGL, RGL, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$trunk_ratio, trunk_ratio, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$overstory, overstory, start = c(1,1,v), count = c(-1,-1,1))
+    ncvar_put(nc, nc$var$root_fract, root_fract, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+    ncvar_put(nc, nc$var$root_depth, root_depth, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+    ncvar_put(nc, nc$var$LAI, LAI, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+    ncvar_put(nc, nc$var$displacement, displacement, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+    ncvar_put(nc, nc$var$veg_rough, veg_rough, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+    ncvar_put(nc, nc$var$albedo, albedo, start = c(1,1,1,v), count = c(-1,-1,-1,1))
+  }
   nc_close(nc = nc)
 }
 
@@ -215,13 +212,13 @@ PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.l
         basin_area[x,y,z] = lakes$fraction[i]
         if (lakes$depth[i] < max.surface.depth) {
           numnod[x,y,z] = 1
-          depth_in[x,y,z] = lakes$depth[i]
-          basin_depth[x,y,z] = lakes$depth[i]
+        } else if (lakes$depth[i] < max.surface.depth + max.layer.depth) {
+          numnod[x,y,z] = 2
         } else {
-          numnod[x,y,z] = 1 + ceiling((lakes$depth[i] - max.surface.depth) / max.layer.depth)
-          depth_in[x,y,z] = lakes$depth[i]
-          basin_depth[x,y,z] = lakes$depth[i] 
+          numnod[x,y,z] = 1 + floor((lakes$depth[i] - max.surface.depth) / max.layer.depth)
         }
+        depth_in[x,y,z] = lakes$depth[i]
+        basin_depth[x,y,z] = lakes$depth[i] 
         break
       }
     }
@@ -244,6 +241,7 @@ PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.l
   nc_close(nc = nc)
 }
 
+# Get nearest values
 getNearest = function(x, y, vals, na.rm = T){
   for(dis in 1:10){
     x.min = max(x - dis, 1)
