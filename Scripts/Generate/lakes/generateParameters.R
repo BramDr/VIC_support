@@ -7,7 +7,7 @@ lakes.file = "Saves/hydrolake_AnnetteJanssen_chars.csv"
 area.file = "../../../Data/Primary/VIC/domain_global.nc"
 domain.template = "../../../Data/Primary/VIC/domain_global.nc"
 param.template = "../../../Data/Primary/VIC/VIC_params_global.nc"
-domain.out = "../../../Data/VIC/Parameters/global/domain_hydrolake_test_global.nc"
+domain.out = "../../../Data/VIC/Parameters/global/domain_hydrolake_AnnetteJanssen_global.nc"
 param.out = "../../../Data/VIC/Parameters/global/VIC_params_hydrolake_AnnetteJanssen_global.nc"
 
 # Load
@@ -56,6 +56,39 @@ for(i in 1:nrow(lakes)){
 }
 image.plot(Nlake)
 
+Cl = array(0, dim = c(length(lons), length(lats), max(Nlake, na.rm = T)))
+for(i in 1:nrow(lakes)){
+  x = lakes$x[i]
+  y = lakes$y[i]
+  for(z in 1:dim(Cl)[3]){
+    if(Cl[x,y,z] == 0){
+      Cl[x,y,z] = lakes$fraction[i]
+      break
+    }
+  }
+}
+Cl.sum = apply(Cl, c(1,2), sum, na.rm = T)
+image.plot(Cl.sum)
+
+for(x in 1:dim(Cl.sum)[1]){
+  for(y in 1:dim(Cl.sum)[2]){
+    if(Cl.sum[x,y] > 1){
+      Cl[x,y,] = Cl[x,y,] / Cl.sum[x,y]
+    }
+  }
+}
+Cl.sum = apply(Cl, c(1,2), sum, na.rm = T)
+image.plot(Cl.sum)
+
+Cv = array(0, dim = c(length(lons), length(lats), max(Nlake, na.rm = T) + 1))
+Cv[,,1:(dim(Cv)[3] - 1)] = Cl
+Cv[,,dim(Cv)[3]] = 1 - Cl.sum
+Cv.sum = apply(Cv, c(1,2), sum, na.rm = T)
+image.plot(Cv.sum)
+
+Nveg = apply(Cv, c(1,2), function(x){sum(x > 0)})
+image.plot(Nveg)
+
 ## Domain
 dir.create(dirname(domain.out))
 file.copy(from = domain.template, to = domain.out, overwrite = TRUE)
@@ -70,12 +103,13 @@ nc_close(nc = nc)
 system(command = paste0("ncks -x -v ", paste0(veg.vars, collapse = ","), " ", param.template, " -O ", param.out))
 
 source("generateFunctions.R")
-AddVegVars(param.out, max(Nlake, na.rm = T))
-AddLakeVars(param.out)
-PutVegVars(param.out, Nlake)
-PutLakeVars(param.out, lakes, area, Nlake)
+AddVegVars(param.out, max(Nveg, na.rm = T))
+AddLakeVars(param.out, max(Nlake, na.rm = T))
+PutVegVars(param.out, Cv, Nveg)
+PutLakeVars(param.out, lakes, Cl, Nlake)
 PutOtherVars(param.out, soil.vars, Nlake)
 
 nc = nc_open(filename = param.out, write = TRUE)
 ncvar_put(nc = nc, varid = "run_cell", Nlake > 0)
 nc_close(nc)
+

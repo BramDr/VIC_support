@@ -12,25 +12,25 @@ AddVegVars = function (file, nveg) {
   veg.dim = ncdim_def(name = "veg_class", units = "class", vals = 1:nveg)
   
   # Var
-  Nveg.var = ncvar_def(name = "Nveg", units = "", dim = list(lon.dim, lat.dim), missval = -1, prec = "integer")
+  Nveg.var = ncvar_def(name = "Nveg", units = "", dim = list(lon.dim, lat.dim), missval = -1, prec = "integer", compression = 2)
   # -
-  Cv.var = ncvar_def(name = "Cv", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  wind_atten.var = ncvar_def(name = "wind_atten", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  wind_h.var = ncvar_def(name = "wind_h", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  rmin.var = ncvar_def(name = "rmin", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  rarc.var = ncvar_def(name = "rarc", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  rad_atten.var = ncvar_def(name = "rad_atten", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  RGL.var = ncvar_def(name = "RGL", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  trunk_ratio.var = ncvar_def(name = "trunk_ratio", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  overstory.var = ncvar_def(name = "overstory", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer")
+  Cv.var = ncvar_def(name = "Cv", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  wind_atten.var = ncvar_def(name = "wind_atten", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  wind_h.var = ncvar_def(name = "wind_h", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  rmin.var = ncvar_def(name = "rmin", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  rarc.var = ncvar_def(name = "rarc", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  rad_atten.var = ncvar_def(name = "rad_atten", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  RGL.var = ncvar_def(name = "RGL", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  trunk_ratio.var = ncvar_def(name = "trunk_ratio", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  overstory.var = ncvar_def(name = "overstory", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer", compression = 2)
   # -
-  root_fract.var = ncvar_def(name = "root_fract", units = "", dim = list(lon.dim, lat.dim, root.dim, veg.dim), missval = -1, prec = "double")
-  root_depth.var = ncvar_def(name = "root_depth", units = "", dim = list(lon.dim, lat.dim, root.dim, veg.dim), missval = -1, prec = "double")
+  root_fract.var = ncvar_def(name = "root_fract", units = "", dim = list(lon.dim, lat.dim, root.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  root_depth.var = ncvar_def(name = "root_depth", units = "", dim = list(lon.dim, lat.dim, root.dim, veg.dim), missval = -1, prec = "double", compression = 2)
   # -
-  LAI.var = ncvar_def(name = "LAI", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double")
-  displacement.var = ncvar_def(name = "displacement", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double")
-  veg_rough.var = ncvar_def(name = "veg_rough", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double")
-  albedo.var = ncvar_def(name = "albedo", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double")
+  LAI.var = ncvar_def(name = "LAI", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  displacement.var = ncvar_def(name = "displacement", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  veg_rough.var = ncvar_def(name = "veg_rough", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double", compression = 2)
+  albedo.var = ncvar_def(name = "albedo", units = "", dim = list(lon.dim, lat.dim, month.dim, veg.dim), missval = -1, prec = "double", compression = 2)
   
   # Add
   nc = nc_open(filename = file, write = TRUE)
@@ -54,7 +54,7 @@ AddVegVars = function (file, nveg) {
 }
 
 # Add lake parameters
-AddLakeVars = function (file) {
+AddLakeVars = function (file, nlake) {
   # Open
   nc = nc_open(filename = file)
   nc_close(nc = nc)
@@ -62,26 +62,28 @@ AddLakeVars = function (file) {
   # Dim
   lon.dim = nc$dim$lon
   lat.dim = nc$dim$lat
-  veg.dim = nc$dim$veg_class
+  lake.dim = ncdim_def(name = "lake_class", units = "class", vals = 1:nlake)
   
   # Var
-  Nlake.var = ncvar_def(name = "Nlake", units = "", dim = list(lon.dim, lat.dim), missval = -1, prec = "integer")
-  lake_id.var = ncvar_def(name = "lake_id", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer")
+  Nlake.var = ncvar_def(name = "Nlake", units = "", dim = list(lon.dim, lat.dim), missval = -1, prec = "integer", compression = 2)
+  lake_veg_class.var = ncvar_def(name = "lake_veg_class", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "integer", compression = 2)
+  lake_id.var = ncvar_def(name = "lake_id", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "integer", compression = 2)
   # -
-  source_id.var = ncvar_def(name = "source_id", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer")
-  lake_elevation.var = ncvar_def(name = "lake_elevation", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -9999, prec = "double")
-  wfrac.var = ncvar_def(name = "wfrac", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  rpercent.var = ncvar_def(name = "rpercent", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  mindepth.var = ncvar_def(name = "mindepth", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  basin_depth.var = ncvar_def(name = "basin_depth", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  depth_in.var = ncvar_def(name = "depth_in", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  basin_frac.var = ncvar_def(name = "basin_area", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double")
-  numnod_layer.var = ncvar_def(name = "numnod", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer")
-  numnod_profile.var = ncvar_def(name = "numnod_profile", units = "", dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "integer")
+  source_id.var = ncvar_def(name = "source_id", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "integer", compression = 2)
+  lake_elevation.var = ncvar_def(name = "lake_elevation", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -9999, prec = "double", compression = 2)
+  wfrac.var = ncvar_def(name = "wfrac", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  rpercent.var = ncvar_def(name = "rpercent", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  mindepth.var = ncvar_def(name = "mindepth", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  basin_depth.var = ncvar_def(name = "basin_depth", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  depth_in.var = ncvar_def(name = "depth_in", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  basin_frac.var = ncvar_def(name = "basin_area", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "double", compression = 2)
+  numnod_layer.var = ncvar_def(name = "numnod", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "integer", compression = 2)
+  numnod_profile.var = ncvar_def(name = "numnod_profile", units = "", dim = list(lon.dim, lat.dim, lake.dim), missval = -1, prec = "integer", compression = 2)
   
   # Add
   nc = nc_open(filename = file, write = TRUE)
   nc = ncvar_add(nc, Nlake.var)
+  nc = ncvar_add(nc, lake_veg_class.var)
   nc = ncvar_add(nc, lake_id.var)
   nc = ncvar_add(nc, source_id.var)
   nc = ncvar_add(nc, lake_elevation.var)
@@ -96,112 +98,75 @@ AddLakeVars = function (file) {
   nc_close(nc = nc)
 }
 
+PutVegVar = function (file, variable, value) {
+  print(variable$name)
+  
+  dims = c(variable$dim[[1]]$len, variable$dim[[2]]$len, variable$dim[[3]]$len)
+  if(variable$ndims == 4) {
+    dims = c(dims, variable$dim[[4]]$len)
+  }
+  
+  dat = array(data = value, dim = dims)
+  if(dims[3] == 3){
+    dat[,,3,] = 0
+  }
+  
+  ncvar_put(file, variable, dat)
+  rm(dat)
+}
+
 # Add vegetation parameters
-PutVegVars = function (file, Nveg) {
+PutVegVars = function (file, Cv, Nveg) {
   # Open
   nc = nc_open(filename = file, write = TRUE)
   ncvar_put(nc, nc$var$Nveg, Nveg)
+  ncvar_put(nc, nc$var$Cv, Cv)
   
-  for (v in 1:nc$dim$veg_class$len) {
-    print(paste0("Working on veg idx ", v))
-    # Alloc
-    Cv = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    wind_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    wind_h = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    rmin = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    rarc = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    rad_atten = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    RGL = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    trunk_ratio = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    overstory = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len))
-    root_fract = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len))
-    root_depth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$root_zone$len))
-    LAI = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
-    displacement = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
-    veg_rough = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
-    albedo = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$month$len))
-    
-    for(x in 1:dim(Cv)[1]){
-      for(y in 1:dim(Cv)[2]){
-        if(is.na(Nveg[x,y]) || Nveg[x,y] <= 0){
-          next
-        }
-        
-        if(Nveg[x,y] > 0){
-          Cv[x,y] = 1 / Nveg[x,y]
-        } else {
-          Cv[x,y] = 0
-        }
-        
-        wind_atten[x,y] = 0.5
-        wind_h[x,y] = 2
-        rmin[x,y] = 100
-        rarc[x,y] = 25
-        rad_atten[x,y] = 0.5
-        RGL[x,y] = 100
-        trunk_ratio[x,y] = 0.2
-        overstory[x,y] = 0
-        
-        for(l in 1:dim(root_fract)[3]){
-          if(!(l == dim(root_fract)[3])){
-            root_fract[x,y,l] = 0.5
-            root_depth[x,y,l] = 0.3
-          }
-        }
-        
-        LAI[x,y,] = 5
-        displacement[x,y,] = 1
-        veg_rough[x,y,] = 1
-        albedo[x,y,] = 0.2
-      }
-    }
-    
-    # Write
-    ncvar_put(nc, nc$var$Cv, Cv, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$wind_atten, wind_atten, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$wind_h, wind_h, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$rmin, rmin, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$rarc, rarc, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$rad_atten, rad_atten, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$RGL, RGL, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$trunk_ratio, trunk_ratio, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$overstory, overstory, start = c(1,1,v), count = c(-1,-1,1))
-    ncvar_put(nc, nc$var$root_fract, root_fract, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-    ncvar_put(nc, nc$var$root_depth, root_depth, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-    ncvar_put(nc, nc$var$LAI, LAI, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-    ncvar_put(nc, nc$var$displacement, displacement, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-    ncvar_put(nc, nc$var$veg_rough, veg_rough, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-    ncvar_put(nc, nc$var$albedo, albedo, start = c(1,1,1,v), count = c(-1,-1,-1,1))
-  }
+  PutVegVar(nc, nc$var$wind_atten, 0.5)
+  PutVegVar(nc, nc$var$wind_h, 2)
+  PutVegVar(nc, nc$var$rmin, 100)
+  PutVegVar(nc, nc$var$rarc, 25)
+  PutVegVar(nc, nc$var$rad_atten, 0.5)
+  PutVegVar(nc, nc$var$RGL, 100)
+  PutVegVar(nc, nc$var$trunk_ratio, 0.52)
+  PutVegVar(nc, nc$var$overstory, 0)
+  PutVegVar(nc, nc$var$root_fract, 0.5)
+  PutVegVar(nc, nc$var$root_depth, 0.3)
+  PutVegVar(nc, nc$var$LAI, 5)
+  PutVegVar(nc, nc$var$displacement, 1)
+  PutVegVar(nc, nc$var$veg_rough, 1)
+  PutVegVar(nc, nc$var$albedo, 0.2)
+  
   nc_close(nc = nc)
 }
 
 # Add lake parameters
-PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.layer.depth = 0.5) {
+PutLakeVars = function (file, lakes, Cl, Nlake, max.surface.depth = 0.6, max.layer.depth = 0.5) {
   # Open
   nc = nc_open(filename = file)
   Cv = ncvar_get(nc, "Cv")
   nc_close(nc = nc)
   
   # Alloc
-  lake_id = array(data = -1, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  source_id = array(data = -1, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  lake_elevation = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  wfrac = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  rpercent = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  mindepth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  basin_depth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  depth_in = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  basin_area = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  numnod_profile = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
-  numnod = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len))
+  lake_veg_class = array(data = -1, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  lake_id = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  source_id = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  lake_elevation = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  wfrac = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  rpercent = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  mindepth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  basin_depth = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  depth_in = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  numnod_profile = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
+  numnod = array(data = 0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$lake_class$len))
   
   for(i in 1:nrow(lakes)){
     x = lakes$x[i]
     y = lakes$y[i]
     
-    for(z in 1:nc$dim$veg_class$len){
-      if(lake_id[x,y,z] == -1){
+    for(z in 1:nc$dim$lake_class$len){
+      if(lake_veg_class[x,y,z] == -1){
+        lake_veg_class[x,y,z] = z
         lake_id[x,y,z] = lakes$ID[i]
         source_id[x,y,z] = lakes$sourceID[i]
         lake_elevation[x,y,z] = lakes$elevation[i]
@@ -209,7 +174,6 @@ PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.l
         rpercent[x,y,z] = 0.2
         mindepth[x,y,z] = 0.5
         numnod_profile[x,y,z] = 10
-        basin_area[x,y,z] = lakes$fraction[i]
         if (lakes$depth[i] < max.surface.depth) {
           numnod[x,y,z] = 1
         } else if (lakes$depth[i] < max.surface.depth + max.layer.depth) {
@@ -226,17 +190,31 @@ PutLakeVars = function (file, lakes, area, Nlake, max.surface.depth = 0.6, max.l
   
   # Write
   nc = nc_open(filename = file, write = TRUE)
+  print(nc$var$Nlake$name)
   ncvar_put(nc, nc$var$Nlake, Nlake)
+  print(nc$var$lake_veg_class$name)
+  ncvar_put(nc, nc$var$lake_veg_class, lake_veg_class)
+  print(nc$var$lake_id$name)
   ncvar_put(nc, nc$var$lake_id, lake_id)
+  print(nc$var$source_id$name)
   ncvar_put(nc, nc$var$source_id, source_id)
+  print(nc$var$lake_elevation$name)
   ncvar_put(nc, nc$var$lake_elevation, lake_elevation)
+  print(nc$var$numnod_profile$name)
   ncvar_put(nc, nc$var$numnod_profile, numnod_profile)
+  print(nc$var$numnod$name)
   ncvar_put(nc, nc$var$numnod, numnod)
+  print(nc$var$depth_in$name)
   ncvar_put(nc, nc$var$depth_in, depth_in)
+  print(nc$var$basin_depth$name)
   ncvar_put(nc, nc$var$basin_depth, basin_depth)
-  ncvar_put(nc, nc$var$basin_area, basin_area)
+  print(nc$var$basin_area$name)
+  ncvar_put(nc, nc$var$basin_area, Cl)
+  print(nc$var$wfrac$name)
   ncvar_put(nc, nc$var$wfrac, wfrac)
+  print(nc$var$rpercent$name)
   ncvar_put(nc, nc$var$rpercent, rpercent)
+  print(nc$var$mindepth$name)
   ncvar_put(nc, nc$var$mindepth, mindepth)
   nc_close(nc = nc)
 }
