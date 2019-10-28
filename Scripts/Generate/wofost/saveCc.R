@@ -1,66 +1,63 @@
-library(ncdf4)
 library(fields)
+library(plyr)
 rm(list = ls())
 
 # Input
 scc.file = "../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
 cc.file = "../../../Data/Transformed/LandUse/cropCalendar_30min_global.csv"
-cc.out = "./Saves/Cc_30min_global.RDS"
+crop.file = "./Saves/crop_mapping.csv"
+Cc.out = "./Saves/Cc_30min_global.RDS"
 
 # Load
+crops = read.csv(crop.file, stringsAsFactors = F)
 scc = read.csv(scc.file, stringsAsFactors = F, header = T)
 cc = read.csv(cc.file, stringsAsFactors = F, header = T)
 
 # Setup
 lons = seq(-179.75, 179.75, by = 0.5)
 lats = seq(-89.75, 89.75, by = 0.5)
+scc = scc[scc$crop %in% crops$crop.id,]
+cc = cc[cc$crop %in% crops$crop.id,]
 
-crop.id = c(1:13, 15:17, 20, 26)
-crop.id = c(crop.id, crop.id + 26)
-crop.desc = c("wheat", "maize", "rice", "barley", "rye", "milet", "sorghum",
-              "soybeans", "sunflower", "potatoes", "cassava", "sugar_cane", 
-              "sugar_beet", "rapeseed", "groundnuts", "pulses", "grapes", "other")
-crop.desc = paste0(crop.desc, rep(c("_IRC", "_RFC"), each = length(crop.desc)))
+scc.cols = colnames(scc)
+cc.cols = colnames(cc)
+scc.cols = gsub(x = scc.cols, pattern = "area", replacement = "subcrop.area")
+cc.cols = gsub(x = cc.cols, pattern = "area", replacement = "crop.area")
+colnames(scc) = scc.cols
+colnames(cc) = cc.cols
 
-crop.scc = scc[scc$crop %in% crop.id, ]
-crop.s = aggregate(x = crop.scc$subcrop, by = list(crop.scc$crop), FUN = max)
+calendar = join(x = scc,y = cc, by = c("cell_ID", "row", "column", "lat", "lon", "crop"))
 
-crop.id.s = c()
-crop.desc.s = c()
-for (i in 1:nrow(crop.s)) {
-  reps = crop.s$x[i]
-  id = crop.s$Group.1[i]
-  
-  idx = which(crop.id == id)
-  cdesc = crop.desc[idx]
-  
-  n.crop.id = rep(id, reps)
-  n.crop.desc = paste0(cdesc, paste0("_S", 1:reps))
-  
-  crop.id.s = c(crop.id.s, n.crop.id)
-  crop.desc.s = c(crop.desc.s, n.crop.desc)
+get.cc = function(x, Cc.cols, subcrop.cols, crop.cols){
+  return(x[subcrop.cols] / x[crop.cols])
 }
 
 # Calculate
-scc.cols = which(colnames(crop.scc) %in% paste0("area.",1:12))
-cc.cols = which(colnames(cc) %in% paste0("area.",1:12))
-Cc = array(NA, dim = c(length(lons), length(lats), length(crop.id.s), 12))
-for(i in 1:nrow(crop.scc)){
-  print(i)
-  cid = crop.scc$crop[i]
-  scid = crop.scc$subcrop[i]
-  
-  idx = which(crop.id.s == cid)[scid]
-  cdesc = crop.desc[idx]
-  x = which(lons == crop.scc$lon[i])
-  y = which(lats == crop.scc$lat[i])
-  
-  cc.row = which(cc$cell_ID == crop.scc$cell_ID[i] & cc$crop == crop.scc$crop[i])
-  
-  break
-  coverage = crop.scc[i, scc.cols] / cc[cc.row, cc.cols]
-  coverage[is.na(coverage)] = 0
-  Cc[x,y,idx,] = as.numeric(coverage)
-}
+subcrop.cols = which(colnames(calendar) %in% paste0("subcrop.area.", 1:12))
+crop.cols = which(colnames(calendar) %in% paste0("crop.area.", 1:12))
+Cc = apply(X = calendar, MARGIN = 1, FUN = get.cc, Cc.cols = Cc.cols, subcrop.cols = subcrop.cols, crop.cols = crop.cols)
+
+calendar[,paste0("Cc.", 1:12)] = NA
+Cc.cols = which(colnames(calendar) %in% paste0("Cc.", 1:12))
+calendar[,Cc.cols] = t(Cc)
+calendar[is.na(calendar)] = 0
 
 # Save
+for(j in 1:nrow(crops)) {
+  Cc.crop.out = gsub(x = Cc.out, pattern = "Cc_", replacement = paste0("Cc_", crops$vic.id[j], "_"))
+  print(basename(Cc.crop.out))
+  
+  calendar.crop = calendar[crops$crop.id[j] == calendar$crop & crops$season[j] == calendar$subcrop,]
+  
+  Cc.map = array(NA, dim = c(length(lons), length(lats), 12))
+  for(i in  1:nrow(calendar.crop)) {
+    x = which(lons == calendar.crop$lon[i])
+    y = which(lats == calendar.crop$lat[i])
+    
+    Cc.map[x,y,] = as.numeric(calendar.crop[i, Cc.cols])
+  }
+  image.plot(Cc.map[,,1])
+  
+  dir.create(dirname(Cc.crop.out))
+  saveRDS(Cc, Cc.crop.out)
+}
