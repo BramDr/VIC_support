@@ -47,9 +47,9 @@ ccc$maxarea <- apply(X = ccc[, paste0("area.", 1:12)], MARGIN = 1, FUN = max)
 
 # Save
 dir.create(dirname(scc.out))
-write.csv(scc, scc.out)
+write.csv(scc, scc.out, row.names = F)
 dir.create(dirname(cc.out))
-write.csv(cc, cc.out)
+write.csv(cc, cc.out, row.names = F)
 dir.create(dirname(ccc.out))
-write.csv(ccc, ccc.out)
+write.csv(ccc, ccc.out, row.names = F)
 
