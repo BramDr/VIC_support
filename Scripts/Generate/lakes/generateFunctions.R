@@ -221,7 +221,7 @@ PutLakeVars = function (file, lakes, Cl, Nlake, max.surface.depth = 0.6, max.lay
 
 # Get nearest values
 getNearest = function(x, y, vals, na.rm = T){
-  for(dis in 1:10){
+  for(dis in 1:1000){
     x.min = max(x - dis, 1)
     y.min = max(y - dis, 1)
     x.max = min(x + dis, dim(vals)[1])
@@ -229,12 +229,12 @@ getNearest = function(x, y, vals, na.rm = T){
     
     val = mean(vals[x.min:x.max, y.min:y.max], na.rm = na.rm)
     
-    if(length(val) != 0){
+    if(length(val) != 0 && !is.na(val)){
       return(val)
     }
   }
   
-  warning("Nearest out of iterations")
+  stop("Nearest out of iterations")
   return(NA)
 }
 
@@ -270,23 +270,29 @@ PutOtherVars = function(file, vars, Nlake) {
       data.new[,,1,1] = data.orig
     }
     
+    data.gen = data.new
     for(x in 1:dims.new[1]){
       for(y in 1:dims.new[2]){
         if(is.na(Nlake[x,y]) || Nlake[x,y] <= 0){
           next
         }
-        if(!is.na(data.new[x,y,1,1])){
+        if(!is.na(data.gen[x,y,1,1])){
           next
         }
         for(z in 1:dims.new[3]){
           for(v in 1:dims.new[4]){
-            data.new[x,y,z,v] = getNearest(x,y,data.new[,,z,v])   
+            data.gen[x,y,z,v] = getNearest(x,y,data.new[,,z,v])   
           }
         }
+        
+        # if (var$name == "depth") {
+        #   print(data.new[x,y,,])
+        #   print(data.gen[x,y,,])
+        # }
       }
     }
     
-    ncvar_put(nc, var, data.new)
+    ncvar_put(nc, var, data.gen)
   }
   
   nc_close(nc = nc)
