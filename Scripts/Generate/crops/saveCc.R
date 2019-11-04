@@ -44,7 +44,7 @@ calendar[is.na(calendar)] = 0
 
 # Save
 for(j in 1:nrow(crops)) {
-  Cc.crop.out = gsub(x = Cc.out, pattern = "Cc_", replacement = paste0("Cc_", crops$vic.id[j], "_"))
+  Cc.crop.out = gsub(x = Cc.out, pattern = "Cc_", replacement = paste0("Cc_", j, "_"))
   print(basename(Cc.crop.out))
   
   calendar.crop = calendar[crops$crop.id[j] == calendar$crop & crops$season[j] == calendar$subcrop,]
@@ -59,5 +59,5 @@ for(j in 1:nrow(crops)) {
   image.plot(Cc.map[,,1])
   
   dir.create(dirname(Cc.crop.out))
-  saveRDS(Cc, Cc.crop.out)
+  saveRDS(Cc.map, Cc.crop.out)
 }
