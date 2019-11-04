@@ -49,6 +49,9 @@ Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouze
 [MIRCA2000 v1.1](https://www.uni-frankfurt.de/45218031/data_download):
 Portmann, F. T., Siebert, S. & Döll, P. (2010): MIRCA2000 – Global monthly irrigated and rainfed crop areas around the year 2000: A new high-resolution data set for agricultural and hydrological modeling, Global Biogeochemical Cycles, 24, GB 1011, doi:10.1029/2008GB003435.
 
+**Global CO2-concentration dataset**
+[ISIMIP input data](https://www.isimip.org/gettingstarted/#input-data-bias-correction)
+
 **Global gridded groundwater fraction for sectors**  
 Döll, P., Hoffmann-Dobrev, H., Portmann, F. T., Siebert, S., Eicker, A., Rodell, M., ... & Scanlon, B. R. (2012). Impact of water withdrawals from groundwater and surface water on continental water storage variations. Journal of Geodynamics, 59, 143-156. doi10.1016/j.jog.2011.05.001
 

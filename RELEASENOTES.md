@@ -8,8 +8,9 @@ Release notes for the VIC-WUR supporting documentation.
 ### Latest
 
 1. Added scripts related to variable land-use forcing (based on MIRCA2000).
-1. Added scripts related to crop parameter generation.
-1. Added scripts related to wofost parameter generation.
+2. Added scripts related to crop parameter generation.
+3. Added scripts related to wofost parameter generation.
+4. Added scripts related to co2 forcing (based on ISIMIP).
 
 ### Version 1.1.0
 Includes minor changes that affect the results to a limited degree, specifically: routing flow distance, industrial water demand, livestock water demand.
