@@ -3,8 +3,8 @@ library(fields)
 rm(list = ls())
 
 # Input
-co2.file <- "./Data/Primary/ISIMIP/CO2/rcp26/co2_rcp26_2006-2299.txt"
-out.dir <- "./Output/VIC/Forcing/global/co2_monthly_rcp26/co2_monthly_rcp26_"
+co2.file <- "../../../Data/Primary/ISIMIP/CO2/rcp26/co2_rcp26_2006-2299.txt"
+out.dir <- "../../../Data/VIC/Forcing/global/co2_monthly_ISIMIP_rcp26/co2_monthly_ISIMIP_rcp26_"
 years <- 2006:2299
 
 # Load

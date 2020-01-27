@@ -3,7 +3,7 @@ library(fields)
 rm(list = ls())
 
 # Input
-out.dir <- "./Output/VIC/Forcing/global/co2_monthly_fixed/co2_monthly_fixed_"
+out.dir <- "../../../Data/VIC/Forcing/global/co2_monthly_fixed/co2_monthly_fixed_"
 years <- 1979:2016
 
 # Setup
@@ -57,7 +57,7 @@ for (z in 1:length(years)) {
     units = "ppm",
     dim = list(lon.dim, lat.dim, time.dim),
     missval = -1,
-    longname = "atmospheric CO2 concentration",
+    longname = "Atmospheric CO2 concentration",
     prec = "double",
     compression = 9
   )

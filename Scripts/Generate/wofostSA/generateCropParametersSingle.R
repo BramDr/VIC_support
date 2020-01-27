@@ -1,10 +1,10 @@
 rm(list = ls())
 
 # Input
-crop.file = "./Saves/crop_mapping_MIRCA.csv"
+crop.file = "./Saves/crop_mapping_single.csv"
 param.desc.file = "../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
 in.dir = "../../../Data/Transformed/WOFOST/Crop/"
-out.dir = "../../../Data/WOFOST/Parameters/Crop/global/"
+out.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
@@ -17,7 +17,7 @@ for (i in 1:nrow(crops)) {
   print(crops$mirca.name[i])
   
   in.file = grep(x = in.files, pattern = paste0("//",crops$wofost.name[i]), value = TRUE)
-  out.file = paste0(out.dir, "/", "crop_params_", crops$mirca.name[i], "_", crops$water[i], "_s", crops$season[i], ".txt")
+  out.file = paste0(out.dir, "/", "crop_params_", crops$mirca.name[i], ".txt")
   
   in.params = read.csv(in.file, stringsAsFactors = F, row.names = 1)
   text = c()

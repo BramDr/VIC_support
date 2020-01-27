@@ -3,8 +3,8 @@ library(fields)
 rm(list = ls())
 
 # Input
-co2.dir <- "./Data/Primary/ISIMIP/CO2/piControl"
-out.dir <- "./Output/VIC/Forcing/global/co2_monthly_piControl/co2_monthly_piControl_"
+co2.dir <- "../../../Data/Primary/ISIMIP/CO2/piControl"
+out.dir <- "../../../Data/VIC/Forcing/global/co2_monthly_ISIMIP_piControl/co2_monthly_ISIMIP_piControl_"
 years <- 1661:2299
 
 # Load

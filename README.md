@@ -63,6 +63,9 @@ Frenken, K., & Gillet, V. (2012). Irrigation water requirement and water withdra
 [WATCH forcing data ERA interim v5](http://www.eu-watch.org/data_availability):
 Weedon,  G.P.,  Balsamo,  G.,  Bellouin,  N.,  Gomes,  S.,  Best,  M.J.  and  Viterbo,  P.,  2014.  The  WFDEI meteorological  forcing  data  set:  WATCH  Forcing  Data  methodology  applied  to  ERA-Interim reanalysis data. Water Resources Research doi:10.1002/2014WR015638
 
+**Global CO2 concentrations**
+[ISIMIP forcing data](https://www.isimip.org/gettingstarted/details/30/)
+
 **Global delta map**  
 [Global Delta Map](http://www.globaldeltarisk.net/data.html):
 Z.D. Tessler, C.J. Vörösmarty, M. Grossberg, I. Gladkova, H. Aizenman, J.P.M. Syvitski, E. Foufoula-Georgiou. Profiling Risk and Sustainability in Coastal Deltas of the World. Science 349(6248), 638-643 (2015) doi:10.1126/science.aab3574.
@@ -70,6 +73,10 @@ Z.D. Tessler, C.J. Vörösmarty, M. Grossberg, I. Gladkova, H. Aizenman, J.P.M. 
 **Global gridded flow direction and length**  
 [RVIC input data](https://rvic.readthedocs.io/en/latest/about/model-overview/):
 Hamman, J., Nijssen, B., Roberts, A., Craig, A., Maslowski, W., and Osinski, R. ( 2017), The coastal streamflow flux in the Regional Arctic System Model, J. Geophys. Res. Oceans, 122, 1683– 1701, doi:10.1002/2016JC012323. 
+
+**WOFOST input files**
+[crop files](https://github.com/ajwdewit/WOFOST_crop_parameters):
+Allard de Wit, Hendrik Boogaard, Davide Fumagalli, Sander Janssen, Rob Knapen, Daniel van Kraalingen, Iwan Supit, Raymond van der Wijngaart, Kees van Diepen (2019), 25 years of the WOFOST cropping systems model, Agricultural Systems, 168, 154-167, doi.org/10.1016/j.agsy.2018.06.018.
 
 ## Primary references
 Simulating human impacts on global water resources using VIC-5 (Droppers et al., 2019)
