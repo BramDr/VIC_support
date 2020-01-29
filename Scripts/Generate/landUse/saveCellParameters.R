@@ -34,23 +34,23 @@ veg_rough <- read.csv(file = veg_rough.file, header = TRUE, stringsAsFactors = F
 displacement <- read.csv(file = displacement.file, header = TRUE, stringsAsFactors = F)
 
 # Setup
-calc.values = function(sel, name) {
+calc.values <- function(sel, name) {
   cv.sel <- aggregate(x = fc.cell[sel, paste0("fc.cell.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  cv.sel = apply(X = cv.sel[, paste0("fc.cell.", 1:12)], MARGIN = 1, FUN = max)
-  
+  cv.sel <- apply(X = cv.sel[, paste0("fc.cell.", 1:12)], MARGIN = 1, FUN = max)
+
   fc.sel <- aggregate(x = fc.tile[sel, paste0("fc.tile.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  
+
   LAI.sel <- aggregate(x = LAI[sel, paste0("LAI.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  
+
   albedo.sel <- aggregate(x = albedo[sel, paste0("albedo.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  
+
   displacement.sel <- aggregate(x = displacement[sel, paste0("displacement.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  
+
   veg_rough.sel <- aggregate(x = veg_rough[sel, paste0("veg_rough.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  
-  fixed.sel <- aggregate(x = fixed[sel,], by = list(cc$cell_ID[sel]), FUN = sum)
-  fixed.sel$overstory = fixed.sel$overstory > 0.8
-  
+
+  fixed.sel <- aggregate(x = fixed[sel, ], by = list(cc$cell_ID[sel]), FUN = sum)
+  fixed.sel$overstory <- fixed.sel$overstory > 0.8
+
   assign(x = paste0("Cv.", name), value = cv.sel, envir = .GlobalEnv)
   assign(x = paste0("fcanopy.", name), value = fc.sel, envir = .GlobalEnv)
   assign(x = paste0("LAI.", name), value = LAI.sel, envir = .GlobalEnv)
@@ -59,32 +59,32 @@ calc.values = function(sel, name) {
   assign(x = paste0("veg_rough.", name), value = veg_rough.sel, envir = .GlobalEnv)
   assign(x = paste0("fixed.", name), value = fixed.sel, envir = .GlobalEnv)
 }
-save.values = function(name, outname) {
-  tmp.Cv.out = gsub(x = Cv.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+save.values <- function(name, outname) {
+  tmp.Cv.out <- gsub(x = Cv.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.Cv.out))
   write.csv(get(x = paste0("Cv.", name)), tmp.Cv.out, row.names = F)
-  
-  tmp.fixed.out = gsub(x = fixed.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.fixed.out <- gsub(x = fixed.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.fixed.out))
   write.csv(get(x = paste0("fixed.", name)), tmp.fixed.out, row.names = F)
-  
-  tmp.fcanopy.out = gsub(x = fcanopy.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.fcanopy.out <- gsub(x = fcanopy.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.fcanopy.out))
   write.csv(get(x = paste0("fcanopy.", name)), tmp.fcanopy.out, row.names = F)
-  
-  tmp.albedo.out = gsub(x = albedo.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.albedo.out <- gsub(x = albedo.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.albedo.out))
   write.csv(get(x = paste0("albedo.", name)), tmp.albedo.out, row.names = F)
-  
-  tmp.LAI.out = gsub(x = LAI.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.LAI.out <- gsub(x = LAI.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.LAI.out))
   write.csv(get(x = paste0("LAI.", name)), tmp.LAI.out, row.names = F)
-  
-  tmp.veg_rough.out = gsub(x = veg_rough.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.veg_rough.out <- gsub(x = veg_rough.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.veg_rough.out))
   write.csv(get(x = paste0("veg_rough.", name)), tmp.veg_rough.out, row.names = F)
-  
-  tmp.displacement.out = gsub(x = displacement.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
+
+  tmp.displacement.out <- gsub(x = displacement.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
   dir.create(dirname(tmp.displacement.out))
   write.csv(get(x = paste0("displacement.", name)), tmp.displacement.out, row.names = F)
 }
@@ -93,7 +93,7 @@ for (m in 1:12) {
   print(m)
   LAI[, paste0("LAI.", m)] <- fc.tile[, paste0("fc.tile.", m)] * LAI[, paste0("LAI.", m)]
   albedo[, paste0("albedo.", m)] <- fc.tile[, paste0("fc.tile.", m)] * albedo[, paste0("albedo.", m)]
-  
+
   displacement[, paste0("displacement.", m)] <- fc.crop[, paste0("fc.crop.", m)] * displacement[, paste0("displacement.", m)]
   veg_rough[, paste0("veg_rough.", m)] <- fc.crop[, paste0("fc.crop.", m)] * veg_rough[, paste0("veg_rough.", m)]
 }
@@ -112,33 +112,33 @@ fixed[, "wind_h"] <- avgf * fixed[, "wind_h"]
 fixed[, "rmin"] <- avgf * fixed[, "rmin"]
 
 # Calculate
-sel.paddy = cc$crop == 3
-sel.irr = cc$crop %in% c(1:2, 4:26)
-sel.rain = cc$crop %in% c(27:52)
+sel.paddy <- cc$crop == 3
+sel.irr <- cc$crop %in% c(1:2, 4:26)
+sel.rain <- cc$crop %in% c(27:52)
 
 calc.values(sel = sel.paddy, name = "paddy")
 calc.values(sel = sel.irr, name = "irr")
 calc.values(sel = sel.rain, name = "rain")
 
 ## Adjustments
-displacement.max = apply(X = displacement.paddy[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
-fixed.paddy[, "wind_h"] = displacement.max / 0.67 + 1
-displacement.max = apply(X = displacement.irr[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
-fixed.irr[, "wind_h"] = displacement.max / 0.67 + 1
-displacement.max = apply(X = displacement.rain[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
-fixed.rain[, "wind_h"] = displacement.max / 0.67 + 1
+displacement.max <- apply(X = displacement.paddy[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
+fixed.paddy[, "wind_h"] <- displacement.max / 0.67 + 1
+displacement.max <- apply(X = displacement.irr[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
+fixed.irr[, "wind_h"] <- displacement.max / 0.67 + 1
+displacement.max <- apply(X = displacement.rain[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
+fixed.rain[, "wind_h"] <- displacement.max / 0.67 + 1
 
-fcanopy.paddy[fcanopy.paddy > 1] = 1
-fcanopy.irr[fcanopy.irr > 1] = 1
-fcanopy.rain[fcanopy.rain > 1] = 1
+fcanopy.paddy[fcanopy.paddy > 1] <- 1
+fcanopy.irr[fcanopy.irr > 1] <- 1
+fcanopy.rain[fcanopy.rain > 1] <- 1
 
-albedo.paddy = albedo.paddy + 0.2 * (1 - fcanopy.paddy)
-albedo.irr = albedo.irr + 0.2 * (1 - fcanopy.irr)
-albedo.rain = albedo.rain + 0.2 * (1 - fcanopy.rain)
+albedo.paddy <- albedo.paddy + 0.2 * (1 - fcanopy.paddy)
+albedo.irr <- albedo.irr + 0.2 * (1 - fcanopy.irr)
+albedo.rain <- albedo.rain + 0.2 * (1 - fcanopy.rain)
 
-fcanopy.paddy[fcanopy.paddy < 0.00011] = 0.00011
-fcanopy.irr[fcanopy.irr < 0.00011] = 0.00011
-fcanopy.rain[fcanopy.rain < 0.00011] = 0.00011
+fcanopy.paddy[fcanopy.paddy < 0.00011] <- 0.00011
+fcanopy.irr[fcanopy.irr < 0.00011] <- 0.00011
+fcanopy.rain[fcanopy.rain < 0.00011] <- 0.00011
 
 # Save
 save.values(name = "paddy", outname = "Paddy")

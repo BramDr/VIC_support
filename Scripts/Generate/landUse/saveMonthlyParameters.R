@@ -66,27 +66,27 @@ add.LAI <- function(x, columns) {
 }
 
 # Calculate
-cc = cbind(cc, kc)
+cc <- cbind(cc, kc)
 
 height <- apply(X = cc, MARGIN = 1, FUN = add.height, columns = colnames(cc))
 height <- as.data.frame(t(height))
-colnames(height) = paste0("height.", 1:12)
+colnames(height) <- paste0("height.", 1:12)
 
 albedo <- apply(X = cc, MARGIN = 1, FUN = add.albedo, columns = colnames(cc))
 albedo <- as.data.frame(t(albedo))
-colnames(albedo) = paste0("albedo.", 1:12)
+colnames(albedo) <- paste0("albedo.", 1:12)
 
 LAI <- apply(X = cc, MARGIN = 1, FUN = add.LAI, columns = colnames(cc))
 LAI <- as.data.frame(t(LAI))
-colnames(LAI) = paste0("LAI.", 1:12)
+colnames(LAI) <- paste0("LAI.", 1:12)
 
 displacement <- apply(X = height, MARGIN = 1, FUN = add.displacement, columns = colnames(height))
 displacement <- as.data.frame(t(displacement))
-colnames(displacement) = paste0("displacement.", 1:12)
+colnames(displacement) <- paste0("displacement.", 1:12)
 
 veg_rough <- apply(X = height, MARGIN = 1, FUN = add.veg_rough, columns = colnames(height))
 veg_rough <- as.data.frame(t(veg_rough))
-colnames(veg_rough) = paste0("veg_rough.", 1:12)
+colnames(veg_rough) <- paste0("veg_rough.", 1:12)
 
 # Save
 dir.create(dirname(height.out))

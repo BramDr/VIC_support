@@ -45,19 +45,18 @@ for (i in 1:nrow(points)) {
   for (x in 1:dim(basin)[1]) {
     for (y in 1:dim(basin)[2]) {
       if (!is.na(basin[x, y]) && basin[x, y] == points$basin[i]) {
-        
         cur <- c(x, y)
         nex <- downstream[x, y, ]
-        
+
         while (TRUE) {
           if (cur[1] == points$x[i] && cur[2] == points$y[i]) {
             mask[x, y, i] <- 1
           }
-          
+
           if (cur[1] == nex[1] && cur[2] == nex[2]) {
             break
           }
-          
+
           cur <- nex
           nex <- downstream[cur[1], cur[2], ]
         }

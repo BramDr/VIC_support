@@ -7,7 +7,7 @@ cc.file <- "../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
 fao.file <- "../../../Data/Primary/FAO/Allen1998/FAO_crop_characteristics.csv"
 Kc.out <- "Saves/croppingCalendars_development.csv"
 
-# Load  
+# Load
 cc <- read.csv(file = cc.file, stringsAsFactors = F)
 fao <- read.csv(fao.file, stringsAsFactors = F)
 
@@ -64,21 +64,21 @@ get.kc <- function(x, columns) {
 ## Calculate kc in steps due to the large number of lines to process
 # steps <- seq(from = 1, to = nrow(cc), by = 500)
 # for (i in 1:length(steps)) {
-#   if (i == 1) {
-#     next
-#   } else if (i == 2) {
-#     kc <- apply(X = cc[steps[i - 1]:(steps[i] - 1), ], MARGIN = 1, FUN = get.kc, columns = colnames(cc))
-#   } else {
-#     kc <- cbind(kc, apply(X = cc[steps[i - 1]:(steps[i] - 1), ], MARGIN = 1, FUN = get.kc, columns = colnames(cc)))
-#   }
+# if (i == 1) {
+# next
+# } else if (i == 2) {
+# kc <- apply(X = cc[steps[i - 1]:(steps[i] - 1), ], MARGIN = 1, FUN = get.kc, columns = colnames(cc))
+# } else {
+# kc <- cbind(kc, apply(X = cc[steps[i - 1]:(steps[i] - 1), ], MARGIN = 1, FUN = get.kc, columns = colnames(cc)))
+# }
 # }
 # kc <- cbind(kc, apply(X = cc[steps[i]:nrow(cc), ], MARGIN = 1, FUN = get.kc, columns = colnames(cc)))
 kc <- apply(X = cc, MARGIN = 1, FUN = get.kc, columns = colnames(cc))
 kc <- as.data.frame(t(kc))
-colnames(kc) = paste0("Kc.", 1:12)
+colnames(kc) <- paste0("Kc.", 1:12)
 
-kc$maxKc = apply(X = kc, MARGIN = 1, FUN = max)
-kc$meanKc = apply(X = kc[,1:(ncol(kc) - 1)], MARGIN = 1, FUN = mean)
+kc$maxKc <- apply(X = kc, MARGIN = 1, FUN = max)
+kc$meanKc <- apply(X = kc[, 1:(ncol(kc) - 1)], MARGIN = 1, FUN = mean)
 
 # Save
 dir.create(dirname(Kc.out))

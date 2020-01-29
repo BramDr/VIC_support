@@ -1,33 +1,33 @@
 rm(list = ls())
 
 # Input
-scc.file = "../../../Data/Primary/MIRCA2000/Growing periods listed/cropping_calendars_30min.txt"
-scc.out = "../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
-cc.out = "../../../Data/Transformed/LandUse/cropCalendar_30min_global.csv"
-ccc.out = "../../../Data/Transformed/LandUse/cellCalendar_30min_global.csv"
+scc.file <- "../../../Data/Primary/MIRCA2000/Growing periods listed/cropping_calendars_30min.txt"
+scc.out <- "../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
+cc.out <- "../../../Data/Transformed/LandUse/cropCalendar_30min_global.csv"
+ccc.out <- "../../../Data/Transformed/LandUse/cellCalendar_30min_global.csv"
 
 # Load
-scc = read.table(scc.file, stringsAsFactors = F, header = T)
-scc$rowname = 1:nrow(scc)
+scc <- read.table(scc.file, stringsAsFactors = F, header = T)
+scc$rowname <- 1:nrow(scc)
 
 # Setup
 get.area <- function(x, columns) {
   x <- as.numeric(x)
   print(x[columns == "rowname"])
-  
+
   if (x[columns == "start"] < x[columns == "end"]) {
     period <- x[columns == "start"]:x[columns == "end"]
   } else {
     period <- c(x[columns == "start"]:12, 1:x[columns == "end"])
   }
-  
+
   area <- rep(0, 12)
   area[period] <- x[columns == "area"]
   return(area)
 }
 
-monthly.area = apply(X = scc, MARGIN = 1, FUN = get.area, columns = colnames(scc))
-scc = cbind(scc, t(monthly.area))
+monthly.area <- apply(X = scc, MARGIN = 1, FUN = get.area, columns = colnames(scc))
+scc <- cbind(scc, t(monthly.area))
 new.colnames <- colnames(scc)[1:(ncol(scc) - 12)]
 new.colnames <- c(new.colnames, paste0("area.", 1:12))
 colnames(scc) <- new.colnames
@@ -52,4 +52,3 @@ dir.create(dirname(cc.out))
 write.csv(cc, cc.out, row.names = F)
 dir.create(dirname(ccc.out))
 write.csv(ccc, ccc.out, row.names = F)
-
