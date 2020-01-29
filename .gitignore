@@ -5,6 +5,7 @@
 !*.R
 !*.sh
 !README.md
+!RELEASENOTES.md
 !LICENSE.txt
 !.gitignore
 
