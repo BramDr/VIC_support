@@ -18,7 +18,7 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- FALSE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(24.75, 88.25, "Ganges")
+points[nrow(points) + 1, ] <- c(5.25, 8.25, "error")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

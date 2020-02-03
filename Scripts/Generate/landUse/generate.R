@@ -164,7 +164,12 @@ for (x in 1:dim(mask)[1]) {
 
     crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
     veg.f <- sum(Cv.veg[x, y, c(1:10, 12)])
-
+    
+    if(crop.f > 1){
+      Cv.new[x,y,11:13] = Cv.new[x,y,11:13] / crop.f
+      crop.f = 1
+    }
+    
     if (veg.f <= 0) {
       if (crop.f == 1) {
         next

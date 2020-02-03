@@ -11,24 +11,38 @@ lon <- seq(from = -179.75, to = 179.75, by = 0.5)
 lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- TRUE
 
-points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(26.75, 22.25, "error")
+boxes <- data.frame(lat.min = numeric(), lon.min = numeric(), lat.max = numeric(), lon.max = numeric(), name = character(), stringsAsFactors = F)
+boxes[nrow(boxes) + 1, ] <- c(1.25, 1.25, 9.25, 9.25, "error")
 
-points$lat <- as.numeric(points$lat)
-points$lon <- as.numeric(points$lon)
+boxes$lat.min <- as.numeric(boxes$lat.min)
+boxes$lon.min <- as.numeric(boxes$lon.min)
+boxes$lat.max <- as.numeric(boxes$lat.max)
+boxes$lon.max <- as.numeric(boxes$lon.max)
+
+# Load
+nc = nc_open(path.domain)
+mask.orig = ncvar_get(nc, "mask")
+nc_close(nc)
 
 # Calculate
-mask <- array(NA, dim = c(length(lon), length(lat), nrow(points)))
-for (i in 1:nrow(points)) {
-  x <- which.min(abs(lon - points$lon[i]))
-  y <- which.min(abs(lat - points$lat[i]))
-  mask[x, y, i] <- 1
+mask <- array(NA, dim = c(length(lon), length(lat), nrow(boxes)))
+for (i in 1:nrow(boxes)) {
+  x.min <- which.min(abs(lon - boxes$lon.min[i]))
+  y.min <- which.min(abs(lat - boxes$lat.min[i]))
+  x.max <- which.min(abs(lon - boxes$lon.max[i]))
+  y.max <- which.min(abs(lat - boxes$lat.max[i]))
+  
+  mask.tmp = array(NA, dim = dim(mask)[1:2])
+  mask.tmp[x.min:x.max, y.min:y.max] <- 1
+  mask.tmp[is.na(mask.orig)] = NA
+  
+  mask[,,i] = mask.tmp
 }
 
 mask.combine <- array(NA, dim = c(length(lon), length(lat)))
 for (x in 1:dim(mask)[1]) {
   for (y in 1:dim(mask)[2]) {
-    for (i in 1:nrow(points)) {
+    for (i in 1:nrow(boxes)) {
       if (is.na(mask[x, y, i])) {
         next
       }
@@ -42,7 +56,7 @@ image.plot(mask.combine)
 
 # Save
 if (combine) {
-  newname <- paste0(dir.out, "/", paste0(points$name, collapse = ""), "/", "domain_", paste0(points$name, collapse = ""), ".nc")
+  newname <- paste0(dir.out, "/", paste0(boxes$name, collapse = ""), "/", "domain_", paste0(boxes$name, collapse = ""), ".nc")
 
   x.index <- which(!is.nan(apply(mask.combine, c(1), mean, na.rm = T)))
   y.index <- which(!is.nan(apply(mask.combine, c(2), mean, na.rm = T)))
@@ -59,8 +73,8 @@ if (combine) {
   ncvar_put(nc, nc$var$mask, mask.combine[min.x:max.x, min.y:max.y])
   nc_close(nc)
 } else {
-  for (i in 1:nrow(points)) {
-    newname <- paste0(dir.out, "/", points$name[i], "/", "domain_", points$name[i], ".nc")
+  for (i in 1:nrow(boxes)) {
+    newname <- paste0(dir.out, "/", boxes$name[i], "/", "domain_", boxes$name[i], ".nc")
 
     x.index <- which(!is.nan(apply(mask[, , i], c(1), mean, na.rm = T)))
     y.index <- which(!is.nan(apply(mask[, , i], c(2), mean, na.rm = T)))
