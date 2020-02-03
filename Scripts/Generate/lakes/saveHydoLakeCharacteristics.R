@@ -25,9 +25,6 @@ id.counter = 0
 for(i in 1:nrow(lakes)){
   x = which.min(abs(nc$dim$lon$vals - lakes$Pour_long[i]))
   y = which.min(abs(nc$dim$lat$vals - lakes$Pour_lat[i]))
-  if(is.na(mask[x,y]) || mask[x,y] == 0){
-    next
-  }
   
   id = id.counter
   sourceid = lakes$Hylak_id[i]
