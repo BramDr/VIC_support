@@ -6,7 +6,7 @@ rm(list = ls())
 receiving.id.file <- "Saves/receiving_id.RDS"
 nreceiving.file <- "Saves/Nreceiving.RDS"
 receiving.file <- "Saves/receiving.RDS"
-wu.out <- "../../../Output/Parameters/global/wu_params_global.nc"
+wu.out <- "../../../Data/VIC/Parameters/global/wu_params_global.nc"
 
 # Load
 receiving <- readRDS(receiving.file)
@@ -73,6 +73,7 @@ nc <- nc_create(
 nc_close(nc)
 
 # Write
+dir.create(dirname(wu.out))
 nc <- nc_open(wu.out, write = T)
 ncatt_put(
   nc = nc,

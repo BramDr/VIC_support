@@ -74,6 +74,22 @@ for (i in 1:nrow(plants)) {
 }
 plants$Withdrawal <- plants$IntensityWith * plants$`Installed_Cap[MW]` * 24 # m3 / day
 plants$Consumption <- plants$IntensityCon * plants$`Installed_Cap[MW]` * 24 # m3 / day
+
+# adjust for actual generation
+plants$Withdrawal[plants$Fuel_type == "UR"] <-
+  plants$Withdrawal[plants$Fuel_type == "UR"] * 0.72
+plants$Withdrawal[plants$Fuel_type == "WOOD" | plants$Fuel_type == "BIOMASS"] <-
+  plants$Withdrawal[plants$Fuel_type == "WOOD" | plants$Fuel_type == "BIOMASS"] * 0.56
+plants$Withdrawal[plants$Fuel_type != "WOOD" & plants$Fuel_type != "BIOMASS" & plants$Fuel_type != "UR"] <-
+  plants$Withdrawal[plants$Fuel_type != "WOOD" & plants$Fuel_type != "BIOMASS" & plants$Fuel_type != "UR"] * 0.46
+
+plants$Consumption[plants$Fuel_type == "UR"] <-
+  plants$Consumption[plants$Fuel_type == "UR"] * 0.72
+plants$Consumption[plants$Fuel_type == "WOOD" | plants$Fuel_type == "BIOMASS"] <-
+  plants$Consumption[plants$Fuel_type == "WOOD" | plants$Fuel_type == "BIOMASS"] * 0.56
+plants$Consumption[plants$Fuel_type != "WOOD" & plants$Fuel_type != "BIOMASS" & plants$Fuel_type != "UR"] <-
+  plants$Consumption[plants$Fuel_type != "WOOD" & plants$Fuel_type != "BIOMASS" & plants$Fuel_type != "UR"] * 0.46
+
 plants$ConsumptionFraction <- plants$Consumption / plants$Withdrawal
 
 sum(plants$Withdrawal) * 365 * 1e-9

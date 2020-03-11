@@ -6,7 +6,7 @@ rm(list = ls())
 mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 gw.file <- "../../../Data/Transformed/Irrigation/irrigationGroundwaterFraction_30min_global.RDS"
 eff.file <- "../../../Data/Transformed/Irrigation/irrigationEfficiency_30min_global.RDS"
-irr.param.out <- "../../../Output/Parameters/global/irr_params_MIRCA2000_global.nc"
+irr.param.out <- "../../../Data/VIC/Parameters/global/irr_params_MIRCA2000_global.nc"
 
 # Setup
 irr.veg <- c(12, 13)

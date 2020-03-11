@@ -6,7 +6,7 @@ rm(list = ls())
 coef.file <- "Saves/industrialCoef_country.csv"
 gdp.file <- "../../../../Data/Transformed/GDP/GDPInterpolated_country.csv"
 gva.file <- "../../../../Data/Transformed/GVA/GVAInterpolated_country.csv"
-light.file <- "../../../../Data/Transformed/Light/lightCountryFraction_6min_global.RDS"
+light.file <- "../../../../Data/Transformed/Light/light_6min_countryFractions.RDS"
 country.file <- "../../../../Data/Transformed/Country/country_6min_global.RDS"
 ind.tmp <- "Saves/industrialDemandSpread_30min_global.RDS"
 years <- 1979:2016

@@ -17,7 +17,7 @@ in.files <- c(
   "../../../Data/Transformed/Energy/energyConsumptionFraction_30min_global.RDS",
   "../../../Data/Transformed/Livestock/livestockConsumptionFraction_30min_global.RDS"
 )
-out.dir <- "../../../Output/Forcing/global/"
+out.dir <- "../../../Data/VIC/Forcing/global/"
 years <- 1979:2016
 
 # Setup
@@ -74,17 +74,17 @@ for (in.file in in.files) {
   }
   if (length(grep(x = in.file, "Demand")) > 0) {
     type <- "demand"
-    ty <- "demand"
+    ty <- "Dem"
     adjust <- 0.25
   }
   if (length(grep(x = in.file, "Groundwater")) > 0) {
     type <- "groundwater_fraction"
-    ty <- "ground"
+    ty <- "Ground"
     units <- "fraction"
   }
   if (length(grep(x = in.file, "Consumption")) > 0) {
     type <- "consumption_fraction"
-    ty <- "consump"
+    ty <- "Cons"
     units <- "fraction"
   }
 
@@ -94,8 +94,8 @@ for (in.file in in.files) {
   for (z in 1:length(years)) {
     year <- years[z]
 
-    out.name <- paste0(sec, "_", ty, "_6hourly_", year, ".nc")
-    out.sdir <- paste0("/", sec, "_", ty, "_6hourly/")
+    out.name <- paste0(sec, ty, "_monthly_", year, ".nc")
+    out.sdir <- paste0("/", sec, ty, "_monthly/")
     out.file <- paste0(out.dir, out.sdir, out.name)
 
     times <- seq(

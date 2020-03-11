@@ -13,18 +13,18 @@ removeVegVars <- function(nc.old.file, nc.new.file) {
 addVegVars <- function(nc.file, nveg_class = NULL) {
   # Get dimensions
   nc <- nc_open(filename = nc.file)
-  lon.dim = nc$dim$lon
-  lat.dim = nc$dim$lat
-  if(is.null(nveg_class)) {
-    veg.dim = nc$dim$veg_class
+  lon.dim <- nc$dim$lon
+  lat.dim <- nc$dim$lat
+  if (is.null(nveg_class)) {
+    veg.dim <- nc$dim$veg_class
   } else {
     veg.dim <- ncdim_def(
       name = "veg_class", units = "class", vals = 1:nveg_class,
       longname = "Vegetation class"
     )
   }
-  root.dim = nc$dim$root_zone
-  month.dim = nc$dim$month
+  root.dim <- nc$dim$root_zone
+  month.dim <- nc$dim$month
   nc_close(nc = nc)
 
   # Create variables
@@ -140,189 +140,191 @@ addVegVars <- function(nc.file, nveg_class = NULL) {
   nc_close(nc = nc)
 }
 
-addVegDefaultDatum <- function (nc.file, nc.var, 
-                                value = NULL, datum = NULL, na.map = NULL,
-                                start = NULL, count = NULL) {
+addVegDefaultDatum <- function(nc.file, nc.var,
+                               value = NULL, datum = NULL, na.map = NULL,
+                               start = NULL, count = NULL) {
   print(paste0("Adding data for ", nc.var$name))
 
   # Generate dimensions
-  dims = rep(1, nc.var$ndims)
-  for(i in 1:nc.var$ndims){
-    if(is.null(count) || count[i] == -1) {
-      dims[i] = nc.var$dim[[i]]$len
+  dims <- rep(1, nc.var$ndims)
+  for (i in 1:nc.var$ndims) {
+    if (is.null(count) || count[i] == -1) {
+      dims[i] <- nc.var$dim[[i]]$len
     } else {
-      dims[i] = count[i];
+      dims[i] <- count[i]
     }
   }
-  
+
   # Generate data
-  if(!is.null(value)) {
-    if(length(value) > 0) {
-      datum = array(data = NA, dim = dims)
+  if (!is.null(value)) {
+    if (length(value) > 0) {
+      datum <- array(data = NA, dim = dims)
       for (i in 1:length(value)) {
-        if(length(dim(datum)) == 2) {
-          datum[,] = value[i]
-        } else if(length(dim(datum)) == 3) {
-          datum[,,i] = value[i]
-        } else if(length(dim(datum)) == 4) {
-          datum[,,,i] = value[i]
-        } 
+        if (length(dim(datum)) == 2) {
+          datum[, ] <- value[i]
+        } else if (length(dim(datum)) == 3) {
+          datum[, , i] <- value[i]
+        } else if (length(dim(datum)) == 4) {
+          datum[, , , i] <- value[i]
+        }
       }
-    } else if(length(value) == 1){
-      datum = array(data = value, dim = dims)
+    } else if (length(value) == 1) {
+      datum <- array(data = value, dim = dims)
     }
   } else if (is.null(datum)) {
     stop("No value or datum given")
   }
-  
+
   # Omit data outside of mask
-  if(!is.null(na.map)) {
-    if(max(dim(na.map) != dims[1:2])){
+  if (!is.null(na.map)) {
+    if (max(dim(na.map) != dims[1:2])) {
       print(paste0("na.map dims: ", paste0(dim(na.map), collapse = ", ")))
       print(paste0("variable dims: ", paste0(dims, collapse = ", ")))
-      stop("na.map dimensions are not equal to variable dimensions");
+      stop("na.map dimensions are not equal to variable dimensions")
     }
-    
-    for(x in 1:dim(na.map)[1]) {
-      for(y in 1:dim(na.map)[2]) {
-        if (na.map[x,y]) {
-          if(length(dim(datum)) == 2) {
-            datum[x,y] = NA
-          } else if(length(dim(datum)) == 3) {
-            datum[x,y,] = NA
-          } else if(length(dim(datum)) == 4) {
-            datum[x,y,,] = NA
-          } 
+
+    for (x in 1:dim(na.map)[1]) {
+      for (y in 1:dim(na.map)[2]) {
+        if (na.map[x, y]) {
+          if (length(dim(datum)) == 2) {
+            datum[x, y] <- NA
+          } else if (length(dim(datum)) == 3) {
+            datum[x, y, ] <- NA
+          } else if (length(dim(datum)) == 4) {
+            datum[x, y, , ] <- NA
+          }
         }
       }
     }
   }
-  
+
   # Put data
-  if(is.null(start) || is.null(count)) {
-    start = rep(1, length(dims))
-    count = rep(-1, length(dims))
+  if (is.null(start) || is.null(count)) {
+    start <- rep(1, length(dims))
+    count <- rep(-1, length(dims))
   }
   nc <- nc_open(filename = nc.file, write = TRUE)
   ncvar_put(nc = nc, varid = nc.var, vals = datum, start = start, count = count)
   nc_close(nc = nc)
-  
+
   # Remove data
-  if(is.null(value)) {
+  if (is.null(value)) {
     rm(datum)
   }
 }
 
-addVegDefaultData <- function (nc.file, Cv = NULL, na.map = NULL, 
-                               wind_atten = NULL,
-                               rad_atten = NULL,
-                               rmin = NULL,
-                               rarc = NULL,
-                               RGL = NULL,
-                               overstory = NULL,
-                               trunk_ratio = NULL,
-                               wind_h = NULL,
-                               root_fract = NULL,
-                               root_depth = NULL,
-                               LAI = NULL,
-                               height = NULL,
-                               albedo = NULL) {
+addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
+                              wind_atten = NULL,
+                              rad_atten = NULL,
+                              rmin = NULL,
+                              rarc = NULL,
+                              RGL = NULL,
+                              overstory = NULL,
+                              trunk_ratio = NULL,
+                              wind_h = NULL,
+                              root_fract = NULL,
+                              root_depth = NULL,
+                              LAI = NULL,
+                              height = NULL,
+                              albedo = NULL) {
   # Get dimensions
   nc <- nc_open(filename = nc.file)
-  lon.dim = nc$dim$lon
-  lat.dim = nc$dim$lat
-  veg.dim = nc$dim$veg_class
-  root.dim = nc$dim$root_zone
-  month.dim = nc$dim$month
+  lon.dim <- nc$dim$lon
+  lat.dim <- nc$dim$lat
+  veg.dim <- nc$dim$veg_class
+  root.dim <- nc$dim$root_zone
+  month.dim <- nc$dim$month
   nc_close(nc = nc)
-  
+
   # Check or create parameters
-  if(is.null(wind_atten)){
-    wind_atten = c(rep(0.5, veg.dim$len - 1), 0)
+  if (is.null(wind_atten)) {
+    wind_atten <- c(rep(0.5, veg.dim$len - 1), 0)
   }
-  if(is.null(rad_atten)){
-    rad_atten = c(rep(0.5, veg.dim$len - 1), 0)
+  if (is.null(rad_atten)) {
+    rad_atten <- c(rep(0.5, veg.dim$len - 1), 0)
   }
-  if(is.null(rmin)){
-    rmin = c(rep(100, veg.dim$len - 1), 0)
+  if (is.null(rmin)) {
+    rmin <- c(rep(100, veg.dim$len - 1), 0)
   }
-  if(is.null(rarc)){
-    rarc = c(rep(2, veg.dim$len - 1), 0)
+  if (is.null(rarc)) {
+    rarc <- c(rep(2, veg.dim$len - 1), 0)
   }
-  if(is.null(RGL)){
-    RGL = c(rep(100, veg.dim$len - 1), 0)
+  if (is.null(RGL)) {
+    RGL <- c(rep(100, veg.dim$len - 1), 0)
   }
-  if(is.null(overstory)){
-    overstory = c(rep(0, veg.dim$len - 1), 0)
+  if (is.null(overstory)) {
+    overstory <- c(rep(0, veg.dim$len - 1), 0)
   }
-  if(is.null(trunk_ratio)){
-    trunk_ratio = c(rep(0.2, veg.dim$len - 1), 0)
+  if (is.null(trunk_ratio)) {
+    trunk_ratio <- c(rep(0.2, veg.dim$len - 1), 0)
   }
-  if(is.null(wind_h)){
-    wind_h = rep(2, veg.dim$len)
+  if (is.null(wind_h)) {
+    wind_h <- rep(2, veg.dim$len)
   }
   # -
-  if(is.null(root_fract)){
-    root_fract = matrix(c(rep(0.5, veg.dim$len - 1), 0), nrow = veg.dim$len, ncol = 2)
-    root_fract = cbind(root_fract, rep(0, veg.dim$len))
+  if (is.null(root_fract)) {
+    root_fract <- matrix(c(rep(0.5, veg.dim$len - 1), 0), nrow = veg.dim$len, ncol = 2)
+    root_fract <- cbind(root_fract, rep(0, veg.dim$len))
   }
-  if(is.null(root_depth)){
-    root_depth = matrix(c(rep(0.3, veg.dim$len - 1), 0), nrow = veg.dim$len, ncol = 1)
-    root_depth = cbind(root_depth, c(rep(0.7, veg.dim$len - 1), 0))
-    root_depth = cbind(root_depth, rep(0, veg.dim$len))
+  if (is.null(root_depth)) {
+    root_depth <- matrix(c(rep(0.3, veg.dim$len - 1), 0), nrow = veg.dim$len, ncol = 1)
+    root_depth <- cbind(root_depth, c(rep(0.7, veg.dim$len - 1), 0))
+    root_depth <- cbind(root_depth, rep(0, veg.dim$len))
   }
-  # -  
-  if(is.null(LAI)){
-    LAI = c(rep(2, veg.dim$len - 1), 0)
-    for(i in 2:12) {
-      LAI = cbind(LAI, c(rep(2, veg.dim$len - 1), 0))
+  # -
+  if (is.null(LAI)) {
+    LAI <- c(rep(2, veg.dim$len - 1), 0)
+    for (i in 2:12) {
+      LAI <- cbind(LAI, c(rep(2, veg.dim$len - 1), 0))
     }
   }
-  if(is.null(height)){
-    height = c(rep(2, veg.dim$len - 1), 0)
-    for(i in 2:12) {
-      height = cbind(height, c(rep(2, veg.dim$len - 1), 0))
+  if (is.null(height)) {
+    height <- c(rep(2, veg.dim$len - 1), 0)
+    for (i in 2:12) {
+      height <- cbind(height, c(rep(2, veg.dim$len - 1), 0))
     }
   }
-  if(is.null(albedo)){
-    albedo = c(rep(0.1, veg.dim$len - 1), 0.2)
-    for(i in 2:12) {
-      albedo = cbind(albedo, c(rep(0.1, veg.dim$len - 1), 0.2))
+  if (is.null(albedo)) {
+    albedo <- c(rep(0.1, veg.dim$len - 1), 0.2)
+    for (i in 2:12) {
+      albedo <- cbind(albedo, c(rep(0.1, veg.dim$len - 1), 0.2))
     }
   }
-  
+
   # Check or create Cv
   if (is.null(Cv)) {
-    Cv = array(data = 1 / veg.dim$len, dim = c(lon.dim$len, lat.dim$len, veg.dim$len))
+    Cv <- array(data = 1 / veg.dim$len, dim = c(lon.dim$len, lat.dim$len, veg.dim$len))
   }
-  if (max(dim(Cv) != c(lon.dim$len, lat.dim$len, veg.dim$len))){
+  if (max(dim(Cv) != c(lon.dim$len, lat.dim$len, veg.dim$len))) {
     print(paste0("Cv dims: ", paste0(dim(Cv), collapse = ", ")))
     print(paste0("File dims: ", paste0(c(lon.dim$len, lat.dim$len, veg.dim$len), collapse = ", ")))
-    stop("Cv dimensions are not equal to file dimensions");
+    stop("Cv dimensions are not equal to file dimensions")
   }
-  
+
   # Check or create na.map
-  if(!is.null(na.map)) {
-    if (max(dim(na.map) != c(lon.dim$len, lat.dim$len))){
+  if (!is.null(na.map)) {
+    if (max(dim(na.map) != c(lon.dim$len, lat.dim$len))) {
       print(paste0("na.map dims: ", paste0(dim(na.map), collapse = ", ")))
       print(paste0("File dims: ", paste0(c(lon.dim$len, lat.dim$len), collapse = ", ")))
-      stop("na.map dimensions are not equal to file dimensions");
+      stop("na.map dimensions are not equal to file dimensions")
     }
-    
-    for(x in 1:dim(na.map)[1]) {
-      for(y in 1:dim(na.map)[2]) {
-        if (na.map[x,y]) {
-          Cv[x,y,] = NA 
-        } else if (is.na(Cv[x,y,1])) {
-          Cv[x,y,] = 0
+
+    for (x in 1:dim(na.map)[1]) {
+      for (y in 1:dim(na.map)[2]) {
+        if (na.map[x, y]) {
+          Cv[x, y, ] <- NA
+        } else if (is.na(Cv[x, y, 1])) {
+          Cv[x, y, ] <- 0
         }
       }
     }
   }
-  na.map = is.na(Cv[,,1])
-  
+  na.map <- is.na(Cv[, , 1])
+
   # Create Nveg
-  Nveg = apply(X = Cv, MARGIN = c(1,2), FUN = function(x){sum(x[1:(length(x) - 1)] > 0, na.rm = T)})
+  Nveg <- apply(X = Cv, MARGIN = c(1, 2), FUN = function(x) {
+    sum(x[1:(length(x) - 1)] > 0, na.rm = T)
+  })
   # Add data
   addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$Nveg, datum = Nveg, na.map = na.map)
   rm(Nveg)
@@ -339,14 +341,14 @@ addVegDefaultData <- function (nc.file, Cv = NULL, na.map = NULL,
   addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$wind_h, value = wind_h, na.map = na.map)
   # -
   for (i in 1:nc$dim$root_zone$len) {
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$root_fract, value = root_fract[,i], na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$root_depth, value = root_depth[,i], na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$root_fract, value = root_fract[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$root_depth, value = root_depth[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
   }
   # -
   for (i in 1:nc$dim$month$len) {
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$LAI, value = LAI[,i], na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$displacement, value = height[,i] * 0.67, na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$veg_rough, value = height[,i] * 0.123, na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$albedo, value = albedo[,i], na.map = na.map, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$LAI, value = LAI[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$displacement, value = height[, i] * 0.67, na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$veg_rough, value = height[, i] * 0.123, na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$albedo, value = albedo[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
   }
 }

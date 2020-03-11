@@ -8,7 +8,7 @@ ldam.file <- "Saves/localDamsMerge.csv"
 gdam.service.file <- "Saves/globalDamsService.RDS"
 ldam.service.file <- "Saves/localDamsService.RDS"
 mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
-dams.out <- "../../../Output/Parameters/global/dam_params_global.nc"
+dams.out <- "../../../Data/VIC/Parameters/global/dam_params_global.nc"
 
 # Load
 mask <- readRDS(mask.file)
@@ -35,16 +35,16 @@ for (x in 1:length(lons)) {
   }
 }
 for (i in 1:nrow(ldams)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(ldams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(ldams$MODEL_LONG_DD[i] == lons)
+  y <- which(ldams$MODEL_LAT_DD[i] == lats)
   if (is.na(mask[x, y])) {
     next
   }
   nldams[x, y] <- nldams[x, y] + 1
 }
 for (i in 1:nrow(gdams)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(gdams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(gdams$MODEL_LONG_DD[i] == lons)
+  y <- which(gdams$MODEL_LAT_DD[i] == lats)
   if (is.na(mask[x, y])) {
     next
   }
@@ -75,8 +75,8 @@ for (x in 1:length(lons)) {
   }
 }
 for (i in 1:nrow(ldams)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(ldams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(ldams$MODEL_LONG_DD[i] == lons)
+  y <- which(ldams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {
@@ -87,8 +87,8 @@ for (i in 1:nrow(ldams)) {
   linflow.frac[x, y, z] <- ldams$MODEL_AREA_FRAC[i]
 }
 for (i in 1:nrow(gdams)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(gdams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(gdams$MODEL_LONG_DD[i] == lons)
+  y <- which(gdams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {
@@ -118,8 +118,8 @@ for (x in 1:length(lons)) {
   }
 }
 for (i in 1:length(ldams.service)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(ldams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(ldams$MODEL_LONG_DD[i] == lons)
+  y <- which(ldams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {
@@ -128,8 +128,8 @@ for (i in 1:length(ldams.service)) {
   nlservice[x, y, z] <- nlservice[x, y, z] + nrow(ldams.service[[i]])
 }
 for (i in 1:length(gdams.service)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(gdams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(gdams$MODEL_LONG_DD[i] == lons)
+  y <- which(gdams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {
@@ -173,8 +173,8 @@ for (x in 1:length(lons)) {
   }
 }
 for (i in 1:length(ldams.service)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(ldams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(ldams$MODEL_LONG_DD[i] == lons)
+  y <- which(ldams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {
@@ -195,8 +195,8 @@ for (i in 1:length(ldams.service)) {
   }
 }
 for (i in 1:length(gdams.service)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == nc$dim$lon$vals)
-  y <- which(gdams$MODEL_LAT_DD[i] == nc$dim$lat$vals)
+  x <- which(gdams$MODEL_LONG_DD[i] == lons)
+  y <- which(gdams$MODEL_LAT_DD[i] == lats)
   z <- 1
 
   if (is.na(mask[x, y])) {

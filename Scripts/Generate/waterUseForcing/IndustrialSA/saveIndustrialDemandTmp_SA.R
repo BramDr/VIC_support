@@ -6,7 +6,7 @@ rm(list = ls())
 coef.file <- "COEF_PLACEHOLDER"
 gdp.file <- "../../../../Data/Transformed/GDP/GDPInterpolated_country.csv"
 gva.file <- "../../../../Data/Transformed/GVA/GVAInterpolated_country.csv"
-light.file <- "../../../../Data/Transformed/Light/lightCountryFraction_6min_global.RDS"
+light.file <- "../../../../Data/Transformed/Light/light_6min_countryFractions.RDS"
 country.file <- "../../../../Data/Transformed/Country/country_6min_global.RDS"
 ind.tmp <- "TMP_PLACEHOLDER"
 years <- 1979:2016

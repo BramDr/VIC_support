@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 light.file <- "../../../Data/Primary/NASA/BlackMarble_2016_01deg_gray_geo.tif"
 country.file <- "../../../Data/Transformed/Country/country_6min_global.RDS"
-light.out <- "../../../Data/Transformed/Light/lightCountryFraction_6min_global.RDS"
+light.out <- "../../../Data/Transformed/Light/light_6min_countryFractions.RDS"
 
 # Load
 light <- raster(light.file)

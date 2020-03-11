@@ -1,9 +1,8 @@
 # README
 Supporting documentation and scripts for VIC-WUR. Inputs are missing for confidentiality reasons.
 
-  * **Data** contains all inputs (and transformed inputs) used to generate the VIC parameters.
+  * **Data** contains all data used to generate the VIC parameters.
   * **Scripts** contains all scripts used to transform the input data and generate the VIC parameters.
-  * **Output** contains all the outputs which can be used to run VIC.
   * **Tools** contains programs that are used to maintain support (such as code formatting).
 
 ----

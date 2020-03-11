@@ -65,14 +65,14 @@ get.number <- function(x, ct, bf, dk, ch, gt, sh, ho, pg) {
   return(ret)
 }
 
-livestock.ct <- raster(grep(x = livestock.files, pattern = "Ct_.*_Da", value = T))
-livestock.bf <- raster(grep(x = livestock.files, pattern = "Bf_.*_Da", value = T))
-livestock.dk <- raster(grep(x = livestock.files, pattern = "Dk_.*_Da", value = T))
-livestock.ch <- raster(grep(x = livestock.files, pattern = "Ch_.*_Da", value = T))
-livestock.gt <- raster(grep(x = livestock.files, pattern = "Gt_.*_Da", value = T))
-livestock.sh <- raster(grep(x = livestock.files, pattern = "Sh_.*_Da", value = T))
-livestock.ho <- raster(grep(x = livestock.files, pattern = "Ho_.*_Da", value = T))
-livestock.pg <- raster(grep(x = livestock.files, pattern = "Pg_.*_Da", value = T))
+livestock.ct <- raster(grep(x = livestock.files, pattern = "Ct_.*_Da.tif$", value = T))
+livestock.bf <- raster(grep(x = livestock.files, pattern = "Bf_.*_Da.tif$", value = T))
+livestock.dk <- raster(grep(x = livestock.files, pattern = "Dk_.*_Da.tif$", value = T))
+livestock.ch <- raster(grep(x = livestock.files, pattern = "Ch_.*_Da.tif$", value = T))
+livestock.gt <- raster(grep(x = livestock.files, pattern = "Gt_.*_Da.tif$", value = T))
+livestock.sh <- raster(grep(x = livestock.files, pattern = "Sh_.*_Da.tif$", value = T))
+livestock.ho <- raster(grep(x = livestock.files, pattern = "Ho_.*_Da.tif$", value = T))
+livestock.pg <- raster(grep(x = livestock.files, pattern = "Pg_.*_Da.tif$", value = T))
 
 livestock.ct <- data.frame(rasterToPoints(aggregate(x = livestock.ct, fact = 6, fun = sum)))
 livestock.bf <- data.frame(rasterToPoints(aggregate(x = livestock.bf, fact = 6, fun = sum)))

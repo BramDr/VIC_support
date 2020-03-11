@@ -3,274 +3,201 @@ library(ncdf4)
 rm(list = ls())
 
 # Input
-function.script <- "generateFunctions.R"
-param.irr.file <- "Saves/parameters_irrigated.RDS"
-param.paddy.file <- "Saves/parameters_paddy.RDS"
-param.rain.file <- "Saves/parameters_rainfed.RDS"
-vegetation.file <- "Input/VIC_params_global.nc"
-vegetation.out <- "Output/VIC_params_MIRCA2000_global.nc"
+function.script <- "../../Support/generateFunctions.R"
+map.script <- "../../Support/mapFunctions.R"
+mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+paddy.file <- "Saves/parametersPaddy_30min_global.RDS"
+irr.file <- "Saves/parametersIrrigated_30min_global.RDS"
+rain.file <- "Saves/parametersRainfed_30min_global.RDS"
+vegetation.file <- "../../../Data/Transformed/Parameters/global/VIC_params_VlietAlt30min_global.nc"
+vegetation.out <- "../../../Data/VIC/Parameters/global/VIC_params_MIRCA2000_global.nc"
 
 # Load
 source(function.script)
+source(map.script)
 
-nc <- nc_open(vegetation.file)
-old.Cv <- ncvar_get(nc, nc$var$Cv)
+irr <- readRDS(irr.file)
+paddy <- readRDS(paddy.file)
+rain <- readRDS(rain.file)
+
+nc <- nc_open(mask.file)
+mask <- ncvar_get(nc, "mask")
 nc_close(nc)
 
-param.irr <- readRDS(param.irr.file)
-param.paddy <- readRDS(param.paddy.file)
-param.rain <- readRDS(param.rain.file)
+nc <- nc_open(vegetation.file)
+Cv.veg <- ncvar_get(nc, "Cv")
+nc_close(nc)
 
 # Setup
-remove.vars <- c(
-  "veg_descr", "veg_class", "Nveg", "Cv", "wind_atten",
-  "wind_h", "rmin", "rarc", "rad_atten", "RGL",
-  "trunk_ratio", "overstory", "root_fract", "root_depth",
-  "LAI", "displacement", "veg_rough", "albedo"
-)
-system(command = paste0("ncks -x -v ", paste0(remove.vars, collapse = ","), " ", vegetation.file, " -O ", vegetation.out))
+fill.maps <- function(maps) {
+  maps.new <- list()
+  for (i in 1:length(maps)) {
+    map <- maps[[i]]
 
-add.data <- function(name, nc.orig, nc.new, data.paddy, data.irr, data.rain) {
-  data.old <- ncvar_get(nc.old, name)
-
-  ncvar_put(nc.new, name, data.old[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
-  ncvar_put(nc.new, name, data.rain[[name]], start = c(1, 1, 11), count = c(-1, -1, 1))
-  ncvar_put(nc.new, name, data.irr[[name]], start = c(1, 1, 12), count = c(-1, -1, 1))
-  ncvar_put(nc.new, name, data.paddy[[name]], start = c(1, 1, 13), count = c(-1, -1, 1))
-  ncvar_put(nc.new, name, data.old[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
-}
-
-add.data.monthly <- function(name, nc.orig, nc.new, data.paddy, data.irr, data.rain) {
-  if (name == "Fcanopy") {
-    name2 <- "fcanopy"
-    data.old <- ncvar_get(nc.old, "albedo")
-    for (x in 1:dim(data.old)[1]) {
-      for (y in 1:dim(data.old)[2]) {
-        if (is.na(data.old[x, y, 1, 1])) {
+    for (x in 1:dim(map)[1]) {
+      for (y in 1:dim(map)[2]) {
+        if (is.na(mask[x, y])) {
           next
         }
 
-        for (z in 1:dim(data.old)[3]) {
-          data.old[x, y, z, ] <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        if (length(dim(map)) == 3) {
+          if (is.na(map[x, y, 1])) {
+            for (z in 1:dim(map)[3]) {
+              map[x, y, z] <- getNearestZero(map[, , z], x, y)
+            }
+          }
+        } else {
+          if (is.na(map[x, y])) {
+            map[x, y] <- getNearestZero(map, x, y)
+          }
         }
       }
     }
 
-    ncvar_put(nc.new, name2, data.old[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
-    ncvar_put(nc.new, name2, data.rain[[name]], start = c(1, 1, 1, 11), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name2, data.irr[[name]], start = c(1, 1, 1, 12), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name2, data.paddy[[name]], start = c(1, 1, 1, 13), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name2, data.old[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
-  } else {
-    data.old <- ncvar_get(nc.old, name)
-
-    ncvar_put(nc.new, name, data.old[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
-    ncvar_put(nc.new, name, data.rain[[name]], start = c(1, 1, 1, 11), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name, data.irr[[name]], start = c(1, 1, 1, 12), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name, data.paddy[[name]], start = c(1, 1, 1, 13), count = c(-1, -1, -1, 1))
-    ncvar_put(nc.new, name, data.old[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+    maps.new[[names(maps)[i]]] <- map
   }
+
+  return(maps.new)
 }
+put.maps <- function(nc.file, maps, veg.idx, mask) {
+  empty.map <- mask * 0
 
-add.data.root <- function(name, nc.orig, nc.new, data.paddy, data.irr, data.rain) {
-  name2 <- name
-  if (name == "root_frac.1") {
-    name2 <- "root_fract"
-    idx <- 1
-  }
-  if (name == "root_frac.2") {
-    name2 <- "root_fract"
-    idx <- 2
-  }
-  if (name == "root_frac.3") {
-    name2 <- "root_fract"
-    idx <- 3
-  }
-  if (name == "root_depth.1") {
-    name2 <- "root_depth"
-    idx <- 1
-  }
-  if (name == "root_depth.2") {
-    name2 <- "root_depth"
-    idx <- 2
-  }
-  if (name == "root_depth.3") {
-    name2 <- "root_depth"
-    idx <- 3
-  }
+  nc <- nc_open(nc.file, write = T)
+  ncvar_put(nc, "wind_atten", maps[["wind_atten"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "wind_h", maps[["wind_h"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "rmin", maps[["rmin"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "rarc", maps[["rarc"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "rad_atten", maps[["rad_atten"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "RGL", maps[["RGL"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "trunk_ratio", maps[["trunk_ratio"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
+  ncvar_put(nc, "overstory", maps[["overstory"]], start = c(1, 1, veg.idx), count = c(-1, -1, 1))
 
-  data.old <- ncvar_get(nc.old, name2)
+  ncvar_put(nc, "root_depth", maps[["root_depth.1"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "root_depth", maps[["root_depth.2"]], start = c(1, 1, 2, veg.idx), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "root_depth", empty.map, start = c(1, 1, 3, veg.idx), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "root_fract", maps[["root_frac.1"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "root_fract", maps[["root_frac.2"]], start = c(1, 1, 2, veg.idx), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "root_fract", empty.map, start = c(1, 1, 3, veg.idx), count = c(-1, -1, 1, 1))
 
-  ncvar_put(nc.new, name2, data.old[, , idx, 1:10], start = c(1, 1, idx, 1), count = c(-1, -1, 1, 10))
-  ncvar_put(nc.new, name2, data.rain[[name]], start = c(1, 1, idx, 11), count = c(-1, -1, 1, 1))
-  ncvar_put(nc.new, name2, data.irr[[name]], start = c(1, 1, idx, 12), count = c(-1, -1, 1, 1))
-  ncvar_put(nc.new, name2, data.paddy[[name]], start = c(1, 1, idx, 13), count = c(-1, -1, 1, 1))
-  ncvar_put(nc.new, name2, data.old[, , idx, 12], start = c(1, 1, idx, 14), count = c(-1, -1, 1, 1))
+  ncvar_put(nc, "albedo", maps[["albedo"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "LAI", maps[["LAI"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "displacement", maps[["displacement"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "veg_rough", maps[["veg_rough"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "fcanopy", maps[["fcanopy"]], start = c(1, 1, 1, veg.idx), count = c(-1, -1, -1, 1))
+  nc_close(nc)
 }
+put.old <- function(nc.file, old.file) {
+  nc <- nc_open(old.file)
+  wind_atten <- ncvar_get(nc, "wind_atten")
+  wind_h <- ncvar_get(nc, "wind_h")
+  rmin <- ncvar_get(nc, "rmin")
+  rarc <- ncvar_get(nc, "rarc")
+  rad_atten <- ncvar_get(nc, "rad_atten")
+  RGL <- ncvar_get(nc, "RGL")
+  trunk_ratio <- ncvar_get(nc, "trunk_ratio")
+  overstory <- ncvar_get(nc, "overstory")
 
+  root_fract <- ncvar_get(nc, "root_fract")
+  root_depth <- ncvar_get(nc, "root_depth")
+
+  albedo <- ncvar_get(nc, "albedo")
+  LAI <- ncvar_get(nc, "LAI")
+  displacement <- ncvar_get(nc, "displacement")
+  veg_rough <- ncvar_get(nc, "veg_rough")
+  nc_close(nc)
+
+  nc <- nc_open(nc.file, write = T)
+  ncvar_put(nc, "wind_atten", wind_atten[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "wind_h", wind_h[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "rmin", rmin[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "rarc", rarc[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "rad_atten", rad_atten[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "RGL", RGL[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "trunk_ratio", trunk_ratio[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+  ncvar_put(nc, "overstory", overstory[, , 1:10], start = c(1, 1, 1), count = c(-1, -1, 10))
+
+  ncvar_put(nc, "wind_atten", wind_atten[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "wind_h", wind_h[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "rmin", rmin[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "rarc", rarc[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "rad_atten", rad_atten[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "RGL", RGL[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "trunk_ratio", trunk_ratio[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+  ncvar_put(nc, "overstory", overstory[, , 12], start = c(1, 1, 14), count = c(-1, -1, 1))
+
+  ncvar_put(nc, "root_fract", root_fract[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+  ncvar_put(nc, "root_depth", root_depth[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+
+  ncvar_put(nc, "root_fract", root_fract[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "root_depth", root_depth[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+
+  ncvar_put(nc, "albedo", albedo[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+  ncvar_put(nc, "LAI", LAI[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+  ncvar_put(nc, "displacement", displacement[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+  ncvar_put(nc, "veg_rough", veg_rough[, , , 1:10], start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+  ncvar_put(nc, "fcanopy", albedo[, , , 1:10] * 0 + 1, start = c(1, 1, 1, 1), count = c(-1, -1, -1, 10))
+
+  ncvar_put(nc, "albedo", albedo[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "LAI", LAI[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "displacement", displacement[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "veg_rough", veg_rough[, , , 12], start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  ncvar_put(nc, "fcanopy", albedo[, , , 12] * 0 + 1, start = c(1, 1, 1, 14), count = c(-1, -1, -1, 1))
+  nc_close(nc)
+}
 
 # Calculate
-new.Cv <- array(NA, dim = c(dim(old.Cv)[1:2], dim(old.Cv)[3] + 2))
-new.Cv[, , 1:10] <- old.Cv[, , 1:10]
-new.Cv[, , 11] <- param.rain$Cv
-new.Cv[, , 12] <- param.irr$Cv
-new.Cv[, , 13] <- param.paddy$Cv
-new.Cv[, , 14] <- old.Cv[, , 12]
+irr.filled <- fill.maps(irr)
+paddy.filled <- fill.maps(paddy)
+rain.filled <- fill.maps(rain)
 
-## adjust Cv for added or removed crop areas
-sum.all <- apply(new.Cv, MARGIN = c(1, 2), FUN = sum)
-sum.nCrop <- apply(new.Cv[, , c(1:10, 14)], MARGIN = c(1, 2), FUN = sum)
-sum.crop <- apply(new.Cv[, , c(11:13)], MARGIN = c(1, 2), FUN = sum)
-add <- 1 - sum.all
-
-adj.Cv <- new.Cv
-for (x in 1:dim(adj.Cv)[1]) {
-  for (y in 1:dim(adj.Cv)[2]) {
-    if (is.na(add[x, y]) || add[x, y] == 0) {
+## Calculate adjusted Cv fractions and Nveg
+Cv.new <- array(0, dim = c(dim(mask)[1], dim(mask)[2], dim(Cv.veg)[3] + 2))
+Cv.new[, , 11] <- rain.filled[["Cv"]]
+Cv.new[, , 12] <- irr.filled[["Cv"]]
+Cv.new[, , 13] <- paddy.filled[["Cv"]]
+for (x in 1:dim(mask)[1]) {
+  for (y in 1:dim(mask)[2]) {
+    if (is.na(mask[x, y])) {
+      Cv.new[x, y, ] <- NA
       next
     }
 
-    if (sum.nCrop[x, y] != 0) {
-      adj.fac <- 1 + (add[x, y] / sum.nCrop[x, y])
-      adj.Cv[x, y, c(1:10, 14)] <- new.Cv[x, y, c(1:10, 14)] * adj.fac
-    } else {
-      new.veg <- rep(0, 14)
-      for (z in c(1:10, 14)) {
-        new.veg[z] <- mean(new.Cv[(x - 2):(x + 2), (y - 2):(y + 2), z], na.rm = T)
+    crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
+    veg.f <- sum(Cv.veg[x, y, c(1:10, 12)])
+
+    if (crop.f > 1) {
+      Cv.new[x, y, 11:13] <- Cv.new[x, y, 11:13] / crop.f
+      crop.f <- 1
+    }
+
+    if (veg.f <= 0) {
+      if (crop.f == 1) {
+        next
       }
-      adj.Cv[x, y, c(1:10, 14)] <- (new.veg[c(1:10, 14)] / sum(new.veg[c(1:10, 14)])) * add[x, y]
+      Cv.new[x, y, dim(Cv.new)[3]] <- (1 - crop.f)
+    } else {
+      rescale.f <- (1 - crop.f) / veg.f
+      Cv.new[x, y, c(1:10, 14)] <- Cv.veg[x, y, c(1:10, 12)] * rescale.f
     }
   }
 }
-sum.check <- apply(adj.Cv, MARGIN = c(1, 2), FUN = sum)
-image.plot(sum.check)
+Cv.sum <- apply(X = Cv.new, MARGIN = c(1, 2), FUN = sum)
+image.plot(Cv.sum)
 
-Nveg <- apply(X = adj.Cv[, , 1:13], MARGIN = c(1, 2), FUN = function(x) {
+Nveg <- apply(X = Cv.new[, , 1:(dim(Cv.new)[3] - 1)], MARGIN = c(1, 2), FUN = function(x) {
   sum(x > 0)
 })
 image.plot(Nveg)
 
-# Save
-nc <- nc_open(filename = vegetation.out)
-nc_close(nc = nc)
+removeVegVars(nc.old.file = vegetation.file, nc.new.file = vegetation.out)
+addVegVars(nc.file = vegetation.out, nveg_class = 14)
 
-lon.dim <- nc$dim$lon
-lat.dim <- nc$dim$lat
-root.dim <- nc$dim$root_zone
-month.dim <- nc$dim$month
-veg.dim <- ncdim_def(
-  name = "veg_class", units = "class", vals = 1:14,
-  longname = "Vegetation class: 1 - Evergreen Needleleaf, 2 - Evergreen Broadleaf, 3 - Deciduous Needleaf, 
-                    4 - Diciduous Broadleaf, 5 - Mixed Cover, 6 - Woodland, 7 - Wooded Grasslands, 8 - Closed Shrublands, 
-                    9 - Open Shrublands, 10 - Grasslands, 11 - Rainfed Cropland, 12 - Irrigated Cropland, 13 - Paddy Cropland, 14 - Bare Soil"
-)
-addVegVars(vegetation.out, lon.dim, lat.dim, veg.dim, root.dim, month.dim)
+put.old(vegetation.out, vegetation.file)
+put.maps(vegetation.out, rain.filled, 11, mask)
+put.maps(vegetation.out, irr.filled, 12, mask)
+put.maps(vegetation.out, paddy.filled, 13, mask)
 
-nc <- nc_open(filename = vegetation.out, write = T)
-nc.old <- nc_open(filename = vegetation.file)
-
-ncatt_put(
-  nc = nc,
-  varid = 0,
-  attname = "Description",
-  attval = "VIC parameters using MIRCA2000. Created by Bram Droppers"
-)
-
-ncvar_put(nc, "Cv", adj.Cv)
+nc <- nc_open(vegetation.out, write = T)
+ncvar_put(nc, "Cv", Cv.new)
 ncvar_put(nc, "Nveg", Nveg)
-
-add.data("wind_atten", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("rmin", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("rarc", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("rad_atten", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("RGL", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("overstory", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data("trunk_ratio", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.root("root_frac.1", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.root("root_frac.2", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.root("root_depth.1", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.root("root_depth.2", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.monthly("LAI", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.monthly("displacement", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.monthly("veg_rough", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.monthly("albedo", nc.old, nc, param.paddy, param.irr, param.rain)
-add.data.monthly("Fcanopy", nc.old, nc, param.paddy, param.irr, param.rain)
-
-ncvar_put(nc, "root_fract", array(0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len)), start = c(1, 1, 3, 1), count = c(-1, -1, 1, -1))
-ncvar_put(nc, "root_depth", array(0, dim = c(nc$dim$lon$len, nc$dim$lat$len, nc$dim$veg_class$len)), start = c(1, 1, 3, 1), count = c(-1, -1, 1, -1))
-
-nc_close(nc.old)
-nc_close(nc)
-
-
-## check and adjust root fractions
-nc <- nc_open(filename = vegetation.out)
-Cv.check <- ncvar_get(nc, nc$var$Cv)
-root.frac.check <- ncvar_get(nc, nc$var$root_fract)
-root.depth.check <- ncvar_get(nc, nc$var$root_depth)
-nc_close(nc)
-
-root.frac.new <- root.frac.check
-root.depth.new <- root.depth.check
-for (x in 1:dim(Cv.check)[1]) {
-  for (y in 1:dim(Cv.check)[2]) {
-    for (v in 1:(dim(Cv.check)[3] - 1)) {
-      if (is.na(Cv.check[x, y, v])) {
-        next
-      }
-
-      if (Cv.check[x, y, v] > 0) {
-        root.frac.sum <- sum(root.frac.new[x, y, , v])
-        root.depth.sum <- sum(root.depth.new[x, y, , v])
-        if (root.frac.sum <= 0 || root.depth.sum <= 0) {
-          root.frac.new[x, y, 1, v] <- max(root.frac.check[, , 1, v], na.rm = T)
-          root.frac.new[x, y, 2, v] <- max(root.frac.check[, , 2, v], na.rm = T)
-          root.frac.new[x, y, 3, v] <- max(root.frac.check[, , 3, v], na.rm = T)
-          root.depth.new[x, y, 1, v] <- max(root.depth.check[, , 1, v], na.rm = T)
-          root.depth.new[x, y, 2, v] <- max(root.depth.check[, , 2, v], na.rm = T)
-          root.depth.new[x, y, 3, v] <- max(root.depth.check[, , 3, v], na.rm = T)
-        }
-
-        root.frac.sum <- sum(root.frac.new[x, y, , v])
-        root.depth.sum <- sum(root.depth.new[x, y, , v])
-        if (root.frac.sum != 1 || root.depth.sum != 1) {
-          root.frac.new[x, y, , v] <- root.frac.check[x, y, , v] / root.frac.sum
-          root.depth.new[x, y, , v] <- root.depth.check[x, y, , v] / root.depth.sum
-        }
-      }
-    }
-  }
-}
-
-nc <- nc_open(filename = vegetation.out, write = T)
-ncvar_put(nc, nc$var$root_fract, root.frac.new)
-ncvar_put(nc, nc$var$root_depth, root.depth.new)
-nc_close(nc)
-
-## check and adjust canopy coverage
-nc <- nc_open(filename = vegetation.out)
-Cv.check <- ncvar_get(nc, nc$var$Cv)
-fcanopy.check <- ncvar_get(nc, nc$var$fcanopy)
-nc_close(nc)
-
-fcanopy.new <- fcanopy.check
-for (x in 1:dim(Cv.check)[1]) {
-  for (y in 1:dim(Cv.check)[2]) {
-    for (v in 1:(dim(Cv.check)[3] - 1)) {
-      if (is.na(Cv.check[x, y, v])) {
-        next
-      }
-
-      if (Cv.check[x, y, v] > 0) {
-        sel <- fcanopy.check[x, y, , v] < 0.00011
-        if (sum(sel) > 0) {
-          fcanopy.new[x, y, sel, v] <- 0.00011
-        }
-      }
-    }
-  }
-}
-
-nc <- nc_open(filename = vegetation.out, write = T)
-ncvar_put(nc, nc$var$fcanopy, fcanopy.new)
 nc_close(nc)

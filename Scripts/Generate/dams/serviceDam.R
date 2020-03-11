@@ -1,16 +1,20 @@
 library(fields)
+library(ncdf4)
 rm(list = ls())
 
 # Input
 ldam.file <- "Saves/localDamsMerge.csv"
 gdam.file <- "Saves/globalDamsMerge.csv"
-accumulation.file <- "../../../Data/Transformed/Routing/accumulation_30min_global.RDS"
+discharge.file <- "../../../Data/Transformed/VIC/fluxes_VlietAlt30min_WB.yearmean.nc"
 downstream.file <- "../../../Data/Transformed/Routing/downstream_30min_global.RDS"
 ldam.service.out <- "Saves/localDamsService.RDS"
 gdam.service.out <- "Saves/globalDamsService.RDS"
 
 # Load
-accumulation <- readRDS(accumulation.file)
+nc <- nc_open(discharge.file)
+discharge <- apply(X = ncvar_get(nc, "OUT_DISCHARGE", start = c(1, 1, 2), count = c(-1, -1, -1)), MARGIN = c(1, 2), FUN = mean)
+nc_close(nc)
+
 downstream <- readRDS(downstream.file)
 ldam <- read.csv(ldam.file, stringsAsFactors = F)
 gdam <- read.csv(gdam.file, stringsAsFactors = F)
@@ -44,14 +48,14 @@ for (i in 1:nrow(gdam)) {
     FRAC = numeric()
   )
 
-  if (is.na(downstream[x, y, 1]) || !(gdam$USE_SUPP[i] == 1 || gdam$USE_IRR[i] == 1)) {
+  if (is.na(downstream[x, y, 1]) || !(gdam$USE_IRR[i] == 1)) {
     gdam.services[[length(gdam.services) + 1]] <- gdam.service
     next
   }
 
   cur <- c(x, y)
   nex <- downstream[x, y, ]
-  frac <- accumulation[x, y] / accumulation [cur[1], cur[2]]
+  frac <- discharge[x, y] / discharge [cur[1], cur[2]]
   while (TRUE) {
     # exclude fractions < 0.25
     if (frac < 0.25) {
@@ -66,7 +70,7 @@ for (i in 1:nrow(gdam)) {
 
     cur <- nex
     nex <- downstream[cur[1], cur[2], ]
-    frac <- accumulation[x, y] / accumulation [cur[1], cur[2]]
+    frac <- discharge[x, y] / discharge [cur[1], cur[2]]
   }
 
   colnames(gdam.service) <- c("X", "Y", "FRAC")
@@ -84,11 +88,11 @@ for (i in 1:nrow(ldam)) {
 }
 
 # visualize
-gdam.service.map <- array(NA, dim = dim(accumulation))
-ldam.service.map <- array(NA, dim = dim(accumulation))
-for (x in 1:dim(accumulation)[1]) {
-  for (y in 1:dim(accumulation)[2]) {
-    if (is.na(accumulation[x, y])) {
+gdam.service.map <- array(NA, dim = dim(discharge))
+ldam.service.map <- array(NA, dim = dim(discharge))
+for (x in 1:dim(discharge)[1]) {
+  for (y in 1:dim(discharge)[2]) {
+    if (is.na(discharge[x, y])) {
       next
     }
     gdam.service.map[x, y] <- 0
