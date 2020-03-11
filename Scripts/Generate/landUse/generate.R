@@ -9,7 +9,7 @@ mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 paddy.file <- "Saves/parametersPaddy_30min_global.RDS"
 irr.file <- "Saves/parametersIrrigated_30min_global.RDS"
 rain.file <- "Saves/parametersRainfed_30min_global.RDS"
-vegetation.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
+vegetation.file <- "../../../Data/Transformed/Parameters/global/VIC_params_VlietAlt30min_global.nc"
 vegetation.out <- "../../../Data/VIC/Parameters/global/VIC_params_MIRCA2000_global.nc"
 
 # Load
@@ -164,12 +164,12 @@ for (x in 1:dim(mask)[1]) {
 
     crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
     veg.f <- sum(Cv.veg[x, y, c(1:10, 12)])
-    
-    if(crop.f > 1){
-      Cv.new[x,y,11:13] = Cv.new[x,y,11:13] / crop.f
-      crop.f = 1
+
+    if (crop.f > 1) {
+      Cv.new[x, y, 11:13] <- Cv.new[x, y, 11:13] / crop.f
+      crop.f <- 1
     }
-    
+
     if (veg.f <= 0) {
       if (crop.f == 1) {
         next

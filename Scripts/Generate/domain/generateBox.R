@@ -20,8 +20,8 @@ boxes$lat.max <- as.numeric(boxes$lat.max)
 boxes$lon.max <- as.numeric(boxes$lon.max)
 
 # Load
-nc = nc_open(path.domain)
-mask.orig = ncvar_get(nc, "mask")
+nc <- nc_open(path.domain)
+mask.orig <- ncvar_get(nc, "mask")
 nc_close(nc)
 
 # Calculate
@@ -31,12 +31,12 @@ for (i in 1:nrow(boxes)) {
   y.min <- which.min(abs(lat - boxes$lat.min[i]))
   x.max <- which.min(abs(lon - boxes$lon.max[i]))
   y.max <- which.min(abs(lat - boxes$lat.max[i]))
-  
-  mask.tmp = array(NA, dim = dim(mask)[1:2])
+
+  mask.tmp <- array(NA, dim = dim(mask)[1:2])
   mask.tmp[x.min:x.max, y.min:y.max] <- 1
-  mask.tmp[is.na(mask.orig)] = NA
-  
-  mask[,,i] = mask.tmp
+  mask.tmp[is.na(mask.orig)] <- NA
+
+  mask[, , i] <- mask.tmp
 }
 
 mask.combine <- array(NA, dim = c(length(lon), length(lat)))

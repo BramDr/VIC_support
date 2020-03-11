@@ -51,8 +51,13 @@ calc.values <- function(sel, name) {
   fixed.sel <- aggregate(x = fixed[sel, ], by = list(cc$cell_ID[sel]), FUN = sum)
   fixed.sel$overstory <- fixed.sel$overstory > 0.8
 
+  fc.adj <- fc.sel
+  for (i in 1:ncol(fc.sel)) {
+    fc.adj[, i] <- fc.sel[, i] * fixed.sel$fcanopy2
+  }
+
   assign(x = paste0("Cv.", name), value = cv.sel, envir = .GlobalEnv)
-  assign(x = paste0("fcanopy.", name), value = fc.sel, envir = .GlobalEnv)
+  assign(x = paste0("fcanopy.", name), value = fc.adj, envir = .GlobalEnv)
   assign(x = paste0("LAI.", name), value = LAI.sel, envir = .GlobalEnv)
   assign(x = paste0("albedo.", name), value = albedo.sel, envir = .GlobalEnv)
   assign(x = paste0("displacement.", name), value = displacement.sel, envir = .GlobalEnv)
@@ -110,6 +115,7 @@ fixed[, "trunk_ratio"] <- avgf * fixed[, "trunk_ratio"]
 fixed[, "wind_atten"] <- avgf * fixed[, "wind_atten"]
 fixed[, "wind_h"] <- avgf * fixed[, "wind_h"]
 fixed[, "rmin"] <- avgf * fixed[, "rmin"]
+fixed[, "fcanopy2"] <- avgf * fixed[, "fcanopy2"]
 
 # Calculate
 sel.paddy <- cc$crop == 3

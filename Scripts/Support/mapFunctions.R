@@ -3,6 +3,10 @@ getNearestZero <- function(map, x, y) {
   return(0)
 }
 
+getNearestValue <- function(map, x, y, value) {
+  return(value)
+}
+
 getNearestCount <- function(map, x, y, itirs = 1000) {
   for (dis in 1:itirs) {
     x.min <- max(x - dis, 1)
@@ -17,6 +21,25 @@ getNearestCount <- function(map, x, y, itirs = 1000) {
       idx <- order(val, decreasing = T)[1]
       val <- as.numeric(names(val)[idx])
 
+      return(val)
+    }
+  }
+
+  warning("Nearest out of iterations")
+  return(NA)
+}
+
+getNearestMax <- function(map, x, y, itirs = 1000) {
+  for (dis in 1:itirs) {
+    x.min <- max(x - dis, 1)
+    y.min <- max(y - dis, 1)
+    x.max <- min(x + dis, dim(map)[1])
+    y.max <- min(y + dis, dim(map)[2])
+
+    val <- map[x.min:x.max, y.min:y.max]
+    val <- max(val, na.rm = T)
+
+    if (!is.infinite(val)) {
       return(val)
     }
   }

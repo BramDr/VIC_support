@@ -5,17 +5,17 @@ rm(list = ls())
 
 # Input
 downstream.file <- "../../../Data/Transformed/Routing/downstream_30min_global.RDS"
-uh.inflow.file <- "Saves/UH_inflow.RDS"
-uh.runoff.file <- "Saves/UH_runoff.RDS"
+uh.river.file <- "Saves/UH_river.RDS"
+uh.grid.file <- "Saves/UH_grid.RDS"
 rout.param.out <- "../../../Data/VIC/Parameters/global/rout_params_global.nc"
 
 # Load
-uh.inflow <- readRDS(uh.inflow.file)
-uh.runoff <- readRDS(uh.runoff.file)
+uh.river <- readRDS(uh.river.file)
+uh.grid <- readRDS(uh.grid.file)
 downstream <- readRDS(downstream.file)
 
 # Setup
-time <- (1:dim(uh.inflow)[3] - 1) * 3600
+time <- (1:dim(uh.grid)[3] - 1) * 3600
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 
@@ -80,20 +80,20 @@ var.downstream <- ncvar_def(
   longname = "ID of the downstream cell",
   compression = 9
 )
-var.uh.inflow <- ncvar_def(
+var.uh.river <- ncvar_def(
   name = "uh_inflow",
   units = "[-]",
   dim = list(dim.lon, dim.lat, dim.time),
   missval = -1,
-  longname = "Unit hydrograph of the inflow (river)",
+  longname = "Unit hydrograph of the river (river)",
   compression = 9
 )
-var.uh.runoff <- ncvar_def(
+var.uh.grid <- ncvar_def(
   name = "uh_runoff",
   units = "[-]",
   dim = list(dim.lon, dim.lat, dim.time),
   missval = -1,
-  longname = "Unit hydrograph of the runoff (cell)",
+  longname = "Unit hydrograph of the grid (cell)",
   compression = 9
 )
 
@@ -103,8 +103,8 @@ nc <- nc_create(
   list(
     var.downstream.id,
     var.downstream,
-    var.uh.inflow,
-    var.uh.runoff
+    var.uh.river,
+    var.uh.grid
   )
 )
 nc_close(nc)
@@ -124,7 +124,7 @@ ncatt_put(
   attname = "Description",
   attval = "Dowstream cells generated based on DDM30"
 )
-ncvar_put(nc, nc$var$uh_inflow, uh.inflow)
+ncvar_put(nc, nc$var$uh_inflow, uh.river)
 ncatt_put(
   nc = nc,
   varid = nc$var$downstream,
@@ -137,5 +137,13 @@ ncatt_put(
     " [m s-2]"
   )
 )
-ncvar_put(nc, nc$var$uh_runoff, uh.runoff)
+ncvar_put(nc, nc$var$uh_runoff, uh.grid)
+ncatt_put(
+  nc = nc,
+  varid = nc$var$downstream,
+  attname = "Description",
+  attval = paste0(
+    "Unit hydrograph generated based on SCS dimensionless unith hydrograph"
+  )
+)
 nc_close(nc)

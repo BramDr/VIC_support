@@ -30,15 +30,16 @@ add.fixed <- function(x, columns) {
   wind_atten <- as.numeric(fao$wind_atten[row])
   wind_h <- as.numeric(fao$wind_h[row])
   rmin <- as.numeric(fao$rmin[row])
+  fcanopy <- as.numeric(fao$fcanopy[row])
 
-  out <- c(root_depth.1, root_depth.2, root_frac.1, root_frac.2, RGL, rarc, rad_atten, overstory, trunk_ratio, wind_atten, wind_h, rmin)
+  out <- c(root_depth.1, root_depth.2, root_frac.1, root_frac.2, RGL, rarc, rad_atten, overstory, trunk_ratio, wind_atten, wind_h, rmin, fcanopy)
   return(out)
 }
 
 # Calculate
 fixed <- apply(X = cc, MARGIN = 1, FUN = add.fixed, columns = colnames(cc))
 fixed <- as.data.frame(t(fixed))
-colnames(fixed) <- c("root_depth.1", "root_depth.2", "root_frac.1", "root_frac.2", "RGL", "rarc", "rad_atten", "overstory", "trunk_ratio", "wind_atten", "wind_h", "rmin")
+colnames(fixed) <- c("root_depth.1", "root_depth.2", "root_frac.1", "root_frac.2", "RGL", "rarc", "rad_atten", "overstory", "trunk_ratio", "wind_atten", "wind_h", "rmin", "fcanopy2")
 
 # Save
 dir.create(dirname(fixed.out))

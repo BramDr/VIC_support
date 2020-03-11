@@ -16,8 +16,9 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(15.25, 105.75, "Mekong")
-points[nrow(points) + 1, ] <- c(18.75, 95.25, "Irrawaddy")
+# points[nrow(points) + 1, ] <- c(15.25, 105.75, "Mekong")
+# points[nrow(points) + 1, ] <- c(18.75, 95.25, "Irrawaddy")
+points[nrow(points) + 1, ] <- c(1.75, 17.25, "Congo")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

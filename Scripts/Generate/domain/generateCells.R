@@ -12,7 +12,7 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(26.75, 22.25, "error")
+points[nrow(points) + 1, ] <- c(14.75, -12.25, "Ballou")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)
