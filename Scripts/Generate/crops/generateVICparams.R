@@ -8,7 +8,7 @@ function.script <- "../../Support/generateFunctions.R"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 Ncrop.file = "./Saves/Ncrop_MIRCA_30min_global.RDS"
 Nbare.file = "./Saves/Nbare_MIRCA_30min_global.RDS"
-vegetation.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
+vegetation.file <- "../../../Data/Transformed/VIC/Parameters/VIC_params_VlietAlt30min_global.nc"
 vegetation.out <- "../../../Data/VIC/Parameters/global/VIC_params_MIRCA_global.nc"
 
 # Load
