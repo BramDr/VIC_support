@@ -75,7 +75,7 @@ for (in.file in in.files) {
   if (length(grep(x = in.file, "Demand")) > 0) {
     type <- "demand"
     ty <- "Dem"
-    adjust <- 0.25
+    adjust <- 1
   }
   if (length(grep(x = in.file, "Groundwater")) > 0) {
     type <- "groundwater_fraction"
@@ -94,8 +94,8 @@ for (in.file in in.files) {
   for (z in 1:length(years)) {
     year <- years[z]
 
-    out.name <- paste0(sec, ty, "_monthly_", year, ".nc")
-    out.sdir <- paste0("/", sec, ty, "_monthly/")
+    out.name <- paste0(sec, ty, "_daily_", year, ".nc")
+    out.sdir <- paste0("/", sec, ty, "_daily/")
     out.file <- paste0(out.dir, out.sdir, out.name)
 
     times <- seq(
