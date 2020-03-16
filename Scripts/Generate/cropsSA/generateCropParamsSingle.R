@@ -13,7 +13,7 @@ plant.file = "./Saves/plantDay_SAGE_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_SAGE_30min_global.RDS"
 tsum1.dir = "./Saves"
 tsum2.dir = "./Saves"
-crop.out = "../../../Data/VIC/Parameters/global/SA/crop_params_single_global.nc"
+crop.out = "../../../Data/VIC/Parameters/global/WOFOST_SA/crop_params_single_global.nc"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)

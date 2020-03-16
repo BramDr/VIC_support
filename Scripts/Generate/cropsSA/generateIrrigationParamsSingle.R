@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 function.script = "../../Support/mapFunctions.R"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
-irrigation.out <- "../../../Data/VIC/Parameters/global/SA/irr_params_single_global.nc"
+irrigation.out <- "../../../Data/VIC/Parameters/global/WOFOST_SA/irr_params_single_global.nc"
 
 # Setup
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)

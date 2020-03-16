@@ -7,7 +7,7 @@ template.file <- "../../../Data/Primary/VIC/domain_global.nc"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 crop.file = "./Saves/crop_mapping_MIRCA.csv"
 Cc.dir = "./Saves"
-domain.out <- "../../../Data/VIC/Parameters/global/SA/domain_variety_global.nc"
+domain.out <- "../../../Data/VIC/Parameters/global/WOFOST_SA/domain_variety_global.nc"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)

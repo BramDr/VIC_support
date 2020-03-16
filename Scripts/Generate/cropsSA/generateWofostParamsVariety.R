@@ -4,7 +4,7 @@ rm(list = ls())
 crop.file = "./Saves/crop_mapping_single.csv"
 crop.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
 management.dir = "../../../Data/WOFOST/Parameters/Management/global/"
-conf.out = "../../../Data/VIC/Parameters/global/SA/wofost_params_variety_global.txt"
+conf.out = "../../../Data/VIC/Parameters/global/WOFOST_SA/wofost_params_variety_global.txt"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
