@@ -103,9 +103,9 @@ for (x in 1:dim(efr.dis2)[1]) {
 
     efr.dis2[x, y, ] <- efr
 
-    efr <- 0.9 * base.agg / days.per.month
+    efr <- 0.9 * (base.agg / days.per.month)
 
-    efr.base2[x, y, ] <- base.agg
+    efr.base2[x, y, ] <- efr
   }
 }
 rm(efr.dis, efr.base)
@@ -133,7 +133,7 @@ for (x in 1:dim(efr.dis2)[1]) {
     efr.base[x, y, ] <- linterp(efr.base2[x, y, ], times.month)
   }
 }
-# rm(efr.dis2, efr.base2)
+rm(efr.dis2, efr.base2)
 print("Tranformed")
 
 
