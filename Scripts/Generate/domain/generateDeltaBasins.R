@@ -3,47 +3,56 @@ library(fields)
 rm(list = ls())
 
 # Input
+path.basin <- "../../../Data/Transformed/Delta/deltaBasins_30min_global.RDS"
 path.domain <- "../../../Data/Primary/VIC/domain_global.nc"
 dir.out <- "../../../Data/VIC/Parameters/"
+
+# Load
+basin <- readRDS(path.basin)
 
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
 lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- TRUE
 
-boxes <- data.frame(lat.min = numeric(), lon.min = numeric(), lat.max = numeric(), lon.max = numeric(), name = character(), stringsAsFactors = F)
-# boxes[nrow(boxes) + 1, ] <- c(1.25, 1.25, 9.25, 9.25, "error")
-boxes[nrow(boxes) + 1, ] <- c(42.75, -4.75, 54.75, 8.25, "NWEurope")
+points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
+points[nrow(points) + 1, ] <- c(15.25, 105.75, "MekongDelta")
+# points[nrow(points) + 1, ] <- c(18.75, 95.25, "Irrawaddy")
+# points[nrow(points) + 1, ] <- c(1.75, 17.25, "Congo")
 
-boxes$lat.min <- as.numeric(boxes$lat.min)
-boxes$lon.min <- as.numeric(boxes$lon.min)
-boxes$lat.max <- as.numeric(boxes$lat.max)
-boxes$lon.max <- as.numeric(boxes$lon.max)
-
-# Load
-nc <- nc_open(path.domain)
-mask.orig <- ncvar_get(nc, "mask")
-nc_close(nc)
+points$lat <- as.numeric(points$lat)
+points$lon <- as.numeric(points$lon)
 
 # Calculate
-mask <- array(NA, dim = c(length(lon), length(lat), nrow(boxes)))
-for (i in 1:nrow(boxes)) {
-  x.min <- which.min(abs(lon - boxes$lon.min[i]))
-  y.min <- which.min(abs(lat - boxes$lat.min[i]))
-  x.max <- which.min(abs(lon - boxes$lon.max[i]))
-  y.max <- which.min(abs(lat - boxes$lat.max[i]))
+for (i in 1:nrow(points)) {
+  x <- which.min(abs(lon - points$lon[i]))
+  y <- which.min(abs(lat - points$lat[i]))
 
-  mask.tmp <- array(NA, dim = dim(mask)[1:2])
-  mask.tmp[x.min:x.max, y.min:y.max] <- 1
-  mask.tmp[is.na(mask.orig)] <- NA
+  id <- basin[x, y]
 
-  mask[, , i] <- mask.tmp
+  if (!is.na(id)) {
+    points$basin[i] <- id
+    points$size[i] <- sum(na.omit(c(basin)) == id)
+  } else {
+    print(paste0("Point ", points[i, ], " falls outside of basin mask"))
+  }
 }
 
-mask.combine <- array(NA, dim = c(length(lon), length(lat)))
-for (x in 1:dim(mask)[1]) {
-  for (y in 1:dim(mask)[2]) {
-    for (i in 1:nrow(boxes)) {
+mask <- array(NA, dim = c(dim(basin), nrow(points)))
+for (i in 1:nrow(points)) {
+  for (x in 1:dim(basin)[1]) {
+    for (y in 1:dim(basin)[2]) {
+      if (!is.na(basin[x, y]) && basin[x, y] == points$basin[i]) {
+        mask[x, y, i] <- 1
+      }
+    }
+  }
+}
+
+mask.combine <- array(NA, dim = c(dim(basin)))
+for (x in 1:dim(basin)[1]) {
+  for (y in 1:dim(basin)[2]) {
+    for (i in 1:nrow(points)) {
       if (is.na(mask[x, y, i])) {
         next
       }
@@ -57,7 +66,7 @@ image.plot(mask.combine)
 
 # Save
 if (combine) {
-  newname <- paste0(dir.out, "/", paste0(boxes$name, collapse = ""), "/", "domain_", paste0(boxes$name, collapse = ""), ".nc")
+  newname <- paste0(dir.out, "/", paste0(points$name, collapse = ""), "/", "domain_", paste0(points$name, collapse = ""), ".nc")
 
   x.index <- which(!is.nan(apply(mask.combine, c(1), mean, na.rm = T)))
   y.index <- which(!is.nan(apply(mask.combine, c(2), mean, na.rm = T)))
@@ -74,8 +83,8 @@ if (combine) {
   ncvar_put(nc, nc$var$mask, mask.combine[min.x:max.x, min.y:max.y])
   nc_close(nc)
 } else {
-  for (i in 1:nrow(boxes)) {
-    newname <- paste0(dir.out, "/", boxes$name[i], "/", "domain_", boxes$name[i], ".nc")
+  for (i in 1:nrow(points)) {
+    newname <- paste0(dir.out, "/", points$name[i], "/", "domain_", points$name[i], ".nc")
 
     x.index <- which(!is.nan(apply(mask[, , i], c(1), mean, na.rm = T)))
     y.index <- which(!is.nan(apply(mask[, , i], c(2), mean, na.rm = T)))

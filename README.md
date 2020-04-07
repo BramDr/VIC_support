@@ -37,7 +37,8 @@ Klein Goldewijk, K., A. Beusen, J.Doelman and E. Stehfest (2017), Anthropogenic 
 [NASA black-marble 2016 grayscale](https://earthobservatory.nasa.gov/features/NightLights/page3.php)  
 
 **Thermo-electric database (including location, fuel-type and cooling system)**  
-Van Vliet, M. T., Wiberg, D., Leduc, S., & Riahi, K. (2016). Power-generation system vulnerability and adaptation to changes in climate and water resources. Nature Climate Change, 6(4), 375. doi:10.1038/nclimate2903
+Van Vliet, M. T., Wiberg, D., Leduc, S., & Riahi, K. (2016). Power-generation system vulnerability and adaptation to changes in climate and water resources. Nature Climate Change, 6(4), 375. doi:10.1038/nclimate2903  
+[EIA national energy data](https://www.eia.gov/)
 
 **Global gridded livestock maps**  
 [FAO Gridded Livestock of the World maps](http://www.fao.org/livestock-systems/en/):
@@ -53,6 +54,9 @@ Portmann, F. T., Siebert, S. & Döll, P. (2010): MIRCA2000 – Global monthly ir
 
 **Global gridded groundwater fraction for sectors**  
 Döll, P., Hoffmann-Dobrev, H., Portmann, F. T., Siebert, S., Eicker, A., Rodell, M., ... & Scanlon, B. R. (2012). Impact of water withdrawals from groundwater and surface water on continental water storage variations. Journal of Geodynamics, 59, 143-156. doi10.1016/j.jog.2011.05.001
+
+**Global pumping capacity**  
+Sutanudjaja, E. H., Van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H., Drost, N., ... & Karssenberg, D. (2018). PCR-GLOBWB 2: a 5 arcmin global hydrological and water resources model. Geoscientific Model Development, 11(6), 2429-2453.
 
 **Global irrigation efficiency**  
 [FAO irrigation water use](http://www.fao.org/nr/water/aquastat/water_use_agr/index.stm):
