@@ -32,7 +32,7 @@ for (i in unique(eur.data$geo.time)) {
   if (nrow(eur.data.sel) > 2) {
     data.sel <- as.matrix(eur.data.sel[1:(nrow(eur.data.sel) - 1), 5:ncol(eur.data.sel)])
     data.sel <- apply(data.sel, c(1, 2), as.numeric)
-    eur.data.sel[nrow(eur.data.sel), 5:ncol(eur.data.sel)] <- apply(X = data.sel, MARGIN = c(2), FUN = sum, na.rm = T)
+    eur.data.sel[nrow(eur.data.sel), 5:ncol(eur.data.sel)] <- apply(X = data.sel, MARGIN = c(2), FUN = sum)
     eur.data.sel[eur.data.sel == 0] <- NA
   }
 

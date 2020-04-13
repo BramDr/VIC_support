@@ -5,10 +5,11 @@ crop.file = "./Saves/crop_mapping_single.csv"
 crop.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
 management.dir = "../../../Data/WOFOST/Parameters/Management/global/"
 conf.out = "../../../Data/VIC/Parameters/global/WOFOST_SA/wofost_params_variety_global.txt"
+tsum.sel = 1900
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
-crop.files = list.files(crop.dir, full.names = T)
+crop.files = list.files(crop.dir, full.names = T, pattern = "variety")
 management.files = list.files(management.dir, full.names = T, pattern = "default")
 
 # Calculate & save
@@ -17,18 +18,20 @@ header = "
 ** For use in VIC-WOFOST
 "
 
-for (i in 1:nrow(crops)){
-  print(crops$mirca.name[i])
+for (i in 1:length(crop.files)){
+  crop.file = crop.files[i]
+  crop.pattern = gsub(x = basename(crop.file), pattern = "_variety.txt", replacement = "")
+  crop.pattern = gsub(x = crop.pattern, pattern = "crop_params_", replacement = "")
+  print(crop.pattern)
   
   text = c()
-  conf.out.tmp = gsub(x = conf.out, pattern = "wofost_params_", replacement = paste0("wofost_params_", crops$mirca.name[i], "_"))
+  conf.out.tmp = gsub(x = conf.out, pattern = "wofost_params_", replacement = paste0("wofost_params_", crop.pattern, "_"))
   
-  crop.file = grep(x = crop.files, pattern = paste0("crop_params_", crops$wofost.name[i], ".txt"), value = T)
   for (j in 1:length(management.files)) {
         line = paste0(getwd(), "/ ", 
                       crop.file, " ", 
                       management.files[j], " ", 
-                      " 0 ")
+                      "01-01 0 ")
         text = c(text, line)
   }
   

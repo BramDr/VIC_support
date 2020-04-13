@@ -1,6 +1,8 @@
+library(stringr)
 rm(list = ls())
 options(warn = 1)
 
+# Input
 param.desc.file = "../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
 in.dirs = c("../../../Data/Primary/WOFOST/Crop/Python_version/",
             "../../../Data/Primary/WOFOST/Crop/NPK_version/",
@@ -8,152 +10,159 @@ in.dirs = c("../../../Data/Primary/WOFOST/Crop/Python_version/",
             "../../../Data/Primary/WOFOST/Crop/CSA_practical/")
 out.dir = "../../../Data/Transformed/WOFOST/Crop/"
 
+# Load
+param.desc = read.csv(param.desc.file, stringsAsFactors = F, sep = ";")
+
 in.files = c()
 for (i in 1:length(in.dirs)) {
   in.files = c(in.files, list.files(path = in.dirs[i], full.names = T))
 }
+#in.files = grep(x = in.files, pattern = ".DATp", value = T)
 
-for (in.file in in.files) {
+# Setup
+find.data.yaml = function(file.text, variable, size) {
+  value = NA
+  
+  for (i in 1:length(file.text)) {
+    param.line = file.text[i]
+    param.line = gsub(pattern = " ", replacement = "", x = param.line)
+    param.line = gsub(pattern = ":", replacement = "", x = param.line)
+    
+    if (param.line == variable) {
+      if (size == 1) {
+        j = i + 1
+        value.line = file.text[j]
+        
+        if(j == i + 1 && length(grep(pattern = "\\[", x = value.line)) != 0){
+          stop(paste0("ERROR: Found [ in first line. ", 
+                      variable, " (", size, "): ", value.line))
+        }
+        
+        value.line = gsub(pattern = " ", replacement = "", x = value.line)
+        value.line = gsub(pattern = "-", replacement = "", x = value.line)
+        
+        # print(value.line)
+        if(variable == "CRPNAM"){
+          value.line = ""
+        }
+        value = as.numeric(value.line)
+      } else {
+        value = c()
+        last.line = F
+        
+        for (j in (i + 1):(i + size)) {
+          value.line = file.text[j]
+          
+          if (last.line) {
+            # Reached last line
+            value = c(value, NA, NA)
+            next
+          }
+          
+          count = str_count(value.line, ",")
+          if(count == 0){
+            stop(paste0("ERROR: Could not find , in line. ", 
+                        variable, " (", size, "): ", value.line))
+          }
+          
+          value.line = gsub(pattern = "\\[", replacement = "", x = value.line)
+          value.line = gsub(pattern = "\\]", replacement = "", x = value.line)
+          value.line = gsub(pattern = " ", replacement = "", x = value.line)
+          value.line = gsub(pattern = "-", replacement = "", x = value.line)
+          value.line = strsplit(x = value.line, split = ",")[[1]][1:2]
+          
+          if (count == 1) {
+            # Reached last line
+            last.line = T
+          }
+          
+          # print(value.line)
+          value = c(value, as.numeric(as.character(unlist(value.line))))
+        }
+      }
+      break
+    }
+  }
+  
+  return(value)
+}
+find.data.txt = function(file.text, variable, size) {
+  value = NA
+  
+  for (i in 1:length(file.text)) {
+    param.line = file.text[i]
+    param.line = gsub(pattern = " ", replacement = "", x = param.line)
+    param.line = gsub(pattern = "=.*", replacement = "", x = param.line)
+    
+    if (param.line == variable) {
+      if (size == 1) {
+        j = i
+        value.line = file.text[j]
+        
+        if(j == i + 1 && length(grep(pattern = "\\,", x = value.line)) != 0){
+          stop(paste0("ERROR: Found , in first line. ", 
+                      variable, " (", size, "): ", value.line))
+        }
+        
+        value.line = gsub(pattern = "!.*", replacement = "", x = value.line)
+        value.line = gsub(pattern = ".*=", replacement = "", x = value.line)
+        
+        # print(value.line)
+        if(variable == "CRPNAM"){
+          value.line = ""
+        }
+        value = as.numeric(value.line)
+      } else {
+        value = c()
+        last.line = F
+        
+        for (j in i:(i + size - 1)) {
+          value.line = file.text[j]
+          
+          if (last.line) {
+            # Reached last line
+            value = c(value, NA, NA)
+            next
+          }
+          
+          count = str_count(value.line, ",")
+          if(count == 0){
+            stop(paste0("ERROR: Could not find , in line. ", 
+                        variable, " (", size, "): ", value.line))
+          } 
+          
+          value.line = gsub(pattern = "!.*", replacement = "", x = value.line)
+          value.line = gsub(pattern = ".*=", replacement = "", x = value.line)
+          value.line = gsub(pattern = " ", replacement = "", x = value.line)
+          value.line = strsplit(x = value.line, split = ",")[[1]][1:2]
+          
+          if (count == 1) {
+            # Reached last line
+            last.line = T
+          }
+          
+          value = c(value, as.numeric(as.character(unlist(value.line))))
+        }
+      }
+      break
+    }
+  }
+  
+  return(value)
+}
+
+k = 1
+for (k in 1:length(in.files)) {
+  in.file = in.files[k]
   print(basename(in.file))
   
   # Load
-  param.desc = read.csv(param.desc.file, stringsAsFactors = F)
   param.orig = readLines(con = in.file)
   
   # Setup
   in.extension = strsplit(basename(in.file), "\\.")
   in.extension = unlist(in.extension)
   in.extension = in.extension[length(in.extension)]
-  
-  find.data.yaml = function(file.text, variable, size) {
-    value = NA
-    
-    for (i in 1:length(file.text)) {
-      param.line = file.text[i]
-      param.line = gsub(pattern = " ", replacement = "", x = param.line)
-      param.line = gsub(pattern = ":", replacement = "", x = param.line)
-      
-      if (param.line == variable) {
-        if (size == 1) {
-          j = i + 1
-          value.line = file.text[j]
-          
-          if(j == i + 1 && length(grep(pattern = "\\[", x = value.line)) != 0){
-            stop(paste0("ERROR: Found [ in first line. ", 
-                         variable, " (", size, "): ", value.line))
-          }
-          
-          value.line = gsub(pattern = " ", replacement = "", x = value.line)
-          value.line = gsub(pattern = "-", replacement = "", x = value.line)
-          
-          # print(value.line)
-          if(variable == "CRPNAM"){
-            value.line = ""
-          }
-          value = as.numeric(value.line)
-        } else {
-          value = c()
-          last.line = F
-          
-          for (j in (i + 1):(i + size)) {
-            value.line = file.text[j]
-            
-            if (last.line) {
-              # Reached last line
-              value = c(value, NA, NA)
-              next
-            }
-            
-            if(j == (i + size) && length(grep(pattern = "\\]", x = value.line)) == 0){
-              stop(paste0("ERROR: Could not find ] in last line. ", 
-                           variable, " (", size, "): ", value.line))
-            } else if (length(grep(pattern = "\\]", x = value.line)) != 0) {
-              # Reached last line
-              last.line = T
-            }
-            
-            value.line = gsub(pattern = "\\[", replacement = "", x = value.line)
-            value.line = gsub(pattern = "\\]", replacement = "", x = value.line)
-            value.line = gsub(pattern = " ", replacement = "", x = value.line)
-            value.line = gsub(pattern = "-", replacement = "", x = value.line)
-            value.line = strsplit(x = value.line, split = ",")
-            
-            # print(value.line)
-            value = c(value, as.numeric(as.character(unlist(value.line))))
-          }
-        }
-        break
-      }
-    }
-    
-    return(value)
-  }
-  find.data.txt = function(file.text, variable, size) {
-    value = NA
-    
-    for (i in 1:length(file.text)) {
-      param.line = file.text[i]
-      param.line = gsub(pattern = " ", replacement = "", x = param.line)
-      param.line = gsub(pattern = "=.*", replacement = "", x = param.line)
-      
-      if (param.line == variable) {
-        if (size == 1) {
-          j = i
-          value.line = file.text[j]
-          
-          if(j == i + 1 && length(grep(pattern = "\\,", x = value.line)) != 0){
-            stop(paste0("ERROR: Found , in first line. ", 
-                         variable, " (", size, "): ", value.line))
-          }
-          
-          value.line = gsub(pattern = "!.*", replacement = "", x = value.line)
-          value.line = gsub(pattern = ".*=", replacement = "", x = value.line)
-          
-          # print(value.line)
-          if(variable == "CRPNAM"){
-            value.line = ""
-          }
-          value = as.numeric(value.line)
-        } else {
-          value = c()
-          last.line = F
-          
-          for (j in i:(i + size - 1)) {
-            value.line = file.text[j]
-            
-            if (last.line) {
-              # Reached last line
-              value = c(value, NA, NA)
-              next
-            }
-            
-            if(j == (i + size) && length(grep(pattern = "\\,", x = value.line)) == 0){
-              stop(paste0("ERROR: Could not find , in last line. ", 
-                           variable, " (", size, "): ", value.line))
-            } 
-            
-            value.line = gsub(pattern = "!.*", replacement = "", x = value.line)
-            value.line = gsub(pattern = ".*=", replacement = "", x = value.line)
-            value.line = strsplit(x = value.line, split = ",")
-            
-            if(j == (i + size) && length(value.line) != 2){
-              stop(paste0("ERROR: Could not find second , in last line. ", 
-                           variable, " (", size, "): ", value.line))
-            } else if (length(value.line) <= 2) {
-              # Reached last line
-              last.line = T
-            }
-            
-            # print(value.line)
-            value = c(value, as.numeric(as.character(unlist(value.line)[1:2])))
-          }
-        }
-        break
-      }
-    }
-    
-    return(value)
-  }
   
   # Calculate
   col.names = c("X", "Y")
@@ -172,8 +181,14 @@ for (in.file in in.files) {
     #print(param.desc$name[i])
     if (in.extension == "yaml") {
       values = find.data.yaml(file.text = param.orig, variable = param.desc$name[i], size = param.desc$size[i])
+      if(is.na(values) && param.desc$name2[i] != "") {
+        values = find.data.yaml(file.text = param.orig, variable = param.desc$name2[i], size = param.desc$size[i])
+      }
     } else {
       values = find.data.txt(file.text = param.orig, variable = param.desc$name[i], size = param.desc$size[i])
+      if(is.na(values) && param.desc$name2[i] != "") {
+        values = find.data.txt(file.text = param.orig, variable = param.desc$name2[i], size = param.desc$size[i])
+      }
     }
     
     row = paste0(param.desc$name[i], "_", 1:param.desc$size[i])

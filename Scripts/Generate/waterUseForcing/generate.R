@@ -54,7 +54,7 @@ for (in.file in in.files) {
   sec <- ""
   type <- ""
   ty <- ""
-  units <- "mm"
+  units <- "mm day-1"
   adjust <- 1
   if (length(grep(x = in.file, "manufacturing")) > 0) {
     sector <- "manufacturing"

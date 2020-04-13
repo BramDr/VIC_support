@@ -11,8 +11,6 @@ Ncrop.file = "./Saves/Ncrop_single_30min_global.RDS"
 veg.class.file = "./Saves/cropVegClass_single_30min_global.RDS"
 plant.file = "./Saves/plantDay_SAGE_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_SAGE_30min_global.RDS"
-tsum1.dir = "./Saves"
-tsum2.dir = "./Saves"
 crop.out = "../../../Data/VIC/Parameters/global/WOFOST_SA/crop_params_single_global.nc"
 
 # Load
@@ -29,8 +27,6 @@ na.map = is.na(na.map) | na.map != 1
 image.plot(na.map)
 
 Cc.files = list.files(path = Cc.dir, pattern = "Cc_.*_single_", full.names = T)
-tsum1.files = list.files(path = tsum1.dir, pattern = "tsum1_.*_single_", full.names = T)
-tsum2.files = list.files(path = tsum2.dir, pattern = "tsum2_.*_single_", full.names = T)
 
 # Setup
 source(function.script)
@@ -103,22 +99,6 @@ var.harvest_day <- ncvar_def(
   longname = "Day of year the crop is harvested",
   compression = 5
 )
-var.TSUM1 <- ncvar_def(
-  name = "TSUM1",
-  units = "K",
-  dim = list(dim.lon, dim.lat, dim.crop),
-  missval = -1,
-  longname = "Daily temperature sum from emergence to anthesis",
-  compression = 5
-)
-var.TSUM2 <- ncvar_def(
-  name = "TSUM2",
-  units = "K",
-  dim = list(dim.lon, dim.lat, dim.crop),
-  missval = -1,
-  longname = "Daily temperature sum from anthesis to maturity",
-  compression = 5
-)
 
 for(i in 1:nrow(crops)){
   print(crops$mirca.name[i])
@@ -127,21 +107,13 @@ for(i in 1:nrow(crops)){
       
   Cc.file = grep(x = Cc.files, pattern = paste0("Cc_", i, "_"), value = T)
   print(basename(Cc.file))
-  tsum1.file = grep(x = tsum1.files, pattern = paste0("tsum1_", i, "_"), value = T)
-  print(basename(tsum1.file))
-  tsum2.file = grep(x = tsum2.files, pattern = paste0("tsum2_", i, "_"), value = T)
-  print(basename(tsum2.file))
   
   Cc.c = readRDS(Cc.file)
-  tsum1 = readRDS(tsum1.file)
-  tsum2 = readRDS(tsum2.file)
   
   Ncrop.c <- fillMap(map = Ncrop[,,i], na.map = na.map, nearest.function = getNearestZero)
   plant.c <- fillMap(map = plant[,,i], na.map = na.map, nearest.function = getNearestMean)
   harvest.c <- fillMap(map = harvest[,,i], na.map = na.map, nearest.function = getNearestMean)
   veg.class.c <- fillMap(map = veg.class[,,i], na.map = na.map, nearest.function = getNearestCount)
-  tsum1.c <- fillMap(map = tsum1, na.map = na.map, nearest.function = getNearestMean)
-  tsum2.c <- fillMap(map = tsum2, na.map = na.map, nearest.function = getNearestMean)
   for(z in 1:dim(Cc.c)[3]){
     Cc.c[,,z] <- fillMap(map = Cc.c[,,z], na.map = na.map, nearest.function = getNearestZero)
   }
@@ -157,9 +129,7 @@ for(i in 1:nrow(crops)){
       var.Cc,
       var.crop_veg_class,
       var.plant_day,
-      var.harvest_day,
-      var.TSUM1,
-      var.TSUM2
+      var.harvest_day
     )
   )
   nc_close(nc)
@@ -178,7 +148,5 @@ for(i in 1:nrow(crops)){
   ncvar_put(nc = nc, varid = nc$var$crop_veg_class, vals = veg.class.c)
   ncvar_put(nc = nc, varid = nc$var$plant_day, vals = plant.c)
   ncvar_put(nc = nc, varid = nc$var$harvest_day, vals = harvest.c)
-  ncvar_put(nc = nc, varid = nc$var$TSUM1, vals = tsum1.c)
-  ncvar_put(nc = nc, varid = nc$var$TSUM2, vals = tsum2.c)
   nc_close(nc)
 }

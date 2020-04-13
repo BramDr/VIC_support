@@ -8,7 +8,7 @@ crop.file = "./Saves/crop_mapping_single.csv"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 start.file = "./Saves/plantDay_SAGE_30min_global.RDS"
 end.file = "./Saves/harvestDay_SAGE_30min_global.RDS"
-season.out = "../../../Data/WOFOST/Parameters/Season/global/SA/season_params_global.nc"
+season.out = "../../../Data/WOFOST/Parameters/Season/global/SA/season_params_global_SAGE.nc"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)

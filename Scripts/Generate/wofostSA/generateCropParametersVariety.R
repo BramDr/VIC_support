@@ -3,11 +3,13 @@ rm(list = ls())
 # Input
 crop.file = "./Saves/crop_mapping_single.csv"
 param.desc.file = "../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
+limits.file = "../../../Data/Primary/WOFOST/Crop/cropTsumLimits.csv"
 in.dir = "../../../Data/Transformed/WOFOST/Crop/"
 out.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
+limits = read.csv(limits.file, stringsAsFactors = F)
 param.desc = read.csv(param.desc.file, stringsAsFactors = F, sep = ";")
 
 # Setup
@@ -43,6 +45,9 @@ get.name.alt = function(name) {
   }
 }
 
+tsum.step = 100
+tsum.day.step = 10
+
 # Calculate & save
 n.space = 16
 in.files = list.files(path = in.dir, pattern = ".yaml", full.names = T)
@@ -55,6 +60,12 @@ for (i in 1:nrow(crops)) {
   
   in.params = read.csv(in.file, stringsAsFactors = F, row.names = 1)
   in.params2 = read.csv(in.file2, stringsAsFactors = F, row.names = 1)
+  
+  limit = limits[limits$name == crops$mirca.name[i],]
+  tsums = seq(from = limit$tsum_low, to = limit$tsum_high, by = tsum.step)
+  if(crops$mirca.name[i] == "cassava") {
+    tsums = seq(from = limit$tsum_low, to = limit$tsum_high, by = tsum.day.step)
+  }
   
   text = c()
   for (k in 1:nrow(param.desc)) {
@@ -170,15 +181,31 @@ for (i in 1:nrow(crops)) {
   }
   
   header = paste0("
-** WOFOST MANAGEMENT FILE
-** Based on Allard de Wit crop files
-** ", date(), "
-"
-)
+  ** WOFOST MANAGEMENT FILE
+  ** Based on Allard de Wit crop files
+  ** ", date(), "
+  "
+  )
   text = c(header, text)
   
-  out.file = paste0(out.dir, "/", "crop_params_", crops$mirca.name[i], "_single.txt")
+  tsum1.wofost = in.params[rownames(in.params) == "TSUM1_1",1]
+  tsum2.wofost = in.params[rownames(in.params) == "TSUM2_1",1]
+  tsum1.frac = tsum1.wofost / (tsum1.wofost + tsum2.wofost)
+  tsum2.frac = tsum2.wofost / (tsum1.wofost + tsum2.wofost)
   
-  dir.create(dirname(out.file))
-  writeLines(text = text, con = out.file)
+  tsums1 = tsums * tsum1.frac
+  tsums2 = tsums * tsum2.frac
+  
+  for (j in 1:length(tsums)) {
+    out.file = paste0(out.dir, "/", "crop_params_", crops$mirca.name[i], "_", tsums[j], "_variety.txt")
+    
+    text.adj = text
+    tsum1.line = grep(x = text.adj, pattern = "TSUM1")
+    tsum2.line = grep(x = text.adj, pattern = "TSUM2")
+    text.adj[tsum1.line] = paste0("TSUM1           = ", tsums1[j], "            ! Daily temperature sum from emergence to anthesis [C day-1]")
+    text.adj[tsum2.line] = paste0("TSUM2           = ", tsums2[j], "            ! Daily temperature sum from emergence to anthesis [C day-1]")
+    
+    dir.create(dirname(out.file))
+    writeLines(text = text.adj, con = out.file)
+  }
 }

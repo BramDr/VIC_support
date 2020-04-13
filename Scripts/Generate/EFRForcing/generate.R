@@ -4,18 +4,54 @@ library(zoo)
 rm(list = ls())
 
 # Input
-in.efr <- "../../../Data/Transformed/VIC/fluxes_global_MIRCA_nat.ydaymean.nc"
-out.dir <- "../../../Output/Forcing/global/"
+in.efr <- "../../../Data/Transformed/VIC/fluxes_NAT.1979-01.nc"
+out.dir <- "../../../Data/VIC/Forcing/global/"
+days.per.month <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 years <- 1979:2016
 
 # Load
 nc <- nc_open(in.efr)
-efr.dis <- ncvar_get(nc, "OUT_DISCHARGE")
-efr.base <- ncvar_get(nc, "OUT_BASEFLOW")
+dates <- as.Date(nc$dim$time$vals, "0000-12-30")
+dates.months <- as.numeric(format.Date(dates, "%m"))
+z <- which(dates >= as.Date("1980-01-01") & dates <= as.Date("2010-01-01"))
+
+efr.dis <- ncvar_get(nc, "OUT_DISCHARGE", start = c(1, 1, min(z)), count = c(-1, -1, length(z)))
+efr.base <- ncvar_get(nc, "OUT_BASEFLOW", start = c(1, 1, min(z)), count = c(-1, -1, length(z)))
+dates <- dates[z]
+dates.months <- dates.months[z]
 nc_close(nc)
 print("Loaded")
 
 # Setup
+linterp <- function(monthly.data, daily.months) {
+  daily.data <- rep(NA, length(daily.months))
+
+  daily.rle <- rle(daily.months)
+  for (i in 1:length(daily.months)) {
+    month <- daily.months[i]
+    month.len <- daily.rle$lengths[daily.rle$values == month]
+
+    if (month == 1) {
+      days.past <- 0
+    } else {
+      days.past <- cumsum(daily.rle$lengths[daily.rle$values <= month - 1])[month - 1]
+    }
+    days.done <- i - days.past
+
+    if (month == 1) {
+      prev.value <- monthly.data[12]
+    } else {
+      prev.value <- monthly.data[month - 1]
+    }
+    next.value <- monthly.data[month]
+
+    daily.data[i] <- prev.value + (next.value - prev.value) * (days.done / month.len)
+  }
+
+  daily.data <- c(daily.data[(length(daily.data) - 15):length(daily.data)], daily.data[1:(length(daily.data) - 16)])
+  return(daily.data)
+}
+
 res <- 0.5
 lons <- seq(
   from = -180 + res / 2,
@@ -42,41 +78,64 @@ lat.dim <- ncdim_def(
 )
 
 # Calculate and save
-efr.dis2 <- array(NA, dim = dim(efr.dis))
-efr.base2 <- array(NA, dim = dim(efr.base))
+efr.dis2 <- array(NA, dim = c(dim(efr.dis)[1:2], 12))
+efr.base2 <- array(NA, dim = c(dim(efr.base)[1:2], 12))
 for (x in 1:dim(efr.dis2)[1]) {
+  print(x)
   for (y in 1:dim(efr.dis2)[2]) {
-    dis <- efr.dis[x, y, ]
-    base <- efr.base[x, y, ]
-
-    if (is.na(dis[1])) {
+    if (is.na(efr.dis[x, y, 1])) {
       next
     }
 
-    dis <- rollapply(data = rep(dis, 3), width = 30, FUN = mean, partial = TRUE)
-    dis <- dis[(nc$dim$time$len + 1):(nc$dim$time$len * 2)]
+    dis <- efr.dis[x, y, ]
+    base <- efr.base[x, y, ]
 
-    base <- rollapply(data = rep(base, 3), width = 30, FUN = mean, partial = TRUE)
-    base <- base[(nc$dim$time$len + 1):(nc$dim$time$len * 2)]
+    dis.agg <- aggregate(x = dis, by = list(dates.months), FUN = mean)[, 2]
+    base.agg <- aggregate(x = base, by = list(dates.months), FUN = mean)[, 2]
 
-    efr <- dis
-    sel <- dis <= 0.4 * mean(dis)
-    efr[sel] <- 0.6 * dis[sel]
-    sel <- dis > 0.8 * mean(dis)
-    efr[sel] <- 0.3 * dis[sel]
-    sel <- dis > 0.4 * mean(dis) & dis <= 0.8 * mean(dis)
-    efr[sel] <- 0.45 * dis[sel]
+    efr <- dis.agg
+    sel <- dis.agg <= 0.4 * mean(dis.agg)
+    efr[sel] <- 0.6 * dis.agg[sel]
+    sel <- dis.agg > 0.8 * mean(dis.agg)
+    efr[sel] <- 0.3 * dis.agg[sel]
+    sel <- dis.agg > 0.4 * mean(dis.agg) & dis.agg <= 0.8 * mean(dis.agg)
+    efr[sel] <- 0.45 * dis.agg[sel]
 
     efr.dis2[x, y, ] <- efr
 
-    efr <- 0.9 * base / 4 # day-1 to step-1
+    efr <- 0.9 * (base.agg / days.per.month)
 
     efr.base2[x, y, ] <- efr
   }
 }
-
 rm(efr.dis, efr.base)
 print("Calculated")
+
+year <- 1980
+times <- seq(
+  from = as.Date(paste0(year, "-01-01")),
+  to = as.Date(paste0(year, "-12-31")),
+  by = "day",
+  origin = "1900-01-01"
+)
+times.month <- as.numeric(format.Date(times, "%m"))
+
+efr.dis <- array(NA, dim = c(dim(efr.dis2)[1:2], length(times)))
+efr.base <- array(NA, dim = c(dim(efr.base2)[1:2], length(times)))
+for (x in 1:dim(efr.dis2)[1]) {
+  print(x)
+  for (y in 1:dim(efr.dis2)[2]) {
+    if (is.na(efr.dis2[x, y, 1])) {
+      next
+    }
+
+    efr.dis[x, y, ] <- linterp(efr.dis2[x, y, ], times.month)
+    efr.base[x, y, ] <- linterp(efr.base2[x, y, ], times.month)
+  }
+}
+rm(efr.dis2, efr.base2)
+print("Tranformed")
+
 
 for (z in 1:length(years)) {
   year <- years[z]
@@ -88,6 +147,7 @@ for (z in 1:length(years)) {
     by = "day",
     origin = "1900-01-01"
   )
+  times.month <- as.numeric(format.Date(times, "%m"))
 
   time.dim <- ncdim_def(
     name = "time",
@@ -97,8 +157,8 @@ for (z in 1:length(years)) {
     calendar = "standard"
   )
 
-  out.name <- paste0("efr_discharge_6hourly_", year, ".nc")
-  out.sdir <- paste0("/efr_discharge_6hourly/")
+  out.name <- paste0("efrDischarge_daily_", year, ".nc")
+  out.sdir <- paste0("/efrDischarge_daily/")
   out.file <- paste0(out.dir, out.sdir, out.name)
 
   var <- ncvar_def(
@@ -113,11 +173,11 @@ for (z in 1:length(years)) {
 
   dir.create(dirname(out.file), showWarnings = F)
   nc <- nc_create(out.file, list(var))
-  ncvar_put(nc, var$name, efr.dis2[, , 1:length(times)])
+  ncvar_put(nc, var$name, efr.dis[, , 1:length(times)])
   nc_close(nc)
 
-  out.name <- paste0("efr_baseflow_6hourly_", year, ".nc")
-  out.sdir <- paste0("/efr_baseflow_6hourly/")
+  out.name <- paste0("efrBaseflow_daily_", year, ".nc")
+  out.sdir <- paste0("/efrBaseflow_daily/")
   out.file <- paste0(out.dir, out.sdir, out.name)
 
   var <- ncvar_def(
@@ -132,8 +192,6 @@ for (z in 1:length(years)) {
 
   dir.create(dirname(out.file), showWarnings = F)
   nc <- nc_create(out.file, list(var))
-  ncvar_put(nc, var$name, efr.base2[, , 1:length(times)])
+  ncvar_put(nc, var$name, efr.base[, , 1:length(times)])
   nc_close(nc)
 }
-
-rm(efr.dis2, efr.base2)
