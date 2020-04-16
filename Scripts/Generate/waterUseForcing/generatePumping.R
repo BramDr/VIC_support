@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 pumping.file <- "../../../Data/Transformed/Pumping/pumpingCapacity_30min_global.RDS"
-out.dir <- "../../../Data/VIC/Forcing/global/pumpCap_daily/pumpCap_daily_"
+out.dir <- "../../../Data/VIC/Forcing/global/pumpCap_monthly/pumpCap_monthly_"
 years <- 1960:2016
 
 # Load

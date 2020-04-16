@@ -54,7 +54,7 @@ for (in.file in in.files) {
   sec <- ""
   type <- ""
   ty <- ""
-  units <- "mm"
+  units <- "mm day-1"
   adjust <- 1
   if (length(grep(x = in.file, "manufacturing")) > 0) {
     sector <- "manufacturing"
@@ -94,8 +94,8 @@ for (in.file in in.files) {
   for (z in 1:length(years)) {
     year <- years[z]
 
-    out.name <- paste0(sec, ty, "_daily_", year, ".nc")
-    out.sdir <- paste0("/", sec, ty, "_daily/")
+    out.name <- paste0(sec, ty, "_monthly_", year, ".nc")
+    out.sdir <- paste0("/", sec, ty, "_monthly/")
     out.file <- paste0(out.dir, out.sdir, out.name)
 
     times <- seq(
