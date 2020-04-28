@@ -11,7 +11,8 @@ Includes minor changes that affect the results to a limited degree, specifically
 
 1. Removed paper related scripts/documents. These have been moved to [this GitHub repository](https://github.com/bramdr/papers). Currently only VIC related scripts/documents are included in this repository.
 2. Updated the folder structure to remove redundand data. All data is located in the folder 'Data', all scripts are located in the folder 'Scripts'.
-3. Included domain generation: single and/or multiple cell generation; single and/or multiple basin generation.
+3. Included domain generation: single and/or multiple cell generation; single and/or multiple basin generation; single and/or basin (+delta) generation.
+4. Added previous VIC parameter scripts
 4. Added pumping capacity scripts.
 5. Added code formatting tools (R styler).
 6. Bug fixes and code updates.

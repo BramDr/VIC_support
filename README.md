@@ -74,3 +74,8 @@ Z.D. Tessler, C.J. Vörösmarty, M. Grossberg, I. Gladkova, H. Aizenman, J.P.M. 
 [RVIC input data](https://rvic.readthedocs.io/en/latest/about/model-overview/):
 Hamman, J., Nijssen, B., Roberts, A., Craig, A., Maslowski, W., and Osinski, R. ( 2017), The coastal streamflow flux in the Regional Arctic System Model, J. Geophys. Res. Oceans, 122, 1683– 1701, doi:10.1002/2016JC012323. 
 
+**Older VIC parameter files**  
+[VIC input parameters 2 degree](https://vic.readthedocs.io/en/master/Datasets/Datasets/):
+Nijssen, B., O'Donnell, G.M., Hamlet, A.F. et al. Hydrologic Sensitivity of Global Rivers to Climate Change. Climatic Change 50, 143–175 (2001). https://doi.org/10.1023/A:1010616428763  
+[VIC input parameters 0.5 degree](https://vic.readthedocs.io/en/master/Datasets/Datasets/):
+van Vliet, M. T., Franssen, W. H., Yearsley, J. R., Ludwig, F., Haddeland, I., Lettenmaier, D. P., & Kabat, P. (2013). Global river discharge and water temperature under climate change. Global Environmental Change, 23(2), 450-464. https://doi.org/10.1016/j.gloenvcha.2012.11.002  
