@@ -8,7 +8,7 @@ dir <- "./Saves"
 pattern <- "Nijssen30min"
 pattern2 <- "NijssenAlt120min"
 vic.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
-vic.out <- "../../../Data/Transformed/VIC/Parameters/VIC_params_NijssenAlt30min_global.nc"
+vic.out <- "../../../Data/Transformed/VIC/Parameters/Other/VIC_params_NijssenAlt30min_global.nc"
 
 # Load
 source(support.script)

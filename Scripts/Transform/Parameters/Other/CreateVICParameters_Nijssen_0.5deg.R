@@ -5,15 +5,13 @@ rm(list = ls())
 # Input
 support.script <- "../../Support/mapFunctions.R"
 dir <- "./Saves"
-pattern <- "Nijssen120min"
-pattern2 <- "NijssenAlt120min"
+pattern <- "Nijssen30min"
 vic.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
-vic.out <- "../../../Data/Transformed/VIC/Parameters/VIC_params_NijssenAlt120min_global.nc"
+vic.out <- "../../../Data/Transformed/VIC/Parameters/Other/VIC_params_Nijssen30min_global.nc"
 
 # Load
 source(support.script)
 files <- list.files(dir, pattern = pattern, full.names = T)
-files2 <- list.files(dir, pattern = pattern2, full.names = T)
 
 lai <- readRDS(grep(files, pattern = "LAI", value = T))
 d1 <- readRDS(grep(files, pattern = "D1", value = T))
@@ -23,14 +21,14 @@ d4 <- readRDS(grep(files, pattern = "D4", value = T))
 infilt <- readRDS(grep(files, pattern = "infilt", value = T))
 depth <- readRDS(grep(files, pattern = "depth", value = T))
 cv <- readRDS(grep(files, pattern = "cv", value = T))
-overstory <- readRDS(grep(files2, pattern = "Overstory", value = T))
-rarc <- readRDS(grep(files2, pattern = "Rarc", value = T))
-rmin <- readRDS(grep(files2, pattern = "Rmin", value = T))
-windh <- readRDS(grep(files2, pattern = "Windh", value = T))
-rgl <- readRDS(grep(files2, pattern = "Rgl", value = T))
-solatn <- readRDS(grep(files2, pattern = "SolarAttenuation", value = T))
-windatn <- readRDS(grep(files2, pattern = "WindAttenuation", value = T))
-trunk <- readRDS(grep(files2, pattern = "TrunkRatio", value = T))
+overstory <- readRDS(grep(files, pattern = "Overstory", value = T))
+rarc <- readRDS(grep(files, pattern = "Rarc", value = T))
+rmin <- readRDS(grep(files, pattern = "Rmin", value = T))
+windh <- readRDS(grep(files, pattern = "Windh", value = T))
+rgl <- readRDS(grep(files, pattern = "Rgl", value = T))
+solatn <- readRDS(grep(files, pattern = "SolarAttenuation", value = T))
+windatn <- readRDS(grep(files, pattern = "WindAttenuation", value = T))
+trunk <- readRDS(grep(files, pattern = "TrunkRatio", value = T))
 expt <- readRDS(grep(files, pattern = "soilExpt", value = T))
 ksat <- readRDS(grep(files, pattern = "soilKsat", value = T))
 phi_s <- readRDS(grep(files, pattern = "Phis", value = T))
@@ -336,13 +334,13 @@ ncvar_put(nc, "root_depth", root_depth.fill)
 ncvar_put(nc, "expt", expt.fill)
 ncvar_put(nc, "Ksat", ksat.fill)
 ncvar_put(nc, "phi_s", phi_s.fill)
-# ncvar_put(nc, "bubble", bubble.fill)
-# ncvar_put(nc, "quartz", quartz.fill)
+ncvar_put(nc, "bubble", bubble.fill)
+ncvar_put(nc, "quartz", quartz.fill)
 ncvar_put(nc, "bulk_density", bulk_density.fill)
 ncvar_put(nc, "soil_density", soil_density.fill)
-ncvar_put(nc, "Wcr_FRACT", wcr.fill)
-ncvar_put(nc, "Wpwp_FRACT", wp.fill)
-ncvar_put(nc, "resid_moist", residual.fill)
+# ncvar_put(nc, "Wcr_FRACT", wcr.fill)
+# ncvar_put(nc, "Wpwp_FRACT", wp.fill)
+# ncvar_put(nc, "resid_moist", residual.fill)
 ncvar_put(nc, "init_moist", init_moist.fill)
 ncvar_put(nc, "fs_active", fs_active.fill)
 nc_close(nc)

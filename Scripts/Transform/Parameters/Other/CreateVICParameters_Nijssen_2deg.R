@@ -5,9 +5,9 @@ rm(list = ls())
 # Input
 support.script <- "../../Support/mapFunctions.R"
 dir <- "./Saves"
-pattern <- "Nijssen30min"
+pattern <- "Nijssen120min"
 vic.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
-vic.out <- "../../../Data/Transformed/VIC/Parameters/VIC_params_Nijssen30min_global.nc"
+vic.out <- "../../../Data/Transformed/VIC/Parameters/Other/VIC_params_Nijssen120min_global.nc"
 
 # Load
 source(support.script)
@@ -334,13 +334,13 @@ ncvar_put(nc, "root_depth", root_depth.fill)
 ncvar_put(nc, "expt", expt.fill)
 ncvar_put(nc, "Ksat", ksat.fill)
 ncvar_put(nc, "phi_s", phi_s.fill)
-ncvar_put(nc, "bubble", bubble.fill)
-ncvar_put(nc, "quartz", quartz.fill)
+# ncvar_put(nc, "bubble", bubble.fill)
+# ncvar_put(nc, "quartz", quartz.fill)
 ncvar_put(nc, "bulk_density", bulk_density.fill)
 ncvar_put(nc, "soil_density", soil_density.fill)
-# ncvar_put(nc, "Wcr_FRACT", wcr.fill)
-# ncvar_put(nc, "Wpwp_FRACT", wp.fill)
-# ncvar_put(nc, "resid_moist", residual.fill)
+ncvar_put(nc, "Wcr_FRACT", wcr.fill)
+ncvar_put(nc, "Wpwp_FRACT", wp.fill)
+ncvar_put(nc, "resid_moist", residual.fill)
 ncvar_put(nc, "init_moist", init_moist.fill)
 ncvar_put(nc, "fs_active", fs_active.fill)
 nc_close(nc)
