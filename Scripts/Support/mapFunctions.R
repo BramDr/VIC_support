@@ -95,16 +95,16 @@ fillMap <- function(map, na.map, nearest.function, ...) {
         }
       }
       if (length(dim(map)) == 3) {
-        if (is.na(map[x, y, 1])) {
-          for (z in 1:dim(map)[3]) {
+        for (z in 1:dim(map)[3]) {
+          if (is.na(map[x, y, z])) {
             map[x, y, z] <- nearest.function(map[, , z], x, y, ...)
           }
         }
       }
       if (length(dim(map)) == 4) {
-        if (is.na(map[x, y, 1, 1])) {
-          for (z in 1:dim(map)[3]) {
-            for (k in 1:dim(map)[4]) {
+        for (z in 1:dim(map)[3]) {
+          for (k in 1:dim(map)[4]) {
+            if (is.na(map[x, y, z, k])) {
               map[x, y, z, k] <- nearest.function(map[, , z, k], x, y, ...)
             }
           }

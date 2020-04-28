@@ -119,6 +119,7 @@ country.ind$Ene_reduce_fraction[sel] <- (0.1 - country.ind$Man_reduce_fraction[s
 country.ind$Ene_reduce_fraction[sel] <- 1 -
   (country.ind$Ene_reduce_fraction[sel] / country.ind$Energy_withdrawal[sel])
 country.ind$Man_reduce_fraction[sel] <- 0.1
+unique(country.ind$Country_number[sel])
 
 # Lower
 man.adj <- man

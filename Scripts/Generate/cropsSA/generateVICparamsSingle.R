@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 function.script <- "../../Support/generateFunctions.R"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
-vegetation.file <- "../../../Data/Transformed/VIC/Parameters/VIC_params_VlietAlt30min_global.nc"
+vegetation.file <- "../../../Data/Transformed/VIC/Parameters/Soil/VIC_params_Saxton_global.nc"
 vegetation.out <- "../../../Data/VIC/Parameters/global/WOFOST_SA/VIC_params_single_global.nc"
 
 # Load

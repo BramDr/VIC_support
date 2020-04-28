@@ -123,7 +123,7 @@ for (i in 1:nrow(crops)) {
       } else if(param.desc$name[k] == "Albedo") {
         value = 0.1
       } else if(param.desc$name[k] == "MinStomResist") {
-        value = 80
+        value = 100
       } else if(param.desc$name[k] == "MaxArchResist") {
         value = 2
       } else if(param.desc$name[k] == "IDSL") {
