@@ -3,7 +3,7 @@ rm(list = ls())
 # Input
 crop.file = "./Saves/crop_mapping_single.csv"
 param.desc.file = "../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
-in.dir = "../../../Data/Transformed/WOFOST/Crop/"
+in.dir = "../../../Data/Transformed/Crops/"
 out.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
 
 # Load
@@ -125,7 +125,7 @@ for (i in 1:nrow(crops)) {
       } else if(param.desc$name[k] == "MinStomResist") {
         value = 100
       } else if(param.desc$name[k] == "MaxArchResist") {
-        value = 2
+        value = 25
       } else if(param.desc$name[k] == "IDSL") {
         value = 0
       }

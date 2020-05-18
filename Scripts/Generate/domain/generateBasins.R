@@ -19,7 +19,11 @@ points <- data.frame(lat = numeric(), lon = numeric(), name = character(), strin
 #points[nrow(points) + 1, ] <- c(15.25, 105.75, "Mekong")
 # points[nrow(points) + 1, ] <- c(18.75, 95.25, "Irrawaddy")
 # points[nrow(points) + 1, ] <- c(1.75, 17.25, "Congo")
-points[nrow(points) + 1, ] <- c(29.75, 70.75, "Indus")
+# points[nrow(points) + 1, ] <- c(29.75, 70.75, "Indus")
+#points[nrow(points) + 1, ] <- c(-1.75, -55.75, "Amazon")
+#points[nrow(points) + 1, ] <- c(32.25, -115.25, "Colorado")
+#points[nrow(points) + 1, ] <- c(31.75, 109.75, "Yangtze")
+points[nrow(points) + 1, ] <- c(26.75, 98.75, "KraBuri")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

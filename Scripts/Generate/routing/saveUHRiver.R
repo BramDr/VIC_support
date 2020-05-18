@@ -52,7 +52,7 @@ for (x in 1:dim(uh.river.map)[1]) {
     uh.river <- get.river.uh(velocity, diffusion, distance[x, y], times)
     # plot(uh.river$Time, uh.river$Fraction, type = "l")
 
-    uh.river.map[x, y, ] <- uh.river$Fraction
+    uh.river.map[x, y, ] <- uh.river$Fraction / sum(uh.river$Fraction)
   }
 }
 plot(uh.river)

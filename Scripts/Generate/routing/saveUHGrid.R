@@ -78,7 +78,7 @@ for (x in 1:dim(uh.grid.map)[1]) {
     # plot(uh.grid, type = "l")
 
     tp.grid.map[x, y] <- tp.grid
-    uh.grid.map[x, y, ] <- uh.grid$Fraction
+    uh.grid.map[x, y, ] <- uh.grid$Fraction / sum(uh.grid$Fraction)
   }
 }
 
