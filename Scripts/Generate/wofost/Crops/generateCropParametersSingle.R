@@ -1,71 +1,27 @@
 rm(list = ls())
 
 # Input
-crop.file = "./Saves/crop_mapping_single.csv"
-param.desc.file = "../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
-limits.file = "../../../Data/Primary/WOFOST/Crop/cropTsumLimits.csv"
-in.dir = "../../../Data/Transformed/Crops/"
-out.dir = "../../../Data/WOFOST/Parameters/Crop/global/SA/"
+crop.file = "./Saves/crop_mapping.csv"
+param.desc.file = "../../../../Data/Primary/WOFOST/Crop/cropParameterDescription.csv"
+in.dir = "../../../../Data/Transformed/Crops/"
+out.dir = "../../../../Data/WOFOST/Parameters/Crop/global/"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
-limits = read.csv(limits.file, stringsAsFactors = F)
 param.desc = read.csv(param.desc.file, stringsAsFactors = F, sep = ";")
-
-# Setup
-get.name.alt = function(name) {
-  if(name == "barley"){
-    return("BAR1")
-  } else if (name == "fababean"){
-    return("FBE0801")
-  } else if (name == "groundnut"){
-    return("GR_NUT")
-  } else if (name == "maize"){
-    return("MAG202")
-  } else if (name == "potato"){
-    return("POT701")
-  } else if (name == "rapeseed"){
-    return("RAP1001")
-  } else if (name == "rice"){
-    return("RIC501")
-  } else if (name == "soybean"){
-    return("SOY0902")
-  } else if (name == "sugarcane"){
-    return("SUGRCANE")
-  } else if (name == "sugarbeet"){
-    return("SUG0601")
-  } else if (name == "sunflower"){
-    return("SUN1101")
-  } else if (name == "sweetpotato"){
-    return("SWPOTATO")
-  } else if (name == "wheat"){
-    return("WWHEAT1")
-  } else {
-    return(toupper(name))
-  }
-}
-
-tsum.step = 100
-tsum.day.step = 10
 
 # Calculate & save
 n.space = 16
 in.files = list.files(path = in.dir, pattern = ".yaml", full.names = T)
 in.files2 = list.files(path = in.dir, pattern = ".DATp", full.names = T)
 for (i in 1:nrow(crops)) {
-  print(crops$mirca.name[i])
+  print(crops$name[i])
   
-  in.file = grep(x = in.files, pattern = paste0("//",crops$wofost.name[i]), value = TRUE)
-  in.file2 = grep(x = in.files2, pattern = paste0("//",get.name.alt(crops$wofost.name[i])), value = TRUE)
+  in.file = grep(x = in.files, pattern = paste0("//",crops$yaml[i]), value = TRUE)
+  in.file2 = grep(x = in.files2, pattern = paste0("//",crops$DATp[i]), value = TRUE)
   
   in.params = read.csv(in.file, stringsAsFactors = F, row.names = 1)
   in.params2 = read.csv(in.file2, stringsAsFactors = F, row.names = 1)
-  
-  limit = limits[limits$name == crops$mirca.name[i],]
-  tsums = seq(from = limit$tsum_low, to = limit$tsum_high, by = tsum.step)
-  if(crops$mirca.name[i] == "cassava") {
-    tsums = seq(from = limit$tsum_low, to = limit$tsum_high, by = tsum.day.step)
-  }
   
   text = c()
   for (k in 1:nrow(param.desc)) {
@@ -181,31 +137,15 @@ for (i in 1:nrow(crops)) {
   }
   
   header = paste0("
-  ** WOFOST MANAGEMENT FILE
-  ** Based on Allard de Wit crop files
-  ** ", date(), "
-  "
-  )
+** WOFOST MANAGEMENT FILE
+** Based on Allard de Wit crop files
+** ", date(), "
+"
+)
   text = c(header, text)
   
-  tsum1.wofost = in.params[rownames(in.params) == "TSUM1_1",1]
-  tsum2.wofost = in.params[rownames(in.params) == "TSUM2_1",1]
-  tsum1.frac = tsum1.wofost / (tsum1.wofost + tsum2.wofost)
-  tsum2.frac = tsum2.wofost / (tsum1.wofost + tsum2.wofost)
+  out.file = paste0(out.dir, "/", "crop_params_", crops$name[i], ".txt")
   
-  tsums1 = tsums * tsum1.frac
-  tsums2 = tsums * tsum2.frac
-  
-  for (j in 1:length(tsums)) {
-    out.file = paste0(out.dir, "/", "crop_params_", crops$mirca.name[i], "_", tsums[j], "_variety.txt")
-    
-    text.adj = text
-    tsum1.line = grep(x = text.adj, pattern = "TSUM1")
-    tsum2.line = grep(x = text.adj, pattern = "TSUM2")
-    text.adj[tsum1.line] = paste0("TSUM1           = ", tsums1[j], "            ! Daily temperature sum from emergence to anthesis [C day-1]")
-    text.adj[tsum2.line] = paste0("TSUM2           = ", tsums2[j], "            ! Daily temperature sum from emergence to anthesis [C day-1]")
-    
-    dir.create(dirname(out.file))
-    writeLines(text = text.adj, con = out.file)
-  }
+  dir.create(dirname(out.file))
+  writeLines(text = text, con = out.file)
 }
