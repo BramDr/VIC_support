@@ -18,7 +18,8 @@ mask <- readRDS(mask.file)
 uh <- read.table(uh.file, sep = ";")
 
 # Setup
-times <- cumsum(rep(3600, 24 * 16))
+times <- cumsum(rep(3600, 24 * 7))
+times <- c(0, times)
 
 interp <- function(x, x1, x2, y1, y2) {
   if (x < x1[1]) {
@@ -78,7 +79,7 @@ for (x in 1:dim(uh.grid.map)[1]) {
     # plot(uh.grid, type = "l")
 
     tp.grid.map[x, y] <- tp.grid
-    uh.grid.map[x, y, ] <- uh.grid$Fraction
+    uh.grid.map[x, y, ] <- uh.grid$Fraction / sum(uh.grid$Fraction)
   }
 }
 

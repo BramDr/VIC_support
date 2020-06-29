@@ -17,7 +17,8 @@ mask <- readRDS(mask.file)
 # Setup
 velocity <- 1
 diffusion <- 2000
-times <- cumsum(rep(3600, 24 * 16))
+times <- cumsum(rep(3600, 24 * 7))
+times <- c(0, times)
 
 get.river.uh <- function(velocity, diffusion, distance, time) {
   uh <- rep(0, length(time))
@@ -52,7 +53,7 @@ for (x in 1:dim(uh.river.map)[1]) {
     uh.river <- get.river.uh(velocity, diffusion, distance[x, y], times)
     # plot(uh.river$Time, uh.river$Fraction, type = "l")
 
-    uh.river.map[x, y, ] <- uh.river$Fraction
+    uh.river.map[x, y, ] <- uh.river$Fraction / sum(uh.river$Fraction)
   }
 }
 plot(uh.river)

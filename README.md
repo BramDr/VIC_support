@@ -7,9 +7,6 @@ Supporting documentation and scripts for VIC-WUR. Inputs are missing for confide
 
 ----
 
-## Primary references
-Simulating human impacts on global water resources using VIC-5 (Droppers et al., 2020)
-
 ## Data
 Data needed to run the scripts (including possible sources and references).
 
@@ -56,7 +53,7 @@ Portmann, F. T., Siebert, S. & Döll, P. (2010): MIRCA2000 – Global monthly ir
 Döll, P., Hoffmann-Dobrev, H., Portmann, F. T., Siebert, S., Eicker, A., Rodell, M., ... & Scanlon, B. R. (2012). Impact of water withdrawals from groundwater and surface water on continental water storage variations. Journal of Geodynamics, 59, 143-156. doi10.1016/j.jog.2011.05.001
 
 **Global pumping capacity**  
-Sutanudjaja, E. H., Van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H., Drost, N., ... & Karssenberg, D. (2018). PCR-GLOBWB 2: a 5 arcmin global hydrological and water resources model. Geoscientific Model Development, 11(6), 2429-2453.
+Sutanudjaja, E. H., Van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H., Drost, N., ... & Karssenberg, D. (2018). PCR-GLOBWB 2: a 5 arcmin global hydrological and water resources model. Geoscientific Model Development, 11(6), 2429-2453, doi:10.5194/gmd-11-2429-2018..
 
 **Global irrigation efficiency**  
 [FAO irrigation water use](http://www.fao.org/nr/water/aquastat/water_use_agr/index.stm):

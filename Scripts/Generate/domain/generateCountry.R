@@ -3,12 +3,12 @@ library(fields)
 rm(list = ls())
 
 # Input
-path.basin <- "../../../Data/Transformed/Delta/deltaBasins_30min_global.RDS"
+path.cell <- "../../../Data/Transformed/Country/country_30min_cellFractions.RDS"
 path.domain <- "../../../Data/Primary/VIC/domain_global.nc"
 dir.out <- "../../../Data/VIC/Parameters/"
 
 # Load
-basin <- readRDS(path.basin)
+cell <- readRDS(path.cell)
 
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
@@ -16,9 +16,11 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- FALSE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(15.25, 105.75, "MekongDelta")
-points[nrow(points) + 1, ] <- c(18.75, 95.25, "IrrawaddyDelta")
-points[nrow(points) + 1, ] <- c(1.75, 17.25, "CongoDelta")
+points[nrow(points) + 1, ] <- c(-37.75, -66.25, "Argentina")
+points[nrow(points) + 1, ] <- c(34.25, 105.75, "China")
+points[nrow(points) + 1, ] <- c(23.25, 77.75, "India")
+points[nrow(points) + 1, ] <- c(28.75, 30.75, "Egypt")
+points[nrow(points) + 1, ] <- c(46.25, 25.25, "Romania")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)
@@ -27,31 +29,49 @@ points$lon <- as.numeric(points$lon)
 for (i in 1:nrow(points)) {
   x <- which.min(abs(lon - points$lon[i]))
   y <- which.min(abs(lat - points$lat[i]))
-
-  id <- basin[x, y]
-
-  if (!is.na(id)) {
-    points$basin[i] <- id
-    points$size[i] <- sum(na.omit(c(basin)) == id)
-  } else {
-    print(paste0("Point ", points[i, ], " falls outside of basin mask"))
-  }
-}
-
-mask <- array(NA, dim = c(dim(basin), nrow(points)))
-for (i in 1:nrow(points)) {
-  for (x in 1:dim(basin)[1]) {
-    for (y in 1:dim(basin)[2]) {
-      if (!is.na(basin[x, y]) && basin[x, y] == points$basin[i]) {
-        mask[x, y, i] <- 1
+  
+  id = NA
+  done = F
+  for(j in 1:length(cell)) {
+    country = names(cell)[j]
+    cell.country = cell[[j]]
+    
+    if(nrow(cell.country) == 0){
+      next
+    }
+    
+    for(k in 1:nrow(cell.country)) {
+      if(cell.country$x[k] == x && cell.country$y[k] == y) {
+        id <- country
+        break
       }
     }
+    if(done) {
+      break
+    }
+  }
+
+  if (!is.na(id)) {
+    points$country[i] <- id
+  } else {
+    print(paste0("Point ", points[i, ], " falls outside of country mask"))
   }
 }
 
-mask.combine <- array(NA, dim = c(dim(basin)))
-for (x in 1:dim(basin)[1]) {
-  for (y in 1:dim(basin)[2]) {
+mask <- array(NA, dim = c(length(lon), length(lat), nrow(points)))
+for (i in 1:nrow(points)) {
+  country = as.character(points$country[i])
+  cell.country = cell[[country]]
+  for(j in 1:nrow(cell.country)) {
+    x = cell.country$x[j]
+    y = cell.country$y[j]
+    mask[x, y, i] <- 1
+  }
+}
+
+mask.combine <- array(NA, dim = c(dim(mask)[1:2]))
+for (x in 1:dim(mask)[1]) {
+  for (y in 1:dim(mask)[2]) {
     for (i in 1:nrow(points)) {
       if (is.na(mask[x, y, i])) {
         next
@@ -82,6 +102,7 @@ if (combine) {
   nc <- nc_open(newname, write = T)
   ncvar_put(nc, nc$var$mask, mask.combine[min.x:max.x, min.y:max.y])
   nc_close(nc)
+  
 } else {
   for (i in 1:nrow(points)) {
     newname <- paste0(dir.out, "/", points$name[i], "/", "domain_", points$name[i], ".nc")

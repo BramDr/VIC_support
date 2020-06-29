@@ -9,11 +9,13 @@ dir.out <- "../../../Data/VIC/Parameters/"
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
 lat <- seq(from = -89.75, to = 89.75, by = 0.5)
-combine <- TRUE
+combine <- FALSE
 
 boxes <- data.frame(lat.min = numeric(), lon.min = numeric(), lat.max = numeric(), lon.max = numeric(), name = character(), stringsAsFactors = F)
-# boxes[nrow(boxes) + 1, ] <- c(1.25, 1.25, 9.25, 9.25, "error")
+boxes[nrow(boxes) + 1, ] <- c(1.25, 1.25, 9.25, 9.25, "Error")
 boxes[nrow(boxes) + 1, ] <- c(42.75, -4.75, 54.75, 8.25, "NWEurope")
+boxes[nrow(boxes) + 1, ] <- c(20.75, 103.75, 44.75, 122.75, "EAsia")
+boxes[nrow(boxes) + 1, ] <- c(30.25, -94.25, 37.75, -87.75, "LMississippi")
 
 boxes$lat.min <- as.numeric(boxes$lat.min)
 boxes$lon.min <- as.numeric(boxes$lon.min)

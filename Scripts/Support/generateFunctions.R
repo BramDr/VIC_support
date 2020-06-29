@@ -1,14 +1,33 @@
 library(ncdf4)
 
-removeVegVars <- function(nc.old.file, nc.new.file) {
-  remove.vars <- c(
-    "veg_descr", "veg_class", "Nveg", "Cv", "wind_atten",
-    "wind_h", "rmin", "rarc", "rad_atten", "RGL",
-    "trunk_ratio", "overstory", "root_fract", "root_depth",
-    "LAI", "displacement", "veg_rough", "albedo"
-  )
-  system(command = paste0("ncks -x -v ", paste0(remove.vars, collapse = ","), " ", nc.old.file, " -O ", nc.new.file))
-}
+misc.vars <- c(
+  "annual_prec", "avg_T", "run_cell"
+)
+soil.vars <- c(
+  "Ksat", "Wcr_FRACT", "Wpwp_FRACT", "bubble", "bulk_density", 
+  "expt", "init_moist", "phi_s", "quartz", "resid_moist",
+  "soil_density", "rough", "snow_rough", "dp", "fs_active"
+)
+veg.vars <- c(
+  "Nveg", "Cv", "wind_atten",
+  "wind_h", "rmin", "rarc", "rad_atten", "RGL",
+  "trunk_ratio", "overstory", "root_fract", "root_depth",
+  "LAI", "displacement", "veg_rough", "albedo"
+)
+calib.vars <- c(
+  "Ds", "Dsmax", "Ws", "c", "depth", "infilt"
+)
+elev.vars <- c(
+  "AreaFract", "Pfactor", "elev", "elevation"
+)
+unused.vars <- c(
+  "off_gmt", "cellnum", "gridcell", "mask", "lats", "lons", "veg_descr"
+)
+
+unused.atts <- c(
+  "source", "username", "host", "nco_openmp_thread_number", 
+  "NCO", "history_of_appended_files", "history"
+)
 
 addVegVars <- function(nc.file, nveg_class = NULL) {
   # Get dimensions
