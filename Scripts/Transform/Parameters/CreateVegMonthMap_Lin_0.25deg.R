@@ -31,7 +31,7 @@ for (i in 1:length(veg.text)) {
   veg.fields <- as.numeric(veg.fields)
 
   class <- veg.fields[1]
-  for(z in 1:nmonths){
+  for (z in 1:nmonths) {
     albedo.map[, , class, z] <- veg.fields[17 + (z - 1)]
     veg_rough.map[, , class, z] <- veg.fields[29 + (z - 1)]
     displacement.map[, , class, z] <- veg.fields[41 + (z - 1)]

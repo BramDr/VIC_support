@@ -17,13 +17,13 @@ eff <- readRDS(eff.file)
 mask <- readRDS(mask.file)
 
 # Setup
-na.map = is.na(mask) | mask == 0
+na.map <- is.na(mask) | mask == 0
 
 irr.veg <- c(12, 13)
 irr.pond <- c(0, 1)
 
-groundwater.filled = fillMap(map = groundwater, na.map = na.map, nearest.function = getNearestMean)
-eff.filled = fillMap(map = eff, na.map = na.map, nearest.function = getNearestMean)
+groundwater.filled <- fillMap(map = groundwater, na.map = na.map, nearest.function = getNearestMean)
+eff.filled <- fillMap(map = eff, na.map = na.map, nearest.function = getNearestMean)
 # image.plot(groundwater.filled)
 # image.plot(eff.filled)
 

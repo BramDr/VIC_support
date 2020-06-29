@@ -10,7 +10,7 @@ cv.out <- "../../../Data/Transformed/Parameters/cv_Lin15min_30min_global.RDS"
 cv.text <- readLines(con = cv.file)
 
 mapping <- read.table(mapping.file)
-mapping[mapping[,4] > 180,4] = mapping[mapping[,4] > 180,4] - 360
+mapping[mapping[, 4] > 180, 4] <- mapping[mapping[, 4] > 180, 4] - 360
 
 # Setup
 lons.15min <- seq(from = -179.875, to = 179.875, by = 0.25)
@@ -28,15 +28,15 @@ for (x in 1:dim(mapping.map)[1]) {
     mapping.map[x, y, 2] <- y.map
   }
 }
-#image.plot(mapping.map[, , 1])
-#image.plot(mapping.map[, , 2])
+# image.plot(mapping.map[, , 1])
+# image.plot(mapping.map[, , 2])
 
-averageMap = function(map, count){
-  for(i in 1:dim(map)[3]) {
-    mapi = map[,,i]
-    mapi = mapi / count[,,i]
-    mapi[count[,,i] == 0] = NA
-    map[,,i] = mapi
+averageMap <- function(map, count) {
+  for (i in 1:dim(map)[3]) {
+    mapi <- map[, , i]
+    mapi <- mapi / count[, , i]
+    mapi[count[, , i] == 0] <- NA
+    map[, , i] <- mapi
   }
   return(map)
 }
@@ -55,13 +55,13 @@ for (i in 1:length(cv.text)) {
     cell <- cv.fields[1]
     nveg <- cv.fields[2]
     row <- which(mapping[, 2] == cell)
-    
+
     x.15min <- which(lons.15min == mapping[row, 4])
     y.15min <- which(lats.15min == mapping[row, 3])
-    
-    x <- mapping.map[x.15min,y.15min,1]
-    y <- mapping.map[x.15min,y.15min,2]
-    
+
+    x <- mapping.map[x.15min, y.15min, 1]
+    y <- mapping.map[x.15min, y.15min, 2]
+
     if (nveg == 0) {
       next
     }
@@ -76,7 +76,7 @@ for (i in 1:length(cv.text)) {
       root_fract <- c(cv.fields[4], cv.fields[6])
 
       cv.map[x, y, veg_class] <- cv.map[x, y, veg_class] + Cv
-      count.map[x, y, veg_class] <- count.map[x,y,veg_class] + 1
+      count.map[x, y, veg_class] <- count.map[x, y, veg_class] + 1
 
       lai.row <- TRUE
     } else {
@@ -89,7 +89,7 @@ for (i in 1:length(cv.text)) {
   }
 }
 
-cv.map.adj = averageMap(cv.map, count.map)
+cv.map.adj <- averageMap(cv.map, count.map)
 
 for (i in 1:(nclasses - 1)) {
   image.plot(cv.map.adj[, , i], main = i)

@@ -11,7 +11,7 @@ root.fract.out <- "../../../Data/Transformed/Parameters/rootFract_Lin15min_30min
 root.text <- readLines(con = root.file)
 
 mapping <- read.table(mapping.file)
-mapping[mapping[,4] > 180,4] = mapping[mapping[,4] > 180,4] - 360
+mapping[mapping[, 4] > 180, 4] <- mapping[mapping[, 4] > 180, 4] - 360
 
 # Setup
 lons.15min <- seq(from = -179.875, to = 179.875, by = 0.25)
@@ -30,16 +30,16 @@ for (x in 1:dim(mapping.map)[1]) {
     mapping.map[x, y, 2] <- y.map
   }
 }
-#image.plot(mapping.map[, , 1])
-#image.plot(mapping.map[, , 2])
+# image.plot(mapping.map[, , 1])
+# image.plot(mapping.map[, , 2])
 
-averageMap = function(map, count){
-  for(i in 1:dim(map)[3]) {
-    for(j in 1:dim(map)[4]) {
-      mapi = map[,,i,j]
-      mapi = mapi / count[,,i]
-      mapi[count[,,i] == 0] = NA
-      map[,,i,j] = mapi
+averageMap <- function(map, count) {
+  for (i in 1:dim(map)[3]) {
+    for (j in 1:dim(map)[4]) {
+      mapi <- map[, , i, j]
+      mapi <- mapi / count[, , i]
+      mapi[count[, , i] == 0] <- NA
+      map[, , i, j] <- mapi
     }
   }
   return(map)
@@ -60,12 +60,12 @@ for (i in 1:length(root.text)) {
     cell <- root.fields[1]
     nveg <- root.fields[2]
     row <- which(mapping[, 2] == cell)
-    
+
     x.15min <- which(lons.15min == mapping[row, 4])
     y.15min <- which(lats.15min == mapping[row, 3])
-    
-    x <- mapping.map[x.15min,y.15min,1]
-    y <- mapping.map[x.15min,y.15min,2]
+
+    x <- mapping.map[x.15min, y.15min, 1]
+    y <- mapping.map[x.15min, y.15min, 2]
 
     if (nveg == 0) {
       next
@@ -79,14 +79,13 @@ for (i in 1:length(root.text)) {
       Cv <- root.fields[2]
       root_depth <- c(root.fields[3], root.fields[5])
       root_fract <- c(root.fields[4], root.fields[6])
-      
+
       root.depth.map[x, y, veg_class, 1:2] <- root.depth.map[x, y, veg_class, 1:2] + root_depth
       root.fract.map[x, y, veg_class, 1:2] <- root.fract.map[x, y, veg_class, 1:2] + root_fract
-      count.map[x, y, veg_class] <- count.map[x,y,veg_class] + 1
+      count.map[x, y, veg_class] <- count.map[x, y, veg_class] + 1
 
       root.row <- TRUE
     } else {
-
       root.row <- FALSE
       if (j >= nveg) {
         mapping.row <- FALSE
@@ -96,8 +95,8 @@ for (i in 1:length(root.text)) {
   }
 }
 
-root.depth.map.adj = averageMap(root.depth.map, count.map)
-root.fract.map.adj = averageMap(root.fract.map, count.map)
+root.depth.map.adj <- averageMap(root.depth.map, count.map)
+root.fract.map.adj <- averageMap(root.fract.map, count.map)
 
 for (i in 1:(nclasses - 1)) {
   image.plot(root.depth.map.adj[, , i, 1], main = i)

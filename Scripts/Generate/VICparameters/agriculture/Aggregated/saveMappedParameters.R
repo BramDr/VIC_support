@@ -76,7 +76,7 @@ create.map <- function(values, lons.v, lats.v) {
 
 map.values <- function(name) {
   print(name)
-  
+
   loc.sel <- get(paste0("loc.", name))
   Cv.sel <- get(paste0("Cv.", name))
   fcanopy.sel <- get(paste0("fcanopy.", name))

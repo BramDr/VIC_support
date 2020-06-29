@@ -29,7 +29,7 @@ Cv.veg <- ncvar_get(nc, "Cv")
 nc_close(nc)
 
 # Setup
-na.map = is.na(mask) | mask == 0
+na.map <- is.na(mask) | mask == 0
 
 put.maps <- function(nc.file, maps, veg.idx) {
   nc <- nc_open(nc.file, write = T)
@@ -117,21 +117,21 @@ put.old <- function(nc.file, old.file) {
 
 # Calculate
 ## Fill variables
-irr.filled = list()
-for(i in 1:length(irr)){
-  irr.filled[[i]] = fillMap(irr[[i]], na.map, getNearestZero)
+irr.filled <- list()
+for (i in 1:length(irr)) {
+  irr.filled[[i]] <- fillMap(irr[[i]], na.map, getNearestZero)
 }
-names(irr.filled) = names(irr)
-paddy.filled = list()
-for(i in 1:length(paddy)){
-  paddy.filled[[i]] = fillMap(paddy[[i]], na.map, getNearestZero)
+names(irr.filled) <- names(irr)
+paddy.filled <- list()
+for (i in 1:length(paddy)) {
+  paddy.filled[[i]] <- fillMap(paddy[[i]], na.map, getNearestZero)
 }
-names(paddy.filled) = names(paddy)
-rain.filled = list()
-for(i in 1:length(rain)){
-  rain.filled[[i]] = fillMap(rain[[i]], na.map, getNearestZero)
+names(paddy.filled) <- names(paddy)
+rain.filled <- list()
+for (i in 1:length(rain)) {
+  rain.filled[[i]] <- fillMap(rain[[i]], na.map, getNearestZero)
 }
-names(rain.filled) = names(rain)
+names(rain.filled) <- names(rain)
 
 ## Calculate adjusted Cv fractions
 Cv.new <- array(0, dim = c(dim(mask)[1], dim(mask)[2], dim(Cv.veg)[3] + 2))
@@ -150,10 +150,10 @@ for (x in 1:dim(mask)[1]) {
     nat.f <- sum(Cv.veg[x, y, c(1:10, 12)])
 
     if (crop.f > 1) {
-      Cv.new[x, y,] <- Cv.new[x, y,] / crop.f
+      Cv.new[x, y, ] <- Cv.new[x, y, ] / crop.f
       crop.f <- 1
-    } 
-    
+    }
+
     if (veg.f <= 0) {
       if (crop.f == 1) {
         next
@@ -171,8 +171,8 @@ for (x in 1:dim(mask)[1]) {
         Cv.new[x, y, c(1:10, dim(Cv.new)[3])] <- Cv.veg[x, y, c(1:10, 12)] * rescale.f
       }
     }
-    
-    Cv.new[x,y,] = Cv.new[x,y,] / sum(Cv.new[x,y,])
+
+    Cv.new[x, y, ] <- Cv.new[x, y, ] / sum(Cv.new[x, y, ])
   }
 }
 Cv.sum <- apply(X = Cv.new, MARGIN = c(1, 2), FUN = sum)

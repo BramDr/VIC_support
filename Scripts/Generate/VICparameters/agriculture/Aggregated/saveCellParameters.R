@@ -36,7 +36,7 @@ avgf <- read.csv(file = avgf.file, header = TRUE, stringsAsFactors = F)
 # Setup
 calc.values <- function(sel, name) {
   print(name)
-  
+
   cv.sel <- aggregate(x = fc.cell[sel, paste0("fc.cell.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
   cv.sel <- apply(X = cv.sel[, paste0("fc.cell.", 1:12)], MARGIN = 1, FUN = max)
 
@@ -153,4 +153,3 @@ fcanopy.rain[fcanopy.rain < 0.00011] <- 0.00011
 save.values(name = "paddy", outname = "Paddy")
 save.values(name = "irr", outname = "Irrigated")
 save.values(name = "rain", outname = "Rainfed")
-

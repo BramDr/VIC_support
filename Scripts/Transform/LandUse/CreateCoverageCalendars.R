@@ -38,7 +38,7 @@ add.fc <- function(x, columns) {
 }
 
 # Calculate
-cc.merge <- merge(subcrop[,c("cell_ID","crop","subcrop", paste0("area.", 1:12))], subcrop[,c("cell_ID","crop","subcrop","maxarea")], all.x = TRUE)
+cc.merge <- merge(subcrop[, c("cell_ID", "crop", "subcrop", paste0("area.", 1:12))], subcrop[, c("cell_ID", "crop", "subcrop", "maxarea")], all.x = TRUE)
 fc.subcrop <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc, columns = colnames(cc.merge))
 fc.subcrop <- as.data.frame(t(fc.subcrop))
 colnames(fc.subcrop) <- paste0("fc.subcrop.", 1:12)
@@ -47,7 +47,7 @@ fc.subcrop$meanfc.subcrop <- apply(X = fc.subcrop[, 1:(ncol(fc.subcrop) - 1)], M
 max(fc.subcrop$maxfc.subcrop)
 min(fc.subcrop$maxfc.subcrop)
 
-cc.merge <- merge(subcrop[,c("cell_ID","crop","subcrop", paste0("area.", 1:12))], crop[,c("cell_ID","crop","maxarea")], all.x = TRUE)
+cc.merge <- merge(subcrop[, c("cell_ID", "crop", "subcrop", paste0("area.", 1:12))], crop[, c("cell_ID", "crop", "maxarea")], all.x = TRUE)
 fc.crop <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc, columns = colnames(cc.merge))
 fc.crop <- as.data.frame(t(fc.crop))
 colnames(fc.crop) <- paste0("fc.crop.", 1:12)
@@ -56,7 +56,7 @@ fc.crop$meanfc.crop <- apply(X = fc.crop[, 1:(ncol(fc.crop) - 1)], MARGIN = 1, F
 max(fc.crop$maxfc.crop)
 min(fc.crop$maxfc.crop)
 
-cc.merge <- merge(subcrop[,c("cell_ID","crop","subcrop", paste0("area.", 1:12))], cell[,c("cell_ID","maxarea")], all.x = TRUE)
+cc.merge <- merge(subcrop[, c("cell_ID", "crop", "subcrop", paste0("area.", 1:12))], cell[, c("cell_ID", "maxarea")], all.x = TRUE)
 fc.cultivate <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc, columns = colnames(cc.merge))
 fc.cultivate <- as.data.frame(t(fc.cultivate))
 colnames(fc.cultivate) <- paste0("fc.cultivate.", 1:12)
@@ -65,8 +65,8 @@ fc.cultivate$meanfc.cultivate <- apply(X = fc.cultivate[, 1:(ncol(fc.cultivate) 
 max(fc.cultivate$maxfc.cultivate)
 min(fc.cultivate$maxfc.cultivate)
 
-cc.merge <- subcrop[,c("cell_ID","crop","subcrop", paste0("area.", 1:12))]
-cc.merge$maxarea = apply(X = subcrop, MARGIN = 1, FUN = add.area.cell, columns = colnames(subcrop))
+cc.merge <- subcrop[, c("cell_ID", "crop", "subcrop", paste0("area.", 1:12))]
+cc.merge$maxarea <- apply(X = subcrop, MARGIN = 1, FUN = add.area.cell, columns = colnames(subcrop))
 fc.cell <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc, columns = colnames(cc.merge))
 fc.cell <- as.data.frame(t(fc.cell))
 colnames(fc.cell) <- paste0("fc.cell.", 1:12)
