@@ -27,17 +27,26 @@ liv$ho.s <- (2.333 * 1e9 / sum(liv$ct) / 365) * liv$ho
 liv$pg.s <- (4.163 * 1e9 / sum(liv$pg) / 365) * liv$pg
 liv$sh.s <- (4.163 * 1e9 / sum(liv$pg) / 365) * liv$sh
 liv$gt.s <- (4.163 * 1e9 / sum(liv$pg) / 365) * liv$gt
-liv$ch.s <- (0.046 * 1e9 / sum(liv$ch) / 100 / 365) * liv$ch
-liv$dk.s <- (0.046 * 1e9 / sum(liv$ch) / 100 / 365) * liv$dk
+liv$ch.s <- (0.046 * 1e9 / (sum(liv$ch) / 100) / 365) * liv$ch
+liv$dk.s <- (0.046 * 1e9 / (sum(liv$ch) / 100) / 365) * liv$dk
 
-liv$ct.mean <- (11.400 * 1e9 / sum(liv$ct) / 365) * liv$ct
-liv$bf.mean <- (1.360 * 1e9 / sum(liv$bf) / 365) * liv$bf
-liv$ho.mean <- (11.400 * 1e9 / sum(liv$ct) / 365) * liv$ho
-liv$pg.mean <- (0.690 * 1e9 / sum(liv$pg) / 365) * liv$pg
-liv$gt.mean <- (0.770 * 1e9 / sum(liv$gt) / 365) * liv$gt
-liv$sh.mean <- (1.110 * 1e9 / sum(liv$sh) / 365) * liv$sh
-liv$ch.mean <- (0.930 * 1e9 / sum(liv$ch) / 100 / 365) * liv$ch
-liv$dk.mean <- (0.930 * 1e9 / sum(liv$ch) / 100 / 365) * liv$dk
+ct.i <- (11.400 * 1e9 / sum(liv$ct) / 365)
+bf.i <- (1.360 * 1e9 / sum(liv$bf) / 365)
+ho.i <- (11.400 * 1e9 / sum(liv$ct) / 365)
+pg.i <- (0.690 * 1e9 / sum(liv$pg) / 365)
+gt.i <- (0.770 * 1e9 / sum(liv$gt) / 365)
+sh.i <- (1.110 * 1e9 / sum(liv$sh) / 365)
+ch.i <- (0.930 * 1e9 / (sum(liv$ch) / 100) / 365)
+dk.i <- (0.930 * 1e9 / (sum(liv$ch) / 100) / 365)
+
+liv$ct.mean <- ct.i * liv$ct
+liv$bf.mean <- bf.i * liv$bf
+liv$ho.mean <- ho.i * liv$ho
+liv$pg.mean <- pg.i * liv$pg
+liv$gt.mean <- gt.i * liv$gt
+liv$sh.mean <- sh.i * liv$sh
+liv$ch.mean <- ch.i * (liv$ch / 100)
+liv$dk.mean <- dk.i * (liv$dk / 100)
 
 liv$ct.min <- (73.2 - 44.1) / 10 / 73.2
 liv$bf.min <- (73.2 - 44.1) / 10 / 73.2

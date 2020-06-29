@@ -7,10 +7,16 @@ function.script <- "../../../Support/generateFunctions.R"
 map.script <- "../../../Support/mapFunctions.R"
 mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
 parameter.file <- "Hybrid/Saves/parametersUniform_30min_global.RDS"
-vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_Vliet_global.nc"
+vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietAlt_global.nc"
 vegetation.out <- "../../../../Data/VIC/Parameters/global/vegetation_params_MIRCAhybridUniform_global.nc"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -19,8 +25,6 @@ source(map.script)
 
 parameter.out.tmp = gsub(x = parameter.file, pattern = "parametersUniform_", replacement = paste0("parametersUniform", "Irrigated", "_"))
 irr <- readRDS(parameter.out.tmp)
-parameter.out.tmp = gsub(x = parameter.file, pattern = "parametersUniform_", replacement = paste0("parametersUniform", "Paddy", "_"))
-paddy <- readRDS(parameter.out.tmp)
 parameter.out.tmp = gsub(x = parameter.file, pattern = "parametersUniform_", replacement = paste0("parametersUniform", "Rainfed", "_"))
 rain <- readRDS(parameter.out.tmp)
 
@@ -44,7 +48,7 @@ nc_close(nc)
 
 # Setup
 na.map = is.na(mask) | mask == 0
-nvegclass = dim(Cv.veg)[3] + 2 + nrow(split)
+nvegclass = dim(Cv.veg)[3] + 1 + nrow(split)
 
 put.maps <- function(nc.file, maps, veg.idx) {
   nc <- nc_open(nc.file, write = T)
@@ -137,11 +141,6 @@ for(i in 1:length(irr)){
   irr.filled[[i]] = fillMap(irr[[i]], na.map, getNearestZero)
 }
 names(irr.filled) = names(irr)
-paddy.filled = list()
-for(i in 1:length(paddy)){
-  paddy.filled[[i]] = fillMap(paddy[[i]], na.map, getNearestZero)
-}
-names(paddy.filled) = names(paddy)
 rain.filled = list()
 for(i in 1:length(rain)){
   rain.filled[[i]] = fillMap(rain[[i]], na.map, getNearestZero)
@@ -162,11 +161,10 @@ for(i in 1:nrow(split)){
 Cv.new <- array(0, dim = c(dim(mask)[1], dim(mask)[2], nvegclass))
 Cv.new[, , 11] <- rain.filled[["Cv"]]
 Cv.new[, , 12] <- irr.filled[["Cv"]]
-Cv.new[, , 13] <- paddy.filled[["Cv"]]
 
 for(i in 1:nrow(split)){
   data.filled = get(x = paste0(split$name[i], ".filled"))
-  Cv.new[, , 13 + i] <- data.filled[["Cv"]]
+  Cv.new[, , 12 + i] <- data.filled[["Cv"]]
 }
 
 for (x in 1:dim(mask)[1]) {
@@ -176,7 +174,7 @@ for (x in 1:dim(mask)[1]) {
       next
     }
 
-    crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
+    crop.f <- irr.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
     for(i in 1:nrow(split)){
       data.filled = get(x = paste0(split$name[i], ".filled"))
       crop.f <- crop.f + data.filled[["Cv"]][x,y]
@@ -242,11 +240,10 @@ addVegVars(nc.file = vegetation.out, nveg_class = nvegclass)
 put.old(vegetation.out, vegetation.file)
 put.maps(vegetation.out, rain.filled, 11)
 put.maps(vegetation.out, irr.filled, 12)
-put.maps(vegetation.out, paddy.filled, 13)
 
 for(i in 1:nrow(split)){
   data.filled = get(x = paste0(split$name[i], ".filled"))
-  put.maps(vegetation.out, data.filled, 13 + i)
+  put.maps(vegetation.out, data.filled, 12 + i)
 }
 
 nc <- nc_open(vegetation.out, write = T)

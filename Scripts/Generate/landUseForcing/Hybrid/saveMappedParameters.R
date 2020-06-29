@@ -7,8 +7,14 @@ cc.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_30min_global
 Cv.file <- "Saves/cellParameters_Cv.csv"
 fcanopy.file <- "Saves/cellParameters_fcanopy.csv"
 param.out <- "Saves/parameters_30min_global.RDS"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -22,7 +28,6 @@ load.values <- function(inname, name) {
 
 cc <- read.csv(cc.file, header = TRUE, stringsAsFactors = F)
 
-load.values("Paddy", "paddy")
 load.values("Irrigated", "irr")
 load.values("Rainfed", "rain")
 
@@ -36,10 +41,6 @@ for(i in 1:nrow(split)){
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 
-loc.paddy <- aggregate(
-  x = cc[cc$crop == 3 & ! cc$crop %in% split$id, c("lon", "lat", "row", "column")],
-  by = list(cc$cell_ID[cc$crop == 3 & ! cc$crop %in% split$id]), FUN = mean
-)
 loc.irr <- aggregate(
   x = cc[cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id, c("lon", "lat", "row", "column")],
   by = list(cc$cell_ID[cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id]), FUN = mean
@@ -89,7 +90,6 @@ map.values <- function(name) {
 
 maps.rain <- map.values("rain")
 maps.irr <- map.values("irr")
-maps.paddy <- map.values("paddy")
 
 for(i in 1:nrow(split)){
   maps.split <- map.values(split$name[i])
@@ -97,9 +97,6 @@ for(i in 1:nrow(split)){
 }
 
 # Save
-parameter.out.tmp = gsub(x = param.out, pattern = "parameters_", replacement = paste0("parameters", "Paddy", "_"))
-dir.create(dirname(parameter.out.tmp))
-saveRDS(maps.paddy, parameter.out.tmp)
 parameter.out.tmp = gsub(x = param.out, pattern = "parameters_", replacement = paste0("parameters", "Irrigated", "_"))
 dir.create(dirname(parameter.out.tmp))
 saveRDS(maps.irr, parameter.out.tmp)

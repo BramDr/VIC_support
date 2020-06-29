@@ -3,45 +3,56 @@ library(fields)
 rm(list = ls())
 
 # Input
-function.script = "../../Support/mapFunctions.R"
-crop.file = "./Saves/crop_mapping_MIRCA.csv"
-Cc.dir = "./Saves"
-mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
-Ncrop.file = "./Saves/Ncrop_MIRCA_30min_global.RDS"
-veg.class.file = "./Saves/cropVegClass_MIRCA_30min_global.RDS"
-plant.file = "./Saves/plantDay_MIRCA_30min_global.RDS"
-harvest.file = "./Saves/harvestDay_MIRCA_30min_global.RDS"
-tsum1.dir = "./Saves"
-tsum2.dir = "./Saves"
-crop.out = "../../../Data/VIC/Parameters/global/crop_params_global.nc"
+function.script = "../../../../Scripts/Support/mapFunctions.R"
+mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
+crop.file = "./Saves/crop_mapping.csv"
+cc.file = "./Saves/cc_30min_global.RDS"
+Ncrop.file = "./Saves/Ncrop_30min_global.RDS"
+veg.class.file = "./Saves/cropVegClass_30min_global.RDS"
+plant.file = "./Saves/plantDay_30min_global.RDS"
+harvest.file = "./Saves/harvestDay_30min_global.RDS"
+tsum1.file = "./Saves/tsum1_30min_global.RDS"
+tsum2.file = "./Saves/tsum2_30min_global.RDS"
+fert.dvs.file = "./Saves/fertilizerDVS_30min_global.RDS"
+fert.n.file = "./Saves/fertilizerN_30min_global.RDS"
+fert.p.file = "./Saves/fertilizerP_30min_global.RDS"
+fert.k.file = "./Saves/fertilizerK_30min_global.RDS"
+min.n.file = "./Saves/mineralizationN_30min_global.RDS"
+min.p.file = "./Saves/mineralizationP_30min_global.RDS"
+min.k.file = "./Saves/mineralizationK_30min_global.RDS"
+rec.n.file = "./Saves/recoveryN_30min_global.RDS"
+rec.p.file = "./Saves/recoveryP_30min_global.RDS"
+rec.k.file = "./Saves/recoveryK_30min_global.RDS"
+crop.out = "../../../../Data/VIC/Parameters/global/crop_params_MIRCAhybrid_global.nc"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
+cc = readRDS(cc.file)
 Ncrop = readRDS(Ncrop.file)
 veg.class = readRDS(veg.class.file)
 plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
-
-na.map.c = Ncrop == 0
+tsum1 = readRDS(tsum1.file)
+tsum2 = readRDS(tsum2.file)
+fert.dvs = readRDS(fert.dvs.file)
+fert.n = readRDS(fert.n.file)
+fert.p = readRDS(fert.p.file)
+fert.k = readRDS(fert.k.file)
+min.n = readRDS(min.n.file)
+min.p = readRDS(min.p.file)
+min.k = readRDS(min.k.file)
+rec.n = readRDS(rec.n.file)
+rec.p = readRDS(rec.p.file)
+rec.k = readRDS(rec.k.file)
 
 nc = nc_open(mask.file)
-na.map = ncvar_get(nc, nc$var$mask)
+mask = ncvar_get(nc, "mask")
 nc_close(nc)
-na.map = is.na(na.map) | na.map != 1
-image.plot(na.map)
-
-Cc.files = list.files(path = Cc.dir, pattern = "Cc_.*_MIRCA_", full.names = T)
-tsum1.files = list.files(path = tsum1.dir, pattern = "tsum1_.*_single_", full.names = T)
-tsum2.files = list.files(path = tsum2.dir, pattern = "tsum2_.*_single_", full.names = T)
 
 # Setup
 source(function.script)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
-
-vic.id.u = unique(crops$vic.id)
-Ncrop = Ncrop[,,1:(dim(Ncrop)[3] - 1)]
-veg.class = veg.class[,,1:(dim(veg.class)[3] - 1)]
 
 # Create
 dim.lon <- ncdim_def(
@@ -56,12 +67,6 @@ dim.lat <- ncdim_def(
   vals = lats,
   longname = "latitude of grid cell center"
 )
-dim.nchar <- ncdim_def(
-  name = "nchar",
-  units = "#",
-  vals = 1:254,
-  longname = "Maximum number of string characters"
-)
 dim.crop <- ncdim_def(
   name = "crop_class",
   units = "#",
@@ -74,6 +79,12 @@ dim.month <- ncdim_def(
   vals = 1:12,
   longname = "month of year (1-12)"
 )
+dim.fert <- ncdim_def(
+  name = "fertilizer_times",
+  units = "#",
+  vals = 1,
+  longname = "Fertilizer time"
+)
 
 var.Ncrop <- ncvar_def(
   name = "Ncrop",
@@ -82,14 +93,6 @@ var.Ncrop <- ncvar_def(
   missval = -1,
   longname = "Number of active crop classes",
   compression = 5
-)
-var.crop_desc <- ncvar_def(
-  name = "crop_desc",
-  units = "N/A",
-  dim = list(dim.nchar, dim.crop),
-  longname = "Crop description",
-  compression = 5,
-  prec = "char"
 )
 var.crop_veg_class <- ncvar_def(
   name = "crop_veg_class",
@@ -139,95 +142,170 @@ var.TSUM2 <- ncvar_def(
   longname = "Daily temperature sum from anthesis to maturity",
   compression = 5
 )
+var.DVS_point <- ncvar_def(
+  name = "DVS_point",
+  units = "-",
+  dim = list(dim.lon, dim.lat, dim.crop, dim.fert),
+  missval = -1,
+  longname = "DVS fraction after which fertilizer is applied",
+  compression = 5
+)
+var.N_amount <- ncvar_def(
+  name = "N_amount",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop, dim.fert),
+  missval = -1,
+  longname = "N fertilizer amount",
+  compression = 5
+)
+var.P_amount <- ncvar_def(
+  name = "P_amount",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop, dim.fert),
+  missval = -1,
+  longname = "P fertilizer amount",
+  compression = 5
+)
+var.K_amount <- ncvar_def(
+  name = "K_amount",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop, dim.fert),
+  missval = -1,
+  longname = "K fertilizer amount",
+  compression = 5
+)
+var.N_mins <- ncvar_def(
+  name = "N_mins",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N amount for mineralization",
+  compression = 5
+)
+var.N_recovery <- ncvar_def(
+  name = "N_recovery",
+  units = "kg kg-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N mineralization recovery rate",
+  compression = 5
+)
+var.P_mins <- ncvar_def(
+  name = "P_mins",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N amount for mineralization",
+  compression = 5
+)
+var.P_recovery <- ncvar_def(
+  name = "P_recovery",
+  units = "kg kg-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N mineralization recovery rate",
+  compression = 5
+)
+var.K_mins <- ncvar_def(
+  name = "K_mins",
+  units = "kg ha-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N amount for mineralization",
+  compression = 5
+)
+var.K_recovery <- ncvar_def(
+  name = "K_recovery",
+  units = "kg kg-1",
+  dim = list(dim.lon, dim.lat, dim.crop),
+  missval = -1,
+  longname = "N mineralization recovery rate",
+  compression = 5
+)
 
-# Calculate
-description = rep("", dim.crop$len)
-for(i in 1:nrow(crops)){
-  description[i] = paste0(crops$mirca.name[i], "_", crops$water[i], "_s", crops$season[i])
-}
-
-Cc.veg = array(0, dim = c(dim(Ncrop)[1], dim(Ncrop)[2], length(vic.id.u), 12))
-for(i in 1:nrow(crops)) {
-  vic.id = crops$vic.id[i]
-  vic.idx = which(vic.id.u == vic.id)
-  
-  Cc.file = grep(x = Cc.files, pattern = paste0("Cc_", i, "_"), value = T)
-  print(basename(Cc.file))
-  Cc.crop = readRDS(Cc.file)
-  
-  Cc.veg[,,vic.idx,] = Cc.veg[,,vic.idx,] + Cc.crop
-}
-image.plot(Cc.veg[,,1,1])
-image.plot(Cc.veg[,,dim(Cc.veg)[3],1])
-
-for(i in 1:nrow(crops)){
-  print(i)
-  
-  plant[,,i] <- fillMap(map = plant[,,i], na.map = na.map.c[,,i], nearest.function = getNearestMean)
-  harvest[,,i] <- fillMap(map = harvest[,,i], na.map = na.map.c[,,i], nearest.function = getNearestMean)
-  veg.class[,,i] <- fillMap(map = veg.class[,,i], na.map = na.map.c[,,i], nearest.function = getNearestCount)
-}
-Ncrop.sum = apply(X = Ncrop, MARGIN = c(1,2), FUN = sum)
-Ncrop.sum <- fillMap(map = Ncrop.sum, na.map = na.map, nearest.function = getNearestZero)
-image.plot(Ncrop.sum)
-
-# Save
-print(basename(crop.out))
 dir.create(dirname(crop.out))
 nc <- nc_create(
   crop.out,
   list(
     var.Ncrop,
-    var.crop_desc,
     var.Cc,
     var.crop_veg_class,
     var.plant_day,
     var.harvest_day,
     var.TSUM1,
-    var.TSUM2
+    var.TSUM2,
+    var.DVS_point,
+    var.N_amount,
+    var.P_amount,
+    var.K_amount,
+    var.N_mins,
+    var.N_recovery,
+    var.P_mins,
+    var.P_recovery,
+    var.K_mins,
+    var.K_recovery
   )
 )
 nc_close(nc)
 
+i = 1
+
 nc <- nc_open(crop.out, write = T)
+
+na.map = is.na(mask) | mask == 0
+image.plot(na.map)
+
+Ncrop.filled <- fillMap(map = Ncrop, na.map = na.map, nearest.function = getNearestZero)
+
+ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)
+
+for(i in 1:nrow(crops)){
+  print(crops$name[i])
+  
+  cc.sum = apply(X = cc[,,i,], MARGIN = c(1,2), FUN = sum)
+  na.map = is.na(cc.sum) | cc.sum == 0
+  image.plot(na.map)
+  
+  ## Calculate
+  cc.filled <- fillMap(map = cc[,,i,], na.map =na.map, nearest.function = getNearestZero)
+  veg.class.filled <- fillMap(map = veg.class[,,i], na.map =na.map, nearest.function = getNearestCount)
+  plant.filled <- fillMap(map = plant[,,i], na.map =na.map, nearest.function = getNearestMean)
+  harvest.filled <- fillMap(map = harvest[,,i], na.map =na.map, nearest.function = getNearestMean)
+  tsum1.filled <- fillMap(map = tsum1[,,i], na.map =na.map, nearest.function = getNearestMean)
+  tsum2.filled <- fillMap(map = tsum2[,,i], na.map =na.map, nearest.function = getNearestMean)
+  fert.dvs.filled <- fillMap(map = fert.dvs[,,i], na.map =na.map, nearest.function = getNearestMean)
+  fert.n.filled <- fillMap(map = fert.n[,,i], na.map =na.map, nearest.function = getNearestMean)
+  fert.p.filled <- fillMap(map = fert.p[,,i], na.map =na.map, nearest.function = getNearestMean)
+  fert.k.filled <- fillMap(map = fert.k[,,i], na.map =na.map, nearest.function = getNearestMean)
+  min.n.filled <- fillMap(map = min.n[,,i], na.map =na.map, nearest.function = getNearestMean)
+  min.p.filled <- fillMap(map = min.p[,,i], na.map =na.map, nearest.function = getNearestMean)
+  min.k.filled <- fillMap(map = min.k[,,i], na.map =na.map, nearest.function = getNearestMean)
+  rec.n.filled <- fillMap(map = rec.n[,,i], na.map =na.map, nearest.function = getNearestMean)
+  rec.p.filled <- fillMap(map = rec.p[,,i], na.map =na.map, nearest.function = getNearestMean)
+  rec.k.filled <- fillMap(map = rec.k[,,i], na.map =na.map, nearest.function = getNearestMean)
+  
+  ncvar_put(nc = nc, varid = var.Cc, vals = cc.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+  ncvar_put(nc = nc, varid = var.crop_veg_class, vals = veg.class.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.plant_day, vals = plant.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.harvest_day, vals = harvest.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.TSUM1, vals = tsum1.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.TSUM2, vals = tsum2.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.DVS_point, vals = fert.dvs.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+  ncvar_put(nc = nc, varid = var.N_amount, vals = fert.n.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+  ncvar_put(nc = nc, varid = var.P_amount, vals = fert.p.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+  ncvar_put(nc = nc, varid = var.K_amount, vals = fert.k.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
+  ncvar_put(nc = nc, varid = var.N_mins, vals = min.n.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.N_recovery, vals = rec.n.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.P_mins, vals = min.p.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.P_recovery, vals = rec.p.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.K_mins, vals = min.k.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.K_recovery, vals = rec.k.filled, start = c(1,1,i), count = c(-1,-1,1))
+}
+
 ncatt_put(
   nc = nc,
   varid = 0,
   attname = "Description",
   attval = "Crop parameters for VIC. Created by Bram Droppers"
 )
-ncvar_put(nc = nc, varid = nc$var$Ncrop, vals = Ncrop.sum)
-ncvar_put(nc = nc, varid = nc$var$crop_desc, vals = description)
-ncvar_put(nc = nc, varid = nc$var$crop_veg_class, vals = veg.class)
-ncvar_put(nc = nc, varid = nc$var$plant_day, vals = plant)
-ncvar_put(nc = nc, varid = nc$var$harvest_day, vals = harvest)
-
-for(i in 1:nrow(crops)){
-  print(crops$mirca.name[i])
-  
-  vic.idx = which(vic.id.u == crops$vic.id[i])
-      
-  Cc.file = grep(x = Cc.files, pattern = paste0("Cc_", i, "_"), value = T)
-  print(basename(Cc.file))
-  tsum1.file = grep(x = tsum1.files, pattern = paste0("tsum1_", i, "_"), value = T)
-  print(basename(tsum1.file))
-  tsum2.file = grep(x = tsum2.files, pattern = paste0("tsum2_", i, "_"), value = T)
-  print(basename(tsum2.file))
-  
-  Cc.c = readRDS(Cc.file)
-  tsum1.c = readRDS(tsum1.file)
-  tsum2.c = readRDS(tsum2.file)
-  
-  tsum1.c <- fillMap(map = tsum1.c, na.map = na.map.c[,,i], nearest.function = getNearestMean)
-  tsum2.c <- fillMap(map = tsum2.c, na.map = na.map.c[,,i], nearest.function = getNearestMean)
-  for(z in 1:dim(Cc.c)[3]){
-    Cc.c[,,z] <- fillMap(map = Cc.c[,,z] / Cc.veg[,,vic.idx,z], na.map = na.map.c[,,i], nearest.function = getNearestZero)
-  }
-  #image.plot(Cc.c[,,5])
-  
-  ncvar_put(nc = nc, varid = nc$var$Cc, vals = Cc.c, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-  ncvar_put(nc = nc, varid = nc$var$TSUM1, vals = tsum1.c, start = c(1,1,i), count = c(-1,-1,1))
-  ncvar_put(nc = nc, varid = nc$var$TSUM2, vals = tsum2.c, start = c(1,1,i), count = c(-1,-1,1))
-  print("done")
-}
 nc_close(nc)

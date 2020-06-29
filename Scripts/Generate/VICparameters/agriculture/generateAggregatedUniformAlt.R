@@ -6,9 +6,9 @@ rm(list = ls())
 function.script <- "../../../Support/generateFunctions.R"
 map.script <- "../../../Support/mapFunctions.R"
 mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
-paddy.file <- "Aggregated/Saves/parametersUniformPaddy_30min_global.RDS"
-irr.file <- "Aggregated/Saves/parametersUniformIrrigated_30min_global.RDS"
-rain.file <- "Aggregated/Saves/parametersUniformRainfed_30min_global.RDS"
+paddy.file <- "Aggregated/Saves/parametersUniformAltPaddy_30min_global.RDS"
+irr.file <- "Aggregated/Saves/parametersUniformAltIrrigated_30min_global.RDS"
+rain.file <- "Aggregated/Saves/parametersUniformAltRainfed_30min_global.RDS"
 vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietAlt_global.nc"
 vegetation.out <- "../../../../Data/VIC/Parameters/global/vegetation_params_MIRCAaggregatedUniformAlt_global.nc"
 

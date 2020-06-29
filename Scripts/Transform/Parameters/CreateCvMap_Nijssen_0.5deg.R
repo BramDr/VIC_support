@@ -4,7 +4,7 @@ rm(list = ls())
 # Input
 cv.file <- "../../../Data/Primary/Nijssen2001/0.5deg/global_veg_param_new"
 mapping.file <- "../../../Data/Primary/Nijssen2001/0.5deg/global_soil_param_new"
-cv.out <- "./Saves/cv_Nijssen30min_30min_global.RDS"
+cv.out <- "../../../Data/Transformed/Parameters/cv_Nijssen30min_30min_global.RDS"
 
 # Load
 cv.text <- readLines(con = cv.file)

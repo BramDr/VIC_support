@@ -4,7 +4,7 @@ rm(list = ls())
 # Input
 lai.file <- "../../../Data/Primary/vanVliet2016/global_veg_param.txt"
 mapping.file <- "../../../Data/Primary/vanVliet2016/global_soil_file.new.arno.modified.fe.wfd"
-lai.out <- "./Saves/LAI_Vliet30min_30min_global.RDS"
+lai.out <- "../../../Data/Transformed/Parameters/LAI_Vliet30min_30min_global.RDS"
 
 # Load
 lai.text <- readLines(con = lai.file)

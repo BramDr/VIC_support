@@ -9,8 +9,14 @@ param.file <- "Saves/parameters_30min_global.RDS"
 mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
 vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietAlt_global.nc"
 cv.monthly.out = "Saves/Cv_monthly_30min_global.RDS"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -18,8 +24,6 @@ source(map.script)
 
 param.file.tmp = gsub(x = param.file, pattern = "parameters_", replacement = paste0("parameters", "Irrigated", "_"))
 irr <- readRDS(param.file.tmp)
-param.file.tmp = gsub(x = param.file, pattern = "parameters_", replacement = paste0("parameters", "Paddy", "_"))
-paddy <- readRDS(param.file.tmp)
 param.file.tmp = gsub(x = param.file, pattern = "parameters_", replacement = paste0("parameters", "Rainfed", "_"))
 rain <- readRDS(param.file.tmp)
 
@@ -39,7 +43,7 @@ nc_close(nc)
 
 # Setup
 na.map = is.na(mask) | mask == 0
-nveg = dim(Cv.veg)[3] + 2 + nrow(split)
+nveg = dim(Cv.veg)[3] + 1 + nrow(split)
 nmonths = 12
 
 # Caclulate
@@ -49,11 +53,6 @@ for(i in 1:length(irr)){
   irr.filled[[i]] = fillMap(irr[[i]], na.map, getNearestZero)
 }
 names(irr.filled) = names(irr)
-paddy.filled = list()
-for(i in 1:length(paddy)){
-  paddy.filled[[i]] = fillMap(paddy[[i]], na.map, getNearestZero)
-}
-names(paddy.filled) = names(paddy)
 rain.filled = list()
 for(i in 1:length(rain)){
   rain.filled[[i]] = fillMap(rain[[i]], na.map, getNearestZero)
@@ -75,10 +74,9 @@ Cv.monthly <- array(0, dim = c(dim(mask)[1], dim(mask)[2], nveg, nmonths))
 for(z in 1:nmonths){
   Cv.monthly[, , 11, z] <- rain.filled[["Cv"]]
   Cv.monthly[, , 12, z] <- irr.filled[["Cv"]]
-  Cv.monthly[, , 13, z] <- paddy.filled[["Cv"]]
   for(i in 1:nrow(split)){
     split.filled = get(x = paste0(split$name[i], ".filled"))
-    Cv.monthly[, , 13 + i, z] <- split.filled[["Cv"]]
+    Cv.monthly[, , 12 + i, z] <- split.filled[["Cv"]]
   }
 }
 for (x in 1:dim(mask)[1]) {
@@ -88,7 +86,7 @@ for (x in 1:dim(mask)[1]) {
       next
     }
     
-    crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
+    crop.f <- irr.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
     for(i in 1:nrow(split)){
       data.filled = get(x = paste0(split$name[i], ".filled"))
       crop.f <- crop.f + data.filled[["Cv"]][x,y]
@@ -141,14 +139,10 @@ for(z in 1:nmonths){
   Cv.monthly.adj[, , 12, z] <- Cv.monthly.adj[, , 12, z] - diff
   Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] <- Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] + diff
   
-  diff = Cv.monthly[, , 13, z] * (1 - paddy.filled[["fcanopy"]][,,z])
-  Cv.monthly.adj[, , 13, z] <- Cv.monthly.adj[, , 13, z] - diff
-  Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] <- Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] + diff
-  
   for(i in 1:nrow(split)){
     split.filled = get(x = paste0(split$name[i], ".filled"))
-    diff = Cv.monthly[, , 13 + i, z] * (1 - split.filled[["fcanopy"]][,,z])
-    Cv.monthly.adj[, , 13 + i, z] <- Cv.monthly.adj[, , 13 + i, z] - diff
+    diff = Cv.monthly[, , 12 + i, z] * (1 - split.filled[["fcanopy"]][,,z])
+    Cv.monthly.adj[, , 12 + i, z] <- Cv.monthly.adj[, , 12 + i, z] - diff
     Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] <- Cv.monthly.adj[, , dim(Cv.monthly.adj)[3], z] + diff
   }
 }

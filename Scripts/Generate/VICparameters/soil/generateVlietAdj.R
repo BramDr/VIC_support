@@ -72,7 +72,7 @@ Wcr.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] = Wpwp.fill[!is.na(Wcr.fill) &
 depth[,,3] = 100 / ((1 - bulk.dens.fill[,,3] / soil.dens.fill[,,3]) * 1000)
 
 max.moist = (1 - bulk.dens.fill / soil.dens.fill) * 1000 * depth
-init.moist.fill = Wcr.fill * max.moist
+init.moist.fill = (Wcr.fill + (1 - Wcr.fill) * 0.5) * max.moist
 
 # Save
 dir.create(dirname(vic.out))

@@ -3,7 +3,7 @@ rm(list = ls())
 
 # Input
 soil.file <- "../../../Data/Primary/Nijssen2001/0.5deg/global_soil_param_new"
-baseflow.out <- "./Saves/baseflow_Nijssen30min_30min_global.RDS"
+baseflow.out <- "../../../Data/Transformed/Parameters/baseflow_Nijssen30min_30min_global.RDS"
 
 # Load
 soil <- read.table(file = soil.file)

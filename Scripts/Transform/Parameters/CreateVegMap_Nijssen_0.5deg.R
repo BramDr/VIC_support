@@ -3,7 +3,7 @@ rm(list = ls())
 
 # Input
 veg.file <- "../../../Data/Primary/Nijssen2001/0.5deg/world_veg_lib.txt"
-veg.out <- "./Saves/vegetation_Nijssen30min_30min_global.RDS"
+veg.out <- "../../../Data/Transformed/Parameters/vegetation_Nijssen30min_30min_global.RDS"
 
 # Load
 veg.text <- readLines(con = veg.file)

@@ -18,7 +18,8 @@ mask <- readRDS(mask.file)
 uh <- read.table(uh.file, sep = ";")
 
 # Setup
-times <- cumsum(rep(3600, 24 * 16))
+times <- cumsum(rep(3600, 24 * 7))
+times <- c(0, times)
 
 interp <- function(x, x1, x2, y1, y2) {
   if (x < x1[1]) {

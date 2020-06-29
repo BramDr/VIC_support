@@ -4,7 +4,7 @@ rm(list = ls())
 # Input
 soil.file <- "../../../Data/Primary/vanVliet2016/global_soil_file.new.arno.modified.fe.wfd"
 header.file <- "../../../Data/Primary/Nijssen2001/2deg/world.soil.parameter.hdr"
-soil.out <- "./Saves/soil_Vliet30min_30min_global.RDS"
+soil.out <- "../../../Data/Transformed/Parameters/soil_Vliet30min_30min_global.RDS"
 
 # Load
 soil <- read.table(soil.file)

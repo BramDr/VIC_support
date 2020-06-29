@@ -83,7 +83,7 @@ for (z in 1:dim(dom.int)[3]) {
   nc_close(nc)
 
   for (m in 1:12) {
-    frac <- 1 + (tmon[, , m] - tyear) / (tyear.max - tyear.min) * 0.1
+    frac <- 1 + (tmon[, , m] - tyear) / (tyear.max - tyear.min) * 0.45
     dom.dem[, , (z - 1) * 12 + m] <- dom.int[, , z] * pop[, , z] / 365 / area * 1e3 * frac
   }
 }

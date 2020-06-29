@@ -11,8 +11,14 @@ fc.tile.monthly.file <- "Saves/subcropCalendar_coverageTileMonthly_30min_global.
 avgf.file <- "Saves/subcropCalendar_fractionTile_30min_global.csv"
 Cv.out <- "Saves/cellParameters_Cv.csv"
 fcanopy.out <- "Saves/cellParameters_fcanopy.csv"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -33,13 +39,13 @@ calc.values <- function(sel, name) {
 
   fixed.sel <- aggregate(x = fixed[sel, ], by = list(cc$cell_ID[sel]), FUN = sum)
 
-  fc.adj <- fc.sel
-  for (i in 1:ncol(fc.sel)) {
-    fc.adj[, i] <- fc.sel[, i] * fixed.sel$fcanopy2
-  }
+  #fc.adj <- fc.sel
+  #for (i in 1:ncol(fc.sel)) {
+  #  fc.adj[, i] <- fc.sel[, i] * fixed.sel$fcanopy2
+  #}
 
   assign(x = paste0("Cv.", name), value = cv.sel, envir = .GlobalEnv)
-  assign(x = paste0("fcanopy.", name), value = fc.adj, envir = .GlobalEnv)
+  assign(x = paste0("fcanopy.", name), value = fc.sel, envir = .GlobalEnv)
 }
 save.values <- function(name, outname) {
   tmp.Cv.out <- gsub(x = Cv.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))
@@ -54,11 +60,9 @@ save.values <- function(name, outname) {
 fixed[, "fcanopy2"] <- avgf * fixed[, "fcanopy2"]
 
 # Calculate
-sel.paddy <- cc$crop == 3 & ! cc$crop %in% split$id
 sel.irr <- cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id
 sel.rain <- cc$crop %in% c(27:52) & ! cc$crop %in% split$id
 
-calc.values(sel = sel.paddy, name = "paddy")
 calc.values(sel = sel.irr, name = "irr")
 calc.values(sel = sel.rain, name = "rain")
 
@@ -68,7 +72,6 @@ for(i in 1:nrow(split)){
 }
 
 ## Adjustments
-fcanopy.paddy[fcanopy.paddy > 1] <- 1
 fcanopy.irr[fcanopy.irr > 1] <- 1
 fcanopy.rain[fcanopy.rain > 1] <- 1
 
@@ -78,7 +81,6 @@ for(i in 1:nrow(split)){
   assign(x = paste0("fcanopy.", split$name[i]), fcanopy.split)
 }
 
-fcanopy.paddy[fcanopy.paddy < 0.00011] <- 0.00011
 fcanopy.irr[fcanopy.irr < 0.00011] <- 0.00011
 fcanopy.rain[fcanopy.rain < 0.00011] <- 0.00011
 
@@ -89,7 +91,6 @@ for(i in 1:nrow(split)){
 }
 
 # Save
-save.values(name = "paddy", outname = "Paddy")
 save.values(name = "irr", outname = "Irrigated")
 save.values(name = "rain", outname = "Rainfed")
 

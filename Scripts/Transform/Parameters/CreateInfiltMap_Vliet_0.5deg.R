@@ -3,7 +3,7 @@ rm(list = ls())
 
 # Input
 soil.file <- "../../../Data/Primary/vanVliet2016/global_soil_file.new.arno.modified.fe.wfd"
-infilt.out <- "./Saves/infilt_Vliet30min_30min_global.RDS"
+infilt.out <- "../../../Data/Transformed/Parameters/infilt_Vliet30min_30min_global.RDS"
 
 # Load
 soil <- read.table(file = soil.file)

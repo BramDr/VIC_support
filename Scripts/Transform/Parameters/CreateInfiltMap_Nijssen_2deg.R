@@ -4,7 +4,7 @@ rm(list = ls())
 # Input
 soil.file <- "../../../Data/Primary/Nijssen2001/2deg/soil_cal_tran.merged.txt"
 mapping.file <- "../../../Data/Primary/Nijssen2001/2deg/soil_cal_tran.merged.txt"
-infilt.out <- "./Saves/infilt_Nijssen120min_30min_global.RDS"
+infilt.out <- "../../../Data/Transformed/Parameters/infilt_Nijssen120min_30min_global.RDS"
 
 # Load
 soil <- read.table(file = soil.file)

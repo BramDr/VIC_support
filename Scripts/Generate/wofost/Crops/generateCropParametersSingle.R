@@ -14,6 +14,8 @@ param.desc = read.csv(param.desc.file, stringsAsFactors = F, sep = ";")
 n.space = 16
 in.files = list.files(path = in.dir, pattern = ".yaml", full.names = T)
 in.files2 = list.files(path = in.dir, pattern = ".DATp", full.names = T)
+
+i = 4
 for (i in 1:nrow(crops)) {
   print(crops$name[i])
   
@@ -92,9 +94,22 @@ for (i in 1:nrow(crops)) {
       } else if(param.desc$name[k] == "MinStomResist") {
         value = 100
       } else if(param.desc$name[k] == "MaxArchResist") {
-        value = 25
+        value = 3
+      } else if(param.desc$name[k] == "Fcanopy") {
+        value = 1
       } else if(param.desc$name[k] == "IDSL") {
         value = 0
+      }
+      
+      if(crops$name[i] == "rice"){
+        if(param.desc$name[k] == "Fcanopy") {
+            value = 0.75
+        }
+      }
+      if(crops$name[i] == "soybean"){
+        if(param.desc$name[k] == "Fcanopy") {
+          value = 0.75
+        }
       }
       
       if (is.na(value)) {
@@ -112,6 +127,12 @@ for (i in 1:nrow(crops)) {
     } else {
       if (sum(is.na(values$Y)) > 0) {
         stop("X is present but not Y?")
+      }
+      
+      if(crops$name[i] == "rice") {
+        if(param.desc$name[k] == "AMAXTB") {
+          values$Y = 60
+        }
       }
       
       for(j in 1:nrow(values)){

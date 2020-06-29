@@ -8,15 +8,15 @@ map.support.file = "../../../../Scripts/Support/mapFunctions.R"
 generate.support.file = "../../../../Scripts/Support/generateFunctions.R"
 expt.factor.file = "../../../../Data/Transformed/Parameters/factorExpt_Nijssen120min_30min_global.RDS"
 ksat.factor.file = "../../../../Data/Transformed/Parameters/factorKsat_Nijssen120min_30min_global.RDS"
-quartz.file = "../../../../Data/Transformed/Soil/quartz_30min_global.RDS"
-expt.file = "../../../../Data/Transformed/Soil/expt_30min_global.RDS"
-ksat.file = "../../../../Data/Transformed/Soil/ksat_30min_global.RDS"
-bulk.dens.file = "../../../../Data/Transformed/Soil/bulk_dens_30min_global.RDS"
-Wcr.file = "../../../../Data/Transformed/Soil/Wcr_30min_global.RDS"
-Wpwp.file = "../../../../Data/Transformed/Soil/Wpwp_30min_global.RDS"
-bubble.file = "../../../../Data/Transformed/Soil/bubble_30min_global.RDS"
-soil.dens.file = "../../../../Data/Transformed/Soil/soil_dens_30min_global.RDS"
-resid.moist.file = "../../../../Data/Transformed/Soil/resid_moist_30min_global.RDS"
+quartz.file = "../../../../Data/Transformed/Soil/ISRIC/quartz_30min_global.RDS"
+expt.file = "../../../../Data/Transformed/Soil/ISRIC/expt_30min_global.RDS"
+ksat.file = "../../../../Data/Transformed/Soil/ISRIC/ksat_30min_global.RDS"
+bulk.dens.file = "../../../../Data/Transformed/Soil/ISRIC/bulk_dens_30min_global.RDS"
+Wcr.file = "../../../../Data/Transformed/Soil/ISRIC/Wcr_30min_global.RDS"
+Wpwp.file = "../../../../Data/Transformed/Soil/ISRIC/Wpwp_30min_global.RDS"
+bubble.file = "../../../../Data/Transformed/Soil/ISRIC/bubble_30min_global.RDS"
+soil.dens.file = "../../../../Data/Transformed/Soil/ISRIC/soil_dens_30min_global.RDS"
+resid.moist.file = "../../../../Data/Transformed/Soil/ISRIC/resid_moist_30min_global.RDS"
 mask.file = "../../../../Data/Primary/VIC/domain_global.nc"
 vic.orig = "../../../../Data/Primary/VIC/VIC_params_global.nc"
 vic.out = "../../../../Data/VIC/Parameters/global/soil_params_SaxtonAdj_global.nc"
@@ -72,7 +72,7 @@ Wcr.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] = Wpwp.fill[!is.na(Wcr.fill) &
 depth[,,3] = 100 / ((1 - bulk.dens.fill[,,3] / soil.dens.fill[,,3]) * 1000)
 
 max.moist = (1 - bulk.dens.fill / soil.dens.fill) * 1000 * depth
-init.moist.fill = Wcr.fill * max.moist
+init.moist.fill = (Wcr.fill + (1 - Wcr.fill) * 0.5) * max.moist
 
 # Save
 dir.create(dirname(vic.out))

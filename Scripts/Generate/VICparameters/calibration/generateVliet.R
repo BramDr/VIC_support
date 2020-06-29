@@ -54,5 +54,7 @@ ncvar_put(nc, "Ds", Ds.fill)
 ncvar_put(nc, "Dsmax", Dsmax.fill)
 ncvar_put(nc, "Ws", Ws.fill)
 ncvar_put(nc, "c", c.fill)
+ncvar_put(nc, "depth", depth.fill)
+ncvar_put(nc, "infilt", infilt.fill)
 nc_close(nc)
 

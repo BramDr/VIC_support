@@ -6,8 +6,14 @@ rm(list = ls())
 cc.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
 fc.file <- "Saves/subcropCalendar_coverageTile_30min_global.csv"
 avgf.out <- "Saves/subcropCalendar_fractionTile_30min_global.csv"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -16,8 +22,6 @@ fc <- read.csv(file = fc.file, stringsAsFactors = F)
 
 # Calculate
 cc <- cbind(cc, fc)
-fc.cell.paddy <- aggregate(formula = meanfc.tile ~ cell_ID, data = cc[cc$crop == 3 & ! cc$crop %in% split$id, ], FUN = sum)
-fc.cell.paddy$paddy.sumfc <- fc.cell.paddy$meanfc
 fc.cell.irr <- aggregate(formula = meanfc.tile ~ cell_ID, data = cc[cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id, ], FUN = sum)
 fc.cell.irr$irr.sumfc <- fc.cell.irr$meanfc
 fc.cell.rain <- aggregate(formula = meanfc.tile ~ cell_ID, data = cc[cc$crop %in% c(27:52) & ! cc$crop %in% split$id, ], FUN = sum)
@@ -30,7 +34,6 @@ for(i in 1:nrow(split)){
 }
 
 cc.merge <- cc
-cc.merge <- join(cc.merge, fc.cell.paddy[, c("cell_ID", "paddy.sumfc")])
 cc.merge <- join(cc.merge, fc.cell.irr[, c("cell_ID", "irr.sumfc")])
 cc.merge <- join(cc.merge, fc.cell.rain[, c("cell_ID", "rain.sumfc")])
 for(i in 1:nrow(split)){
@@ -39,9 +42,6 @@ for(i in 1:nrow(split)){
 }
 
 cc.merge$avgf <- NA
-cc.merge$avgf[cc.merge$crop == 3 & ! cc$crop %in% split$id] <- 
-  cc.merge$meanfc[cc.merge$crop == 3 & ! cc$crop %in% split$id] /
-  cc.merge$paddy.sumfc[cc.merge$crop == 3 & ! cc$crop %in% split$id]
 cc.merge$avgf[cc.merge$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id] <- 
   cc.merge$meanfc[cc.merge$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id] /
   cc.merge$irr.sumfc[cc.merge$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id]

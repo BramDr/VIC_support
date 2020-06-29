@@ -30,13 +30,13 @@ calc.values <- function(sel, name) {
 
   fixed.sel <- aggregate(x = fixed[sel, ], by = list(cc$cell_ID[sel]), FUN = sum)
 
-  fc.adj <- fc.sel
-  for (i in 1:ncol(fc.sel)) {
-    fc.adj[, i] <- fc.sel[, i] * fixed.sel$fcanopy2
-  }
+  #fc.adj <- fc.sel
+  #for (i in 1:ncol(fc.sel)) {
+  #  fc.adj[, i] <- fc.sel[, i] * fixed.sel$fcanopy2
+  #}
   
   assign(x = paste0("Cv.", name), value = cv.sel, envir = .GlobalEnv)
-  assign(x = paste0("fcanopy.", name), value = fc.adj, envir = .GlobalEnv)
+  assign(x = paste0("fcanopy.", name), value = fc.sel, envir = .GlobalEnv)
 }
 save.values <- function(name, outname) {
   tmp.Cv.out <- gsub(x = Cv.out, pattern = "cellParameters", replacement = paste0("cellParameters", outname))

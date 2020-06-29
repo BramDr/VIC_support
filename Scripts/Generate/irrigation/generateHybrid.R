@@ -5,30 +5,37 @@ rm(list = ls())
 # Input
 support.script <- "../../../Scripts/Support/mapFunctions.R"
 mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
-gw.file <- "../../../Data/Transformed/Irrigation/irrigationGroundwaterFraction_30min_global.RDS"
 eff.file <- "../../../Data/Transformed/Irrigation/irrigationEfficiency_30min_global.RDS"
 irr.param.out <- "../../../Data/VIC/Parameters/global/irr_params_MIRCAhybrid_global.nc"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
-                   irr = c(0, 1),
-                   paddy = c(0, 0),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   irr = c(0, 1,
+                          0, 1,
+                          0, 1,
+                          0, 1),
+                   paddy = c(0, 0,
+                          0, 0,
+                          0, 1,
+                          0, 0),
                    stringsAsFactors = F)
 
 # Load
 source(support.script)
 
-groundwater <- readRDS(gw.file)
 eff <- readRDS(eff.file)
+groundwater <- array(0, dim(eff))
 mask <- readRDS(mask.file)
 
 # Setup
 na.map = is.na(mask) | mask == 0
 
-irr.veg <- c(12, 13)
-irr.pond <- c(0, 1)
+irr.veg <- c(12)
+irr.pond <- c(0)
 for(i in 1:nrow(split)){
   if(split$irr[i] == 1){
-    irr.veg <- c(irr.veg, 13 + i)
+    irr.veg <- c(irr.veg, 12 + i)
     irr.pond <- c(irr.pond, split$paddy[i])
   }
 }

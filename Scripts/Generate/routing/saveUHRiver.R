@@ -17,7 +17,8 @@ mask <- readRDS(mask.file)
 # Setup
 velocity <- 1
 diffusion <- 2000
-times <- cumsum(rep(3600, 24 * 16))
+times <- cumsum(rep(3600, 24 * 7))
+times <- c(0, times)
 
 get.river.uh <- function(velocity, diffusion, distance, time) {
   uh <- rep(0, length(time))

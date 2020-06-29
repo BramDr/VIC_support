@@ -4,7 +4,7 @@ rm(list = ls())
 # Input
 lai.file <- "../../../Data/Primary/Nijssen2001/2deg/world_veg_parameters.0.01_threshold.txt"
 mapping.file <- "../../../Data/Primary/Nijssen2001/2deg/world.soil.parameter.txt"
-lai.out <- "./Saves/LAI_Nijssen120min_30min_global.RDS"
+lai.out <- "../../../Data/Transformed/Parameters/LAI_Nijssen120min_30min_global.RDS"
 
 # Load
 lai.text <- readLines(con = lai.file)

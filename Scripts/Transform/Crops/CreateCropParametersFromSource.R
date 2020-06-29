@@ -8,7 +8,7 @@ in.dirs = c("../../../Data/Primary/WOFOST/Crop/Python_version/",
             "../../../Data/Primary/WOFOST/Crop/NPK_version/",
             "../../../Data/Primary/WOFOST/Crop/EU_project/",
             "../../../Data/Primary/WOFOST/Crop/CSA_practical/")
-out.dir = "../../../Data/Transformed/WOFOST/Crop/"
+out.dir = "../../../Data/Transformed/Crops/"
 
 # Load
 param.desc = read.csv(param.desc.file, stringsAsFactors = F, sep = ";")

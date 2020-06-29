@@ -22,6 +22,7 @@ gva$Gva <- gva$Gdp * (gva$GvaPGdp / 100)
 gva <- gva[, c("Country_number", "Year", "Gva")]
 
 # Setup
+fit.frac <- 0.8
 set.seed(23021992)
 data <- merge(gva, with, by = c("Country_number", "Year"))
 data <- merge(data, pop, by = c("Country_number", "Year"))
@@ -44,7 +45,7 @@ for (cn in unique(data$Country_number)) {
     sel <- c(sel, sd$row)
     isel <- c(isel, sd$row)
   } else {
-    ss <- sample(x = 1:nrow(sd), size = ceiling(nrow(sd) / 2))
+    ss <- sample(x = 1:nrow(sd), size = ceiling(nrow(sd) * fit.frac))
     iss <- 1:nrow(sd)
     iss <- iss[!iss %in% ss]
 

@@ -8,8 +8,14 @@ coverage.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_covera
 area.file <- "../../../../../Data/Primary/MIRCA2000/Cell area grid/cell_area_ha_30mn.asc"
 fc.tile.out <- "Saves/subcropCalendar_coverageTile_30min_global.csv"
 fc.tile.monthly.out <- "Saves/subcropCalendar_coverageTileMonthly_30min_global.csv"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated"),
-                   id = c(27, 1),
+split = data.frame(name = c("wheatRainfed","wheatIrrigated",
+                            "maizeRainfed","maizeIrrigated",
+                            "riceRainfed","riceIrrigated",
+                            "soybeanRainfed","soybeanIrrigated"),
+                   id = c(27, 1,
+                          28, 2,
+                          29, 3,
+                          34, 8),
                    stringsAsFactors = F)
 
 # Load
@@ -41,13 +47,6 @@ add.fc.tile.monthly <- function(x, columns) {
 
 # Calculate
 ## Calculate tile area
-cc.cell.paddy <- aggregate(
-  formula = cbind(area.1, area.2, area.3, area.4, area.5, area.6, area.7, area.8, area.9, area.10, area.11, area.12) ~ cell_ID + row + column,
-  data = cc[cc$crop == 3 & ! cc$crop %in% split$id, ], FUN = sum
-)
-cc.cell.paddy[, paste0("paddyarea.", 1:12)] <- cc.cell.paddy[, paste0("area.", 1:12)]
-cc.cell.paddy$maxpaddyarea <- apply(X = cc.cell.paddy[, paste0("paddyarea.", 1:12)], MARGIN = 1, FUN = max)
-
 cc.cell.irr <- aggregate(
   formula = cbind(area.1, area.2, area.3, area.4, area.5, area.6, area.7, area.8, area.9, area.10, area.11, area.12) ~ cell_ID + row + column,
   data = cc[cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id, ], FUN = sum
@@ -74,7 +73,6 @@ for(i in 1:nrow(split)){
 
 ## Merge
 cc.merge <- cc
-cc.merge <- join(cc.merge, cc.cell.paddy[, c("cell_ID", "maxpaddyarea", paste0("paddyarea.", 1:12))])
 cc.merge <- join(cc.merge, cc.cell.irr[, c("cell_ID", "maxirrarea", paste0("irrarea.", 1:12))])
 cc.merge <- join(cc.merge, cc.cell.rain[, c("cell_ID", "maxrainarea", paste0("rainarea.", 1:12))])
 for(i in 1:nrow(split)){
@@ -83,11 +81,6 @@ for(i in 1:nrow(split)){
 }
 cc.merge$croparea <- NA
 cc.merge$tilearea <- NA
-
-cc.merge[cc.merge$crop == 3 & ! cc$crop %in% split$id, paste0("croparea.", 1:12)] <-
-  cc.merge[cc.merge$crop == 3 & ! cc$crop %in% split$id, paste0("paddyarea.", 1:12)]
-cc.merge$tilearea[cc.merge$crop == 3 & ! cc$crop %in% split$id] <- 
-  cc.merge$maxpaddyarea[cc.merge$crop == 3 & ! cc$crop %in% split$id]
 
 cc.merge[cc.merge$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id, paste0("croparea.", 1:12)] <-
   cc.merge[cc.merge$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id, paste0("irrarea.", 1:12)]
@@ -105,12 +98,6 @@ for(i in 1:nrow(split)){
   cc.merge$tilearea[cc$crop %in% split$id[i]] <- 
     cc.merge[cc$crop %in% split$id[i], paste0("max", split$name[i], "area")]
 }
-
-cc.merge[!is.na(cc.merge$maxwheatIrrigatedarea),
-         c("cell_ID", "crop", "subcrop", "area", 
-           "maxwheatRainfedarea", "maxwheatIrrigatedarea", 
-           "maxpaddyarea", "maxirrarea", "maxrainarea", 
-           "tilearea")]
 
 ## Calculate coverage
 fc.tile <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc.tile, columns = colnames(cc.merge))
@@ -134,3 +121,4 @@ dir.create(dirname(fc.tile.out))
 write.csv(fc.tile, fc.tile.out, row.names = F)
 dir.create(dirname(fc.tile.monthly.out))
 write.csv(fc.tile.monthly, fc.tile.monthly.out, row.names = F)
+
