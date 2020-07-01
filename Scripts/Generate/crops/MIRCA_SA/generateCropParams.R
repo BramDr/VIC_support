@@ -13,6 +13,7 @@ plant.file = "./Saves/plantDay_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_30min_global.RDS"
 tsum1.file = "./Saves/tsum1_30min_global.RDS"
 tsum2.file = "./Saves/tsum2_30min_global.RDS"
+tfactor.file = "./Saves/tfactor_30min_global.RDS"
 fert.dvs.file = "./Saves/fertilizerDVS_30min_global.RDS"
 fert.n.file = "./Saves/fertilizerN_30min_global.RDS"
 fert.p.file = "./Saves/fertilizerP_30min_global.RDS"
@@ -34,6 +35,7 @@ plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
 tsum1 = readRDS(tsum1.file)
 tsum2 = readRDS(tsum2.file)
+tfactor = readRDS(tfactor.file)
 fert.dvs = readRDS(fert.dvs.file)
 fert.n = readRDS(fert.n.file)
 fert.p = readRDS(fert.p.file)
@@ -143,6 +145,14 @@ var.TSUM2 <- ncvar_def(
   longname = "Daily temperature sum from anthesis to maturity",
   compression = 5
 )
+var.Tfactor <- ncvar_def(
+  name = "Tfactor",
+  units = "K",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "Temperature factor due to elevation",
+  compression = 5
+)
 var.DVS_point <- ncvar_def(
   name = "DVS_point",
   units = "-",
@@ -229,7 +239,7 @@ for(i in 1:nrow(crops)){
   print(crops$name[i])
   
   #if(((crops$name[i] != "rice" || crops$water[i] != "irrigated") && (crops$name[i] != "maize" || crops$water[i] != "rainfed")) || crops$season[i] != 1) {
-  #if((crops$name[i] != "soybean" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
+  #if((crops$name[i] != "maize" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
   #  next
   #}
   
@@ -252,6 +262,7 @@ for(i in 1:nrow(crops)){
         var.harvest_day,
         var.TSUM1,
         var.TSUM2,
+        var.Tfactor,
         var.DVS_point,
         var.N_amount,
         var.P_amount,
@@ -277,6 +288,7 @@ for(i in 1:nrow(crops)){
     harvest.filled <- fillMap(map = harvest[,,i,z], na.map =na.map, nearest.function = getNearestMean)
     tsum1.filled <- fillMap(map = tsum1[,,i,z], na.map =na.map, nearest.function = getNearestMean)
     tsum2.filled <- fillMap(map = tsum2[,,i,z], na.map =na.map, nearest.function = getNearestMean)
+    tfactor.filled <- fillMap(map = tfactor, na.map =na.map, nearest.function = getNearestZero)
     fert.dvs.filled <- fillMap(map = fert.dvs[,,i], na.map =na.map, nearest.function = getNearestMean)
     fert.n.filled <- fillMap(map = fert.n[,,i], na.map =na.map, nearest.function = getNearestMean)
     fert.p.filled <- fillMap(map = fert.p[,,i], na.map =na.map, nearest.function = getNearestMean)
@@ -296,6 +308,7 @@ for(i in 1:nrow(crops)){
     ncvar_put(nc = nc, varid = var.harvest_day, vals = harvest.filled)
     ncvar_put(nc = nc, varid = var.TSUM1, vals = tsum1.filled)
     ncvar_put(nc = nc, varid = var.TSUM2, vals = tsum2.filled)
+    ncvar_put(nc = nc, varid = var.Tfactor, vals = tfactor.filled)
     ncvar_put(nc = nc, varid = var.DVS_point, vals = fert.dvs.filled)
     ncvar_put(nc = nc, varid = var.N_amount, vals = fert.n.filled)
     ncvar_put(nc = nc, varid = var.P_amount, vals = fert.p.filled)

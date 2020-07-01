@@ -8,6 +8,7 @@ crop.file = "./Saves/crop_mapping.csv"
 cc.file = "./Saves/cc_30min_global.RDS"
 plant.file = "./Saves/plantDay_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_30min_global.RDS"
+tfactor.file = "./Saves/tfactor_30min_global.RDS"
 tair.file = "../../../../Data/Transformed/WFDEI/Tair_daily_WFDEI_1991_2000.myda.nc"
 crop.param.dir = "../../../../Data/WOFOST/Parameters/Crop/global"
 tsum1.out = "./Saves/tsum1_30min_global.RDS"
@@ -19,6 +20,7 @@ crop.param.files = list.files(path = crop.param.dir, full.names = T)
 cc = readRDS(cc.file)
 plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
+Tfactor = readRDS(tfactor.file)
 
 nc = nc_open(tair.file)
 Tair = ncvar_get(nc, "Tair")
@@ -111,7 +113,7 @@ for(i in 1:nrow(crops)) {
   print(crops$name[i])
   
   #if(((crops$name[i] != "rice" || crops$water[i] != "irrigated") && (crops$name[i] != "maize" || crops$water[i] != "rainfed")) || crops$season[i] != 1) {
-  #if((crops$name[i] != "soybean" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
+  #if((crops$name[i] != "maize" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
   #  next
   #}
   
@@ -209,6 +211,7 @@ for(i in 1:nrow(crops)) {
         if(is.na(Tair.sel[1])){
           next
         }
+        Tair.sel = Tair.sel + Tfactor[x,y]
         
         ## Sowing
         Tair.sow = Tair.sel[1]

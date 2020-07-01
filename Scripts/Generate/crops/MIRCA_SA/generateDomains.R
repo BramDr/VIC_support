@@ -32,7 +32,7 @@ for(i in 1:nrow(crops)){
   print(crops$name[i])
   
   #if(((crops$name[i] != "rice" || crops$water[i] != "irrigated") && (crops$name[i] != "maize" || crops$water[i] != "rainfed")) || crops$season[i] != 1) {
-  #if((crops$name[i] != "soybean" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
+  #if((crops$name[i] != "maize" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
   #  next
   #}
   
