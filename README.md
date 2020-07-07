@@ -1,4 +1,8 @@
 # README
+[![License](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/BramDr/VIC_support/master/LICENSE.txt) [![DOI](https://zenodo.org/badge/7766/BramDr/VIC_support.svg)](https://zenodo.org/badge/latestdoi/7766/BramDr/VIC_support)
+
+----
+
 Supporting documentation and scripts for VIC-WUR. Inputs are missing for confidentiality reasons.
 
   * **Data** contains all data used to generate the VIC parameters, this should be created locally.
