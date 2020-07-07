@@ -1,5 +1,5 @@
 # README
-[![License](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/BramDr/VIC_support/master/LICENSE.txt) [![DOI](https://zenodo.org/badge/7766/BramDr/VIC_support.svg)](https://zenodo.org/badge/latestdoi/7766/BramDr/VIC_support)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/BramDr/VIC_support/master/LICENSE.txt) [![DOI](https://zenodo.org/badge/7766/BramDr/VIC_support.svg)](https://zenodo.org/badge/latestdoi/7766/BramDr/VIC_support)
 
 ----
 
