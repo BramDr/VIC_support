@@ -41,10 +41,12 @@ start.doy.m = 14
 end.doy.m = 14
 start.doy.l = 24
 end.doy.l = 24
+start.doy.vl = 34
+end.doy.vl = 34
 start.doy.options = c()
 end.doy.options = c()
-for(start.doy in c(start.doy.e, start.doy.m, start.doy.l)){
-  for(end.doy in c(end.doy.e, end.doy.m, end.doy.l)){
+for(start.doy in c(start.doy.e, start.doy.m, start.doy.l, start.doy.vl)){
+  for(end.doy in c(end.doy.e, end.doy.m, end.doy.l, end.doy.vl)){
     start.doy.options = c(start.doy.options, start.doy)
     end.doy.options = c(end.doy.options, end.doy)
   }
@@ -66,6 +68,14 @@ set.plant.harvest = function(x, columns, idx) {
   
   plant_day[x.idx,y.idx,idx] <<- start.doy + start.doy.options[option]
   harvest_day[x.idx,y.idx,idx] <<- end.doy + end.doy.options[option]
+  
+  if(plant_day[x.idx,y.idx,idx] > 365) {
+   plant_day[x.idx,y.idx,idx] <<- plant_day[x.idx,y.idx,idx] - 365
+  }
+  if(harvest_day[x.idx,y.idx,idx] > 365) {
+   harvest_day[x.idx,y.idx,idx] <<- harvest_day[x.idx,y.idx,idx] - 365
+  }
+  
   return(0)
 }
 

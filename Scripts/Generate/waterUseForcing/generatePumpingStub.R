@@ -1,10 +1,16 @@
-library(ncdf4)
 library(fields)
+library(ncdf4)
 rm(list = ls())
 
 # Input
-out.dir <- "../../../Data/VIC/Forcing/global/co2_yearly_fixed/co2_yearly_fixed_"
-years <- 1979:2016
+mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
+out.dir <- "../../../Data/VIC/Forcing/global/pumpCap_yearly_stub/pumpCap_yearly_stub_"
+years <- 1960:2016
+
+# Load
+nc <- nc_open(mask.file)
+mask <- ncvar_get(nc, "mask")
+nc_close(nc)
 
 # Setup
 res <- 0.5
@@ -32,14 +38,17 @@ lat.dim <- ncdim_def(
   longname = "latitude of cell centre"
 )
 
-# Calculate and save
+# Calculate
+pumping.tot = array(99999, dim = c(length(lons), length(lats)))
+
+# Save
 for (z in 1:length(years)) {
   year <- years[z]
-  
+
   out.file <- paste0(out.dir, year, ".nc")
-  
+
   times <- as.Date(paste0(year, "-01-01"))
-  
+
   time.dim <- ncdim_def(
     name = "time",
     units = "days since 1970-01-01",
@@ -47,21 +56,20 @@ for (z in 1:length(years)) {
     unlim = T,
     calendar = "standard"
   )
-  
+
   var <- ncvar_def(
-    name = "co2",
-    units = "ppm",
+    name = "pumping_capacity",
+    units = "mm day-1",
     dim = list(lon.dim, lat.dim, time.dim),
     missval = -1,
-    longname = "Atmospheric CO2 concentration",
+    longname = paste0("Pumping capacity for groundwater withdrawals"),
     prec = "double",
     compression = 9
   )
-  
-  data <- array(370, dim = c(lon.dim$len, lat.dim$len, time.dim$len))
-  
+
   dir.create(dirname(out.file))
   nc <- nc_create(out.file, list(var))
-  ncvar_put(nc, var, data)
+
+  ncvar_put(nc, var$name, pumping.tot)
   nc_close(nc)
 }

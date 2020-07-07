@@ -13,6 +13,7 @@ plant.file = "./Saves/plantDay_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_30min_global.RDS"
 tsum1.file = "./Saves/tsum1_30min_global.RDS"
 tsum2.file = "./Saves/tsum2_30min_global.RDS"
+tfactor.file = "./Saves/tfactor_30min_global.RDS"
 fert.dvs.file = "./Saves/fertilizerDVS_30min_global.RDS"
 fert.n.file = "./Saves/fertilizerN_30min_global.RDS"
 fert.p.file = "./Saves/fertilizerP_30min_global.RDS"
@@ -34,6 +35,7 @@ plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
 tsum1 = readRDS(tsum1.file)
 tsum2 = readRDS(tsum2.file)
+tfactor = readRDS(tfactor.file)
 fert.dvs = readRDS(fert.dvs.file)
 fert.n = readRDS(fert.n.file)
 fert.p = readRDS(fert.p.file)
@@ -142,6 +144,14 @@ var.TSUM2 <- ncvar_def(
   longname = "Daily temperature sum from anthesis to maturity",
   compression = 5
 )
+var.Tfactor <- ncvar_def(
+  name = "Tfactor",
+  units = "K",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "Temperature factor due to elevation",
+  compression = 5
+)
 var.DVS_point <- ncvar_def(
   name = "DVS_point",
   units = "-",
@@ -234,6 +244,7 @@ nc <- nc_create(
     var.harvest_day,
     var.TSUM1,
     var.TSUM2,
+    var.Tfactor,
     var.DVS_point,
     var.N_amount,
     var.P_amount,
@@ -256,8 +267,10 @@ na.map = is.na(mask) | mask == 0
 image.plot(na.map)
 
 Ncrop.filled <- fillMap(map = Ncrop, na.map = na.map, nearest.function = getNearestZero)
+tfactor.filled <- fillMap(map = tfactor, na.map = na.map, nearest.function = getNearestZero)
 
 ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)
+ncvar_put(nc = nc, varid = var.Tfactor, vals = tfactor.filled)
 
 for(i in 1:nrow(crops)){
   print(crops$name[i])

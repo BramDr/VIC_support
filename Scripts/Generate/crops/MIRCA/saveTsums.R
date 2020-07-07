@@ -8,6 +8,7 @@ crop.file = "./Saves/crop_mapping.csv"
 cc.file = "./Saves/cc_30min_global.RDS"
 plant.file = "./Saves/plantDay_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_30min_global.RDS"
+tfactor.file = "./Saves/tfactor_30min_global.RDS"
 tair.file = "../../../../Data/Transformed/WFDEI/Tair_daily_WFDEI_1991_2000.myda.nc"
 crop.param.dir = "../../../../Data/WOFOST/Parameters/Crop/global"
 tsum1.out = "./Saves/tsum1_30min_global.RDS"
@@ -19,6 +20,7 @@ crop.param.files = list.files(path = crop.param.dir, full.names = T)
 cc = readRDS(cc.file)
 plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
+Tfactor = readRDS(tfactor.file)
 
 nc = nc_open(tair.file)
 Tair = ncvar_get(nc, "Tair")
@@ -84,15 +86,8 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
     return(c(tsum1, tsum2))
   
   } else if(crop == "soybean"){
-    tsum1 = (tsumtot - 600) / 2
-    tsum2 = (tsumtot - 600) / 2 + 600
-    if(tsum1 <= 0){
-      tsum1 = 1
-    }
-    if(tsum1 > 600){
-      tsum2 = tsum2 + tsum1 - 600
-      tsum1 = 600
-    }
+    tsum1 = (tsumtot / 5) * 2
+    tsum2 = (tsumtot / 5) * 3
     return(c(tsum1, tsum2))
     
   } else if(crop == "rice") {
@@ -108,10 +103,11 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
 }
 
 # Calculate
-i = 1
 tsum1.map = array(NA, dim = dim(plant))
 tsum2.map = array(NA, dim = dim(plant))
-length.map = array(NA, dim = dim(plant))
+length1.map = array(NA, dim = dim(plant))
+length2.map = array(NA, dim = dim(plant))
+i = 6
 for(i in 1:nrow(crops)) {
   print(crops$name[i])
   
@@ -170,6 +166,7 @@ for(i in 1:nrow(crops)) {
   cc.crop = apply(X = cc.crop, MARGIN = c(1,2), FUN = sum)
   plant.crop = plant[,,i]
   harvest.crop = harvest[,,i]
+  
   x = 378
   y = 188
   done=F
@@ -183,8 +180,8 @@ for(i in 1:nrow(crops)) {
       plant.sel = ceiling(plant.crop[x,y])
       harvest.sel = ceiling(harvest.crop[x,y])
       if(is.na(harvest.sel)){
-        tsum1.map[x,y,i] = NA
-        tsum2.map[x,y,i] = NA
+        tsum1.map[x,y,i] = 1
+        tsum2.map[x,y,i] = 1
         next
       }
       
@@ -197,6 +194,7 @@ for(i in 1:nrow(crops)) {
       if(is.na(Tair.sel[1])){
         next
       }
+      Tair.sel = Tair.sel + Tfactor[x,y]
       
       ## Sowing
       Tair.sow = Tair.sel[1]
@@ -211,8 +209,8 @@ for(i in 1:nrow(crops)) {
       Iem = min(which(Tair.em >= Tem))
       
       if(is.infinite(Iem)){
-        tsum1.map[x,y,i] = NA
-        tsum2.map[x,y,i] = NA
+        tsum1.map[x,y,i] = 1
+        tsum2.map[x,y,i] = 1
         next
       }
       
@@ -223,23 +221,21 @@ for(i in 1:nrow(crops)) {
       Idev = length(Tair.dev)
       
       if(length(Tair.dev) <= 1){
-        tsum1.map[x,y,i] = NA
-        tsum2.map[x,y,i] = NA
+        tsum1.map[x,y,i] = 1
+        tsum2.map[x,y,i] = 1
         next
       }
       
-      Tsums = calcPhaseWOFOST(Tair.dev[Idev], crops$name[i])
-      
+      Tsums = calcPhaseWOFOST(Tair.dev, crops$name[i])
       tsum1.map[x,y,i] = Tsums[1]
       tsum2.map[x,y,i] = Tsums[2]
       
-      length.map[x,y,i] = length(Tair.sel)
       if(tsum1.map[x,y,i] < 0 || tsum1.map[x,y,i] < 0){
         stop("Error in calculation, tsum < 0")
       }
       if(tsum1.map[x,y,i] <= 0 || tsum2.map[x,y,i] <= 0){
-        tsum1.map[x,y,i] = NA
-        tsum2.map[x,y,i] = NA
+        tsum1.map[x,y,i] = 1
+        tsum2.map[x,y,i] = 1
         next
       }
       if(done){
@@ -251,10 +247,8 @@ for(i in 1:nrow(crops)) {
     }
   }
   
-  #image.plot(tsum1.map[,,i], main = paste0(crops$name[i], " TSUM1"))
-  #image.plot(tsum2.map[,,i], main = paste0(crops$name[i], " TSUM2"))
-  #image.plot(length.map[,,i], main = paste0(crops$name[i], " LEN"))
-  #image.plot(tsum1.map[,,i] + tsum2.map[,,i], main = paste0(crops$name[i], " TSUMTOT"))
+  image.plot(tsum1.map[,,i], main = paste0(crops$name[i], " TSUM1"), zlim = c(0,2500))
+  image.plot(tsum2.map[,,i], main = paste0(crops$name[i], " TSUM2"), zlim = c(0,2500))
 }
 
 # Save
@@ -262,3 +256,4 @@ dir.create(dirname(tsum1.out))
 saveRDS(tsum1.map, tsum1.out)
 dir.create(dirname(tsum2.out))
 saveRDS(tsum2.map, tsum2.out)
+  

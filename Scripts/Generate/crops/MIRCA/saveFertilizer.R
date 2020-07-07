@@ -13,7 +13,7 @@ fert.files = list.files(fert.dir, pattern = "fertilizer_application", full.names
 man.file = list.files(fert.dir, pattern = "manure_application", full.names = T)
 
 nc = nc_open(man.file)
-years = nc$dim$time$vals
+nc.years = nc$dim$time$vals
 man.n = ncvar_get(nc, nc$var$manurerate)
 nc_close(nc)
 man.n[is.na(man.n)] = 0
@@ -27,6 +27,8 @@ fertilizer.n = array(0, dim = c(length(lons), length(lats), nrow(crops)))
 fertilizer.p = array(0, dim = c(length(lons), length(lats), nrow(crops)))
 fertilizer.k = array(0, dim = c(length(lons), length(lats), nrow(crops)))
 fertilizer.dvs = array(0, dim = c(length(lons), length(lats), nrow(crops)))
+
+i = 5
 for(i in 1:nrow(crops)){
   print(crops$name[i])
   
@@ -41,7 +43,7 @@ for(i in 1:nrow(crops)){
   nc_close(nc)
   fert.n[is.na(fert.n)] = 0
   
-  fertilizer.n[,,i] = fert.n[,dim(fert.n)[2]:1, years == 2000] + man.n[,dim(man.n)[2]:1, years == 2000]
+  fertilizer.n[,,i] = fert.n[,dim(fert.n)[2]:1, nc.years == 2000] + man.n[,dim(man.n)[2]:1, nc.years == 2000]
 }
 
 # Save

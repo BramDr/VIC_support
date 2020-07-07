@@ -28,6 +28,8 @@ fertilizer.n = array(0, dim = c(length(lons), length(lats), nrow(crops), length(
 fertilizer.p = array(0, dim = c(length(lons), length(lats), nrow(crops), length(years)))
 fertilizer.k = array(0, dim = c(length(lons), length(lats), nrow(crops), length(years)))
 fertilizer.dvs = array(0, dim = c(length(lons), length(lats), nrow(crops), length(years)))
+
+i = 5
 for(i in 1:nrow(crops)){
   print(crops$name[i])
   
