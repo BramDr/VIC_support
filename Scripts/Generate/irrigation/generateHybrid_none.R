@@ -7,7 +7,7 @@ support.script <- "../../../Scripts/Support/mapFunctions.R"
 mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 gw.file <- "../../../Data/Transformed/Irrigation/irrigationGroundwaterFraction_30min_global.RDS"
 eff.file <- "../../../Data/Transformed/Irrigation/irrigationEfficiency_30min_global.RDS"
-irr.param.out <- "../../../Data/VIC/Parameters/global/irr_params_MIRCAhybrid_global.nc"
+irr.param.out <- "../../../Data/VIC/Parameters/global/irr_params_MIRCAhybrid_noneEff_global.nc"
 split = data.frame(name = c("wheatRainfed","wheatIrrigated",
                             "maizeRainfed","maizeIrrigated",
                             "riceRainfed","riceIrrigated",
@@ -98,5 +98,5 @@ nc <- nc_open(irr.param.out, write = T)
 ncvar_put(nc, var.veg.class, irr.veg)
 ncvar_put(nc, var.paddy, irr.pond)
 ncvar_put(nc, var.groundwater_fraction, groundwater.filled * 0)
-ncvar_put(nc, var.irrigation_efficiency, eff.filled)
+ncvar_put(nc, var.irrigation_efficiency, eff.filled * 0 + 1)
 nc_close(nc)

@@ -35,23 +35,6 @@ for(i in 1:nrow(crops)){
 option.map[option.map == 0] = 3
 image.plot(option.map[,,5])
 
-start.doy.e = 4
-end.doy.e = 4
-start.doy.m = 14
-end.doy.m = 14
-start.doy.l = 24
-end.doy.l = 24
-start.doy.vl = 34
-end.doy.vl = 34
-start.doy.options = c()
-end.doy.options = c()
-for(start.doy in c(start.doy.e, start.doy.m, start.doy.l, start.doy.vl)){
-  for(end.doy in c(end.doy.e, end.doy.m, end.doy.l, end.doy.vl)){
-    start.doy.options = c(start.doy.options, start.doy)
-    end.doy.options = c(end.doy.options, end.doy)
-  }
-}
-
 set.plant.harvest = function(x, columns, idx) {
   x <- as.numeric(x)
   #print(x[columns == "rowname"])
@@ -61,20 +44,34 @@ set.plant.harvest = function(x, columns, idx) {
   x.idx = x[columns == "x"]
   y.idx = x[columns == "y"]
   
+  start.alt = start + 1
+  end.alt = end + 1
+  if(start.alt > 12) {
+    start.alt = start.alt - 12
+  }
+  if(end.alt > 12) {
+    end.alt = end.alt - 12
+  }
+  
   option = option.map[x.idx, y.idx, idx]
   
-  start.doy = as.numeric(format.Date(as.Date(paste0("0001-",start,"-01")), "%j"))
-  end.doy = as.numeric(format.Date(as.Date(paste0("0001-",end,"-01")), "%j"))
+  start.doy.e = as.numeric(format.Date(as.Date(paste0("0001-",start,"-05")), "%j"))
+  end.doy.e = as.numeric(format.Date(as.Date(paste0("0001-",end,"-05")), "%j"))
+  start.doy.m = as.numeric(format.Date(as.Date(paste0("0001-",start,"-15")), "%j"))
+  end.doy.m = as.numeric(format.Date(as.Date(paste0("0001-",end,"-15")), "%j"))
+  start.doy.l = as.numeric(format.Date(as.Date(paste0("0001-",start,"-25")), "%j"))
+  end.doy.l = as.numeric(format.Date(as.Date(paste0("0001-",end,"-25")), "%j"))
+  start.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",start.alt,"-04")), "%j"))
+  end.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",end.alt,"-04")), "%j"))
   
-  plant_day[x.idx,y.idx,idx] <<- start.doy + start.doy.options[option]
-  harvest_day[x.idx,y.idx,idx] <<- end.doy + end.doy.options[option]
+  start.doy.comb = c(start.doy.e, start.doy.m, start.doy.l, start.doy.vl)
+  end.doy.comb = c(end.doy.e, end.doy.m, end.doy.l, end.doy.vl)
   
-  if(plant_day[x.idx,y.idx,idx] > 365) {
-   plant_day[x.idx,y.idx,idx] <<- plant_day[x.idx,y.idx,idx] - 365
-  }
-  if(harvest_day[x.idx,y.idx,idx] > 365) {
-   harvest_day[x.idx,y.idx,idx] <<- harvest_day[x.idx,y.idx,idx] - 365
-  }
+  start.doys = rep(start.doy.comb, each = length(end.doy.comb))
+  end.doys = rep(end.doy.comb, times = length(start.doy.comb))
+  
+  plant_day[x.idx,y.idx,idx] <<- start.doys[option]
+  harvest_day[x.idx,y.idx,idx] <<- end.doys[option]
   
   return(0)
 }
@@ -89,6 +86,10 @@ for(i in 1:nrow(crops)){
   
   scc.c = scc[scc$crop == crops$mirca[i] & scc$subcrop == crops$season[i], ]
   scc.c$rowname = 1:nrow(scc.c)
+  
+  if(i == 1){
+    scc.c$end[scc.c$lon > 95 & scc.c$end == 4] = 5
+  }
   
   apply(X = scc.c, MARGIN = 1, FUN = set.plant.harvest, columns = colnames(scc.c), idx = i)
 }

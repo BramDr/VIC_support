@@ -71,9 +71,9 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
     if(tsum2 <= 0){
       tsum2 = 1
     }
-    if(tsum2 > 1300){
-      tsum1 = tsum1 + tsum2 - 1300
-      tsum2 = 1300
+    if(tsum2 > 1500){
+      tsum1 = tsum1 + tsum2 - 1500
+      tsum2 = 1500
     }
     return(c(tsum1, tsum2))
     
@@ -93,6 +93,10 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
   } else if(crop == "rice") {
     tsum1 = (tsumtot / 5) * 3
     tsum2 = (tsumtot / 5) * 2
+    if(tsum1 > 1000){
+      tsum2 = tsum2 + tsum1 - 1000
+      tsum1 = 1000
+    }
     return(c(tsum1, tsum2))
       
   }

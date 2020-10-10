@@ -44,6 +44,10 @@ for(i in 1:nrow(crops)){
   scc.c = scc[scc$crop == crops$mirca[i] & scc$subcrop == crops$season[i], ]
   scc.c$rowname = 1:nrow(scc.c)
   
+  if(i == 1){
+    scc.c$end[scc.c$lon > 95 & scc.c$end == 4] = 5
+  }
+  
   apply(X = scc.c, MARGIN = 1, FUN = set.plant.harvest, columns = colnames(scc.c), idx = i)
 }
 image.plot(plant_day[,,1])

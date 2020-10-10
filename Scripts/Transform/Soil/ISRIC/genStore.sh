@@ -1,7 +1,7 @@
 #!/bin/bash
 
-scriptfile="./StoreSoilTextures.R"
-gendir="./Gen"
+scriptfile="./StoreSoilChemical.R"
+gendir="./Gen2"
 step=15
 lats=$(seq -90 $step 90)
 lons=$(seq -180 $step 180)

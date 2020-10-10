@@ -1,12 +1,15 @@
 library(fields)
+library(raster)
 library(ncdf4)
 rm(list = ls())
 
-# Input
+ocar.file = "../../../../Data/Transformed/Soil/ISRIC/ocar_30min_global.RDS"
 tnit.file = "../../../../Data/Transformed/Soil/ISRIC/tnit_30min_global.RDS"
-bulk.file = "../../../../Data/Transformed/Soil/ISRIC/bulk_30min_global.RDS"
-temp.file = "../../../../Data/Transformed/VIC/fluxes_VICWURsaxtonvarying.nat.ymonmean.1981-01.nc"
-moist.file = "../../../../Data/Transformed/VIC/fluxes_VICWURsaxtonvarying.nat.ymonmean.1981-01.nc"
+cnrat.file = "../../../../Data/Transformed/Soil/ISRIC/cnrat_30min_global.RDS"
+clay.file = "../../../../Data/Transformed/Soil/ISRIC/clay_30min_global.RDS"
+ph.file = "../../../../Data/Transformed/Soil/ISRIC/ph_30min_global.RDS"
+temp.file = "../../../../Data/Transformed/WFDEI/Tair_ymonmean_WFDEI_1979-2016.nc"
+tfactor.file = "./Saves/tfactor_30min_global.RDS"
 crop.file = "./Saves/crop_mapping.csv"
 plant.file = "./Saves/plantDay_30min_global.RDS"
 harvest.file = "./Saves/harvestDay_30min_global.RDS"
@@ -19,39 +22,77 @@ rec.k.out = "./Saves/recoveryK_30min_global.RDS"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
-
-tnit = readRDS(tnit.file)
-tnit[tnit<0] = NA
-
-bulk = readRDS(bulk.file)
-bulk[bulk<=0] = NA
-
 plant = readRDS(plant.file)
 harvest = readRDS(harvest.file)
+Tfactor = readRDS(tfactor.file)
+
+clay = readRDS(clay.file)
+ocar = readRDS(ocar.file)
+tnit = readRDS(tnit.file)
+cnrat = readRDS(cnrat.file)
+ph = readRDS(ph.file)
 
 nc = nc_open(temp.file)
-temp = ncvar_get(nc, "OUT_SOIL_TEMP", start = c(1,1,1,1), count = c(-1,-1,1,-1), collapse_degen = F)
+temp = ncvar_get(nc, "Tair")
 nc_close(nc)
-temp.mean = apply(X = temp, MARGIN = c(1,2), FUN = mean)
-image.plot(temp.mean)
-
-nc = nc_open(moist.file)
-moist = ncvar_get(nc, "OUT_SOIL_EFF_SAT", start = c(1,1,1,1), count = c(-1,-1,1,-1), collapse_degen = F)
-nc_close(nc)
-moist.mean = apply(X = moist, MARGIN = c(1,2), FUN = mean)
-image.plot(moist.mean)
 
 # Setup
 lons = seq(-179.75, 179.75, by = 0.5)
 lats = seq(-89.75, 89.75, by = 0.5)
-noptions = 9
 
-calcFactor = function(temp, moist){
-  return(temp * 
-          (0.04021601 - 
-             5.00505434 * moist ^ 3 + 
-             4.26937932 * moist ^ 2 + 
-             0.71890122 * moist))
+clay[clay <= 0] = NA
+ocar[ocar <= 0] = NA
+tnit[tnit <= 0] = NA
+cnrat[cnrat <= 0] = NA
+ph[ph <= 0] = NA
+
+clay = t(clay[dim(clay)[1]:1,,1])
+ocar = t(ocar[dim(ocar)[1]:1,,1])
+tnit = t(tnit[dim(tnit)[1]:1,,1])
+cnrat = t(cnrat[dim(cnrat)[1]:1,,1])
+ph = t(ph[dim(ph)[1]:1,,1])
+onit = ocar / cnrat
+
+calcQUEFTS90 = function(ocar, ph){
+  Nf = 0.25*(ph-3)
+  aN = 6.8
+  SN = aN * Nf * ocar
+  return(SN)
+}
+calcQUEFTS93 = function(ocar, ph, temp, clay){
+  Nf = 2 ^ ((temp - 9) / 9) / log(15*clay,10)
+  aN = 4.5
+  SN = aN * Nf * ocar
+  return(SN)
+}
+calcQUEFTS04 = function(ocar, ph, temp){
+  Nf = 0.25 * (ph-3)
+  Nf[ph > 7] = 1
+  Nf[ph < 4.7] = 0.4
+  aN = 2 * 2^((temp - 9) / 9)
+  SN = aN * Nf * ocar
+  return(SN)
+}
+
+calcQUEFTS90.alt = function(onit, ph){
+  Nf = 0.25*(ph-3)
+  aN = 68
+  SN = aN * Nf * onit
+  return(SN)
+}
+calcQUEFTS93.alt = function(onit, ph, temp, clay){
+  Nf = 2 ^ ((temp - 9) / 9) / log(15*clay,10)
+  aN = 45
+  SN = aN * Nf * onit
+  return(SN)
+}
+calcQUEFTS04.alt = function(onit, ph, temp){
+  Nf = 0.25 * (ph-3)
+  Nf[ph > 7] = 1
+  Nf[ph < 4.7] = 0.4
+  aN = 20 * 2^((temp - 9) / 9)
+  SN = aN * Nf * onit
+  return(SN)
 }
 
 # Calculate
@@ -62,66 +103,58 @@ recovery.n = array(NA, dim = c(length(lons), length(lats), nrow(crops)))
 recovery.p = array(NA, dim = c(length(lons), length(lats), nrow(crops)))
 recovery.k = array(NA, dim = c(length(lons), length(lats), nrow(crops)))
 
-i = 1
+i = 6
 for(i in 1:nrow(crops)) {
   print(crops$name[i])
   
-  j = 1
-  for(j in 1) {
-    
-    x = 140
-    y = 250
-    temp.crop = array(NA, dim = dim(plant)[1:2])
-    moist.crop = array(NA, dim = dim(plant)[1:2])
-    for(x in 1:dim(plant)[1]) {
-      for(y in 1:dim(plant)[2]) {
-        if(is.na(plant[x,y,i,j])){
-          next
-        }
-        
-        start.month = as.Date(plant[x,y,i,j], origin = "0000-12-31")
-        start.month = as.numeric(format.Date(start.month, "%m"))
-        end.month = as.Date(harvest[x,y,i,j], origin = "0000-12-31")
-        end.month = as.numeric(format.Date(end.month, "%m"))
-        
-        if(start.month < end.month){
-          temp.sel = mean(temp[x,y,,start.month:end.month])
-          moist.sel = mean(moist[x,y,,start.month:end.month])
-        } else {
-          temp.sel = mean(temp[x,y,,c(end.month:12, 1:start.month)])
-          moist.sel = mean(moist[x,y,,c(end.month:12, 1:start.month)])
-        }
-        
-        temp.crop[x,y] = temp.sel
-        moist.crop[x,y] = moist.sel
+  x = 140
+  y = 250
+  temp.crop = array(NA, dim = c(dim(plant)[1:2]))
+  for(x in 1:dim(plant)[1]) {
+    for(y in 1:dim(plant)[2]) {
+      if(is.na(plant[x,y,i,6])){
+        next
       }
+      
+      start.month = as.Date(plant[x,y,i,6], origin = "0000-12-31")
+      start.month = as.numeric(format.Date(start.month, "%m"))
+      end.month = as.Date(harvest[x,y,i,6], origin = "0000-12-31")
+      end.month = as.numeric(format.Date(end.month, "%m"))
+      
+      if(start.month < end.month){
+        temp.sel = temp[x,y,start.month:end.month]
+      } else {
+        temp.sel = temp[x,y,c(start.month:12, 1:end.month)]
+      }
+      
+      temp.sel = mean(temp.sel)
+      
+      temp.crop[x,y] = temp.sel
     }
-    image.plot(temp.crop)
-    image.plot(moist.crop)
-    
-    factor = 1 - exp(-0.001 * calcFactor(temp.crop, moist.crop))
-    factor[factor < 0] = 0
-    #image.plot(factor)
-  
-    tnit.40cm = apply(X = tnit[,,1:2], MARGIN = c(1,2), FUN = mean, na.rm = T)
-    bulk.40cm = apply(X = bulk[,,1:2], MARGIN = c(1,2), FUN = mean, na.rm = T)
-  
-    tnit.adj = t(tnit.40cm[dim(tnit.40cm)[1]:1,])
-    #image.plot(tnit.adj)
-    bulk.adj = t(bulk.40cm[dim(bulk.40cm)[1]:1,])
-    #image.plot(bulk.adj)
-  
-    min.n = tnit.adj / 1000 * bulk.adj * 1000 * 10000 * factor * 0.3 # g kg-1 -> kg ha-1 (0.3 m deep)
-    image.plot(min.n, zlim = c(0,500))
-  
-    min.p = min.k = array(999999.9, dim = dim(min.n))
-    rec.n = array(1 / 365, dim = dim(min.n))
-    rec.p = rec.k = array(1, dim = dim(min.n))
   }
+  temp.crop = temp.crop - 273.15 + Tfactor
+  #image.plot(temp.crop)
   
-  # image.plot(moist.mean - moist.crop)
-  # image.plot(temp.mean - temp.crop)
-  # image.plot(factor - (1 - exp(-0.001 * calcFactor(temp.mean, moist.mean))))
+  # QUEFTS.90=calcQUEFTS90(ocar,ph)
+  # image.plot(QUEFTS.90 / 120)
+  # QUEFTS.93=calcQUEFTS93(ocar,ph,temp.mean,clay)
+  # image.plot(QUEFTS.93 / 120)
+  # QUEFTS.04=calcQUEFTS04(ocar,ph,temp.mean)
+  # image.plot(QUEFTS.04 / 120, zlim = c(0,3))
+  
+  # QUEFTS.90=calcQUEFTS90.alt(onit,ph)
+  # image.plot(QUEFTS.90 / 120)
+  # QUEFTS.93=calcQUEFTS93.alt(onit,ph,temp.mean,clay)
+  # image.plot(QUEFTS.93 / 120)
+  # QUEFTS.04=calcQUEFTS04.alt(onit,ph,temp.mean)
+  # image.plot(QUEFTS.04 / 120, zlim = c(0,3))
+  
+  min.n=calcQUEFTS04(ocar,ph,temp.crop) * 3
+  image.plot(min.n / 360, zlim = c(0,3), main = paste0(crops$water[i], " ", crops$name[i], " ", crops$season[i]))
+  
+  min.p = min.k = array(999999.9, dim = dim(min.n))
+  rec.n = array(1 / 360, dim = dim(min.n))
+  rec.p = rec.k = array(1, dim = dim(min.n))
   
   mineral.n[,,i] = min.n
   mineral.p[,,i] = min.p

@@ -4,9 +4,9 @@ rm(list = ls())
 
 # Input
 cc.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
-fixed.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_fixed2_30min_global.csv"
+fixed.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_fixed_30min_global.csv"
 albedo.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_albedo_30min_global.csv"
-LAI.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_LAI2_30min_global.csv"
+LAI.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_LAI_30min_global.csv"
 veg_rough.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_vegRough_30min_global.csv"
 displacement.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_displacement_30min_global.csv"
 fc.cell.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_coverageCell_30min_global.csv"

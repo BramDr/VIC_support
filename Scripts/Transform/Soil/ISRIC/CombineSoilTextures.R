@@ -7,13 +7,11 @@ out.clay = "../../../../Data/Transformed/Soil/ISRIC/clay_30min_global.RDS"
 out.sand = "../../../../Data/Transformed/Soil/ISRIC/sand_30min_global.RDS"
 out.silt = "../../../../Data/Transformed/Soil/ISRIC/silt_30min_global.RDS"
 out.bulk = "../../../../Data/Transformed/Soil/ISRIC/bulk_30min_global.RDS"
-out.tnit = "../../../../Data/Transformed/Soil/ISRIC/tnit_30min_global.RDS"
 
 clay.files = list.files(gen.dir, pattern = "clay_", full.names = T)
 sand.files = list.files(gen.dir, pattern = "sand_", full.names = T)
 silt.files = list.files(gen.dir, pattern = "silt_", full.names = T)
 bulk.files = list.files(gen.dir, pattern = "bulk_", full.names = T)
-tnit.files = list.files(gen.dir, pattern = "tnit_", full.names = T)
 
 combine.files = function(file.list) {
   map = array(NA, dim = c(360,720, 7))
@@ -47,23 +45,19 @@ clay = combine.files(clay.files)
 sand = combine.files(sand.files)
 silt = combine.files(silt.files)
 bulk = combine.files(bulk.files)
-tnit = combine.files(tnit.files)
 
 image.plot(clay[,,1])
 image.plot(sand[,,1])
 image.plot(silt[,,1])
 image.plot(bulk[,,1])
-image.plot(tnit[,,7])
 
 dir.create(dirname(out.clay))
 dir.create(dirname(out.sand))
 dir.create(dirname(out.silt))
 dir.create(dirname(out.bulk))
-dir.create(dirname(out.tnit))
 
 saveRDS(clay, out.clay)
 saveRDS(sand, out.sand)
 saveRDS(silt, out.silt)
 saveRDS(bulk, out.bulk)
-saveRDS(tnit, out.tnit)
 

@@ -234,6 +234,13 @@ var.K_recovery <- ncvar_def(
   compression = 5
 )
 
+na.map = apply(X = Ncrop, MARGIN = c(1,2), FUN = sum, na.rm = T)
+na.map = is.na(na.map) | na.map == 0
+#image.plot(na.map)
+
+## Calculate
+tfactor.filled <- fillMap(map = tfactor, na.map = na.map, nearest.function = getNearestZero)
+
 i = 1
 for(i in 1:nrow(crops)){
   print(crops$name[i])
@@ -242,6 +249,24 @@ for(i in 1:nrow(crops)){
   #if((crops$name[i] != "maize" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
   #  next
   #}
+  
+  na.map = is.na(Ncrop[,,i]) | Ncrop[,,i] == 0
+  #image.plot(na.map)
+  
+  ## Calculate
+  Ncrop.filled <- fillMap(map = Ncrop[,,i], na.map = na.map, nearest.function = getNearestZero)
+  fert.dvs.filled <- fillMap(map = fert.dvs[,,i], na.map = na.map, nearest.function = getNearestMean)
+  fert.n.filled <- fillMap(map = fert.n[,,i], na.map = na.map, nearest.function = getNearestMean)
+  fert.p.filled <- fillMap(map = fert.p[,,i], na.map = na.map, nearest.function = getNearestMean)
+  fert.k.filled <- fillMap(map = fert.k[,,i], na.map = na.map, nearest.function = getNearestMean)
+  min.n.filled <- fillMap(map = min.n[,,i], na.map = na.map, nearest.function = getNearestMean)
+  min.p.filled <- fillMap(map = min.p[,,i], na.map = na.map, nearest.function = getNearestMean)
+  min.k.filled <- fillMap(map = min.k[,,i], na.map = na.map, nearest.function = getNearestMean)
+  rec.n.filled <- fillMap(map = rec.n[,,i], na.map = na.map, nearest.function = getNearestMean)
+  rec.p.filled <- fillMap(map = rec.p[,,i], na.map = na.map, nearest.function = getNearestMean)
+  rec.k.filled <- fillMap(map = rec.k[,,i], na.map = na.map, nearest.function = getNearestMean)
+  cc.filled <- fillMap(map = cc[,,i,], na.map = na.map, nearest.function = getNearestZero)
+  veg.class.filled <- fillMap(map = veg.class[,,i], na.map = na.map, nearest.function = getNearestCount)
   
   for(z in 1:noptions) {
     print(z)
@@ -278,27 +303,10 @@ for(i in 1:nrow(crops)){
     nc_close(nc)
 
     ## Calculate
-    na.map = is.na(Ncrop[,,i]) | Ncrop[,,i] == 0 | is.na(tsum1[,,i,z]) | is.na(tsum2[,,i,z])
-    #image.plot(na.map)
-    
-    Ncrop.filled <- fillMap(map = Ncrop[,,i], na.map = na.map, nearest.function = getNearestZero)
-    cc.filled <- fillMap(map = cc[,,i,], na.map =na.map, nearest.function = getNearestZero)
-    veg.class.filled <- fillMap(map = veg.class[,,i], na.map =na.map, nearest.function = getNearestCount)
-    plant.filled <- fillMap(map = plant[,,i,z], na.map =na.map, nearest.function = getNearestMean)
-    harvest.filled <- fillMap(map = harvest[,,i,z], na.map =na.map, nearest.function = getNearestMean)
-    tsum1.filled <- fillMap(map = tsum1[,,i,z], na.map =na.map, nearest.function = getNearestMean)
-    tsum2.filled <- fillMap(map = tsum2[,,i,z], na.map =na.map, nearest.function = getNearestMean)
-    tfactor.filled <- fillMap(map = tfactor, na.map =na.map, nearest.function = getNearestZero)
-    fert.dvs.filled <- fillMap(map = fert.dvs[,,i], na.map =na.map, nearest.function = getNearestMean)
-    fert.n.filled <- fillMap(map = fert.n[,,i], na.map =na.map, nearest.function = getNearestMean)
-    fert.p.filled <- fillMap(map = fert.p[,,i], na.map =na.map, nearest.function = getNearestMean)
-    fert.k.filled <- fillMap(map = fert.k[,,i], na.map =na.map, nearest.function = getNearestMean)
-    min.n.filled <- fillMap(map = min.n[,,i], na.map =na.map, nearest.function = getNearestMean)
-    min.p.filled <- fillMap(map = min.p[,,i], na.map =na.map, nearest.function = getNearestMean)
-    min.k.filled <- fillMap(map = min.k[,,i], na.map =na.map, nearest.function = getNearestMean)
-    rec.n.filled <- fillMap(map = rec.n[,,i], na.map =na.map, nearest.function = getNearestMean)
-    rec.p.filled <- fillMap(map = rec.p[,,i], na.map =na.map, nearest.function = getNearestMean)
-    rec.k.filled <- fillMap(map = rec.k[,,i], na.map =na.map, nearest.function = getNearestMean)
+    plant.filled <- fillMap(map = plant[,,i,z], na.map = na.map, nearest.function = getNearestMean)
+    harvest.filled <- fillMap(map = harvest[,,i,z], na.map = na.map, nearest.function = getNearestMean)
+    tsum1.filled <- fillMap(map = tsum1[,,i,z], na.map = na.map, nearest.function = getNearestMean)
+    tsum2.filled <- fillMap(map = tsum2[,,i,z], na.map = na.map, nearest.function = getNearestMean)
     
     nc <- nc_open(crop.out.tmp, write = T)
     ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)

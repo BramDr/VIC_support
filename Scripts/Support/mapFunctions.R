@@ -80,11 +80,17 @@ fillMap <- function(map, na.map, nearest.function, ...) {
         if (length(dim(map)) == 2) {
           map[x, y] <- NA
         }
-        if (length(dim(map)) == 3) {
+        else if (length(dim(map)) == 3) {
           map[x, y, ] <- NA
         }
-        if (length(dim(map)) == 4) {
+        else if (length(dim(map)) == 4) {
           map[x, y, , ] <- NA
+        }
+        else if (length(dim(map)) == 5) {
+          map[x, y, , , ] <- NA
+        }
+        else {
+          stop("Map dimensions not implemented")
         }
         next
       }
@@ -94,14 +100,14 @@ fillMap <- function(map, na.map, nearest.function, ...) {
           map[x, y] <- nearest.function(map, x, y, ...)
         }
       }
-      if (length(dim(map)) == 3) {
+      else if (length(dim(map)) == 3) {
         for (z in 1:dim(map)[3]) {
           if (is.na(map[x, y, z])) {
             map[x, y, z] <- nearest.function(map[, , z], x, y, ...)
           }
         }
       }
-      if (length(dim(map)) == 4) {
+      else if (length(dim(map)) == 4) {
         for (z in 1:dim(map)[3]) {
           for (k in 1:dim(map)[4]) {
             if (is.na(map[x, y, z, k])) {
@@ -109,6 +115,20 @@ fillMap <- function(map, na.map, nearest.function, ...) {
             }
           }
         }
+      }
+      else if (length(dim(map)) == 5) {
+        for (z in 1:dim(map)[3]) {
+          for (k in 1:dim(map)[4]) {
+            for (l in 1:dim(map)[5]) {
+              if (is.na(map[x, y, z, k, l])) {
+                map[x, y, z, k, l] <- nearest.function(map[, , z, k, l], x, y, ...)
+              }
+            }
+          }
+        }
+      }
+      else {
+        stop("Map dimensions not implemented")
       }
     }
   }

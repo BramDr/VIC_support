@@ -24,7 +24,7 @@ min.k.file = "./Saves/mineralizationK_30min_global.RDS"
 rec.n.file = "./Saves/recoveryN_30min_global.RDS"
 rec.p.file = "./Saves/recoveryP_30min_global.RDS"
 rec.k.file = "./Saves/recoveryK_30min_global.RDS"
-crop.out = "../../../../Data/VIC/Parameters/global/crop_params_MIRCAhybrid_global.nc"
+crop.out = "../../../../Data/VIC/Parameters/global/crop_params_MIRCAhybrid_lowMin_global.nc"
 
 # Load
 crops = read.csv(crop.file, stringsAsFactors = F)
@@ -307,7 +307,7 @@ for(i in 1:nrow(crops)){
   ncvar_put(nc = nc, varid = var.N_amount, vals = fert.n.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
   ncvar_put(nc = nc, varid = var.P_amount, vals = fert.p.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
   ncvar_put(nc = nc, varid = var.K_amount, vals = fert.k.filled, start = c(1,1,i,1), count = c(-1,-1,1,-1))
-  ncvar_put(nc = nc, varid = var.N_mins, vals = min.n.filled, start = c(1,1,i), count = c(-1,-1,1))
+  ncvar_put(nc = nc, varid = var.N_mins, vals = min.n.filled * 0.75, start = c(1,1,i), count = c(-1,-1,1))
   ncvar_put(nc = nc, varid = var.N_recovery, vals = rec.n.filled, start = c(1,1,i), count = c(-1,-1,1))
   ncvar_put(nc = nc, varid = var.P_mins, vals = min.p.filled, start = c(1,1,i), count = c(-1,-1,1))
   ncvar_put(nc = nc, varid = var.P_recovery, vals = rec.p.filled, start = c(1,1,i), count = c(-1,-1,1))

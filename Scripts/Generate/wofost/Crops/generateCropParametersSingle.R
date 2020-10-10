@@ -92,9 +92,9 @@ for (i in 1:nrow(crops)) {
       } else if(param.desc$name[k] == "Albedo") {
         value = 0.1
       } else if(param.desc$name[k] == "MinStomResist") {
-        value = 100
+        value = 80
       } else if(param.desc$name[k] == "MaxArchResist") {
-        value = 3
+        value = 2
       } else if(param.desc$name[k] == "Fcanopy") {
         value = 1
       } else if(param.desc$name[k] == "IDSL") {
@@ -105,10 +105,29 @@ for (i in 1:nrow(crops)) {
         if(param.desc$name[k] == "Fcanopy") {
             value = 0.75
         }
+        if(param.desc$name[k] == "TSUMEM") {
+            value = 0
+        }
       }
       if(crops$name[i] == "soybean"){
-        if(param.desc$name[k] == "Fcanopy") {
-          value = 0.75
+        if(param.desc$name[k] == "MaxArchResist") {
+          value = 2.5
+        }
+      }
+      if(crops$name[i] == "maize"){
+        if(param.desc$name[k] == "RDMCR") {
+          value = 200
+        }
+        if(param.desc$name[k] == "MinStomResist") {
+          value = 120
+        }
+        if(param.desc$name[k] == "MaxArchResist") {
+          value = 50
+        }
+      }
+      if(crops$name[i] == "wheat"){
+        if(param.desc$name[k] == "MinStomResist") {
+          value = 100
         }
       }
       
@@ -131,7 +150,7 @@ for (i in 1:nrow(crops)) {
       
       if(crops$name[i] == "rice") {
         if(param.desc$name[k] == "AMAXTB") {
-          values$Y = 60
+          values$Y = 70
         }
       }
       

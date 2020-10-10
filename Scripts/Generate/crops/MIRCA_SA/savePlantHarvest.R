@@ -28,6 +28,10 @@ set.plant.harvest = function(x, columns, idx) {
   x.idx = x[columns == "x"]
   y.idx = x[columns == "y"]
   
+  if(start == end){
+    print("SAME")
+  }
+  
   start.alt = start + 1
   end.alt = end + 1
   if(start.alt > 12) {
@@ -43,8 +47,8 @@ set.plant.harvest = function(x, columns, idx) {
   end.doy.m = as.numeric(format.Date(as.Date(paste0("0001-",end,"-15")), "%j"))
   start.doy.l = as.numeric(format.Date(as.Date(paste0("0001-",start,"-25")), "%j"))
   end.doy.l = as.numeric(format.Date(as.Date(paste0("0001-",end,"-25")), "%j"))
-  start.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",start,"-05")), "%j"))
-  end.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",end,"-05")), "%j"))
+  start.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",start.alt,"-04")), "%j"))
+  end.doy.vl = as.numeric(format.Date(as.Date(paste0("0001-",end.alt,"-04")), "%j"))
   
   z = 1
   for(start.doy in c(start.doy.e, start.doy.m, start.doy.l, start.doy.vl)){
@@ -65,6 +69,10 @@ for(i in 1:nrow(crops)){
   
   scc.c = scc[scc$crop == crops$mirca[i] & scc$subcrop == crops$season[i], ]
   scc.c$rowname = 1:nrow(scc.c)
+  
+  if(i == 1){
+    scc.c$end[scc.c$lon > 95 & scc.c$end == 4] = 5
+  }
   
   apply(X = scc.c, MARGIN = 1, FUN = set.plant.harvest, columns = colnames(scc.c), idx = i)
 }

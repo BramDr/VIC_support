@@ -5,15 +5,15 @@ rm(list = ls())
 soil.dir = "../../../../Data/Primary/WISE/wise_30sec_v1/Interchangeable_format"
 map.file = "../../../../Data/Primary/WISE/wise_30sec_v1/Interchangeable_format/wise_30sec_v1.tif"
 mapping.file = "../../../../Data/Primary/WISE/wise_30sec_v1/Interchangeable_format/wise_30sec_v1.tsv"
-out.clay = "./Saves/clay_30min_global.RDS"
-out.sand = "./Saves/sand_30min_global.RDS"
-out.silt = "./Saves/silt_30min_global.RDS"
-out.bulk = "./Saves/bulk_30min_global.RDS"
+out.ocar = "./Saves/ocar_30min_global.RDS"
+out.ph = "./Saves/ph_30min_global.RDS"
+out.tnit = "./Saves/tnit_30min_global.RDS"
+out.cnrat = "./Saves/cnrat_30min_global.RDS"
 
 extent.isel = extent(-4.75, 8.25, 42.75, 54.75)
 extent.out = extent(-180, 180, -90, 90)
 
-soil.files = list.files(soil.dir, pattern = "_wD[0-9]", full.names = T)
+soil.files = list.files(soil.dir, pattern = "_wD1", full.names = T)
 map = raster(map.file)
 map = crop(map, extent.isel)
 extent.sel = extent(map)
@@ -53,30 +53,30 @@ for(i in 1:length(soil.files)){
   layer = gsub(x = layer, pattern = ".*wD", replacement = "")
   layer = as.numeric(layer)
   
-  clay = get.char(map, mapping, soil, "CLPC")
-  sand = get.char(map, mapping, soil, "SDTO")
-  silt = get.char(map, mapping, soil, "STPC")
-  bulk = get.char(map, mapping, soil, "BULK")
+  ocar = get.char(map, mapping, soil, "ORGC")
+  ph = get.char(map, mapping, soil, "PHAQ")
+  tnit = get.char(map, mapping, soil, "TOTN")
+  cnrat = get.char(map, mapping, soil, "CNrt")
   
-  clay.agg = agg.map(clay,60)
-  sand.agg = agg.map(sand,60)
-  silt.agg = agg.map(silt,60)
-  bulk.agg = agg.map(bulk,60)
+  ocar.agg = agg.map(ocar,60)
+  ph.agg = agg.map(ph,60)
+  tnit.agg = agg.map(tnit,60)
+  cnrat.agg = agg.map(cnrat,60)
   
   extent.print = paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
   
-  out.clay.tmp = gsub(out.clay, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.sand.tmp = gsub(out.sand, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.silt.tmp = gsub(out.silt, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.bulk.tmp = gsub(out.bulk, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.ocar.tmp = gsub(out.ocar, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.ph.tmp = gsub(out.ph, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.tnit.tmp = gsub(out.tnit, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.cnrat.tmp = gsub(out.cnrat, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
   
-  dir.create(dirname(out.clay.tmp))
-  dir.create(dirname(out.sand.tmp))
-  dir.create(dirname(out.silt.tmp))
-  dir.create(dirname(out.bulk.tmp))
+  dir.create(dirname(out.ocar.tmp))
+  dir.create(dirname(out.ph.tmp))
+  dir.create(dirname(out.tnit.tmp))
+  dir.create(dirname(out.cnrat.tmp))
   
-  saveRDS(clay.agg, out.clay.tmp)
-  saveRDS(sand.agg, out.sand.tmp)
-  saveRDS(silt.agg, out.silt.tmp)
-  saveRDS(bulk.agg, out.bulk.tmp)
+  saveRDS(ocar.agg, out.ocar.tmp)
+  saveRDS(ph.agg, out.ph.tmp)
+  saveRDS(tnit.agg, out.tnit.tmp)
+  saveRDS(cnrat.agg, out.cnrat.tmp)
 }

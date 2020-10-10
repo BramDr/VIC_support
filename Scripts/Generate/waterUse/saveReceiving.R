@@ -3,9 +3,8 @@ library(fields)
 rm(list = ls())
 
 # Input
-count.file <- "../../../Data/Transformed/Routing/count_30min_global.RDS"
-basin.file <- "../../../Data/Transformed/Routing/basins_30min_global.RDS"
-delta.file <- "../../../Data/Transformed/Delta/delta_30min_global.RDS"
+delta.receiving.file <- "Saves/receivingDelta.RDS"
+neighbour.receiving.file <- "Saves/receivingNeighbour.RDS"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
 receiving.id.out <- "Saves/receiving_id.RDS"
 nreceiving.out <- "Saves/Nreceiving.RDS"
@@ -16,47 +15,52 @@ nc <- nc_open(mask.file)
 mask <- ncvar_get(nc, "mask")
 nc_close(nc)
 
-count <- readRDS(count.file)
-basin <- readRDS(basin.file)
-delta <- readRDS(delta.file)
+delta.receiving = readRDS(delta.receiving.file)
+neighbour.receiving = readRDS(neighbour.receiving.file)
 
 # Calculate
-## Get the basin associated with the delta
-delta.basin <- data.frame(delta = unique(na.omit(c(delta))), basin = NA, count = 0, x = NA, y = NA)
-for (x in 1:dim(delta)[1]) {
-  for (y in 1:dim(delta)[2]) {
-    if (is.na(delta[x, y])) {
+## receiving
+total.receiving = vector(mode = "list", length = 720)
+for(x in 1:dim(mask)[1]){
+  total.receiving[[x]] = vector(mode = "list", length = 360)
+}
+for (x in 1:dim(mask)[1]) {
+  for (y in 1:dim(mask)[2]) {
+    if (length(names(neighbour.receiving[[x]][[y]])) == 0 &&
+        length(names(delta.receiving[[x]][[y]])) == 0) {
       next
     }
-
-    row <- which(delta.basin$delta == delta[x, y])
-    if (count[x, y] > delta.basin$count[row]) {
-      delta.basin$basin[row] <- basin[x, y]
-      delta.basin$count[row] <- count[x, y]
-      delta.basin$x[row] <- x
-      delta.basin$y[row] <- y
+    
+    df = data.frame(x = numeric(), y = numeric())
+    
+    if (length(names(neighbour.receiving[[x]][[y]])) != 0) {
+      df = rbind(df, neighbour.receiving[[x]][[y]]$df)
     }
+    
+    if (length(names(delta.receiving[[x]][[y]])) != 0) {
+      df = rbind(df, delta.receiving[[x]][[y]]$df)
+    }
+    
+    df = unique(df)
+    
+    total.receiving[[x]][[y]]$df <- df
   }
 }
 
-## Get the basin outflow point associated with the delta
-for (x in 1:dim(basin)[1]) {
-  for (y in 1:dim(basin)[2]) {
-    if (is.na(basin[x, y])) {
+## Nreceiving
+Nreceiving <- mask * 0
+for (x in 1:dim(mask)[1]) {
+  for (y in 1:dim(mask)[2]) {
+    if (length(names(total.receiving[[x]][[y]])) == 0) {
       next
     }
-    if (!basin[x, y] %in% delta.basin$basin) {
-      next
-    }
-
-    row <- which(delta.basin$basin == basin[x, y])
-    if (count[x, y] > delta.basin$count[row]) {
-      delta.basin$count[row] <- count[x, y]
-      delta.basin$x[row] <- x
-      delta.basin$y[row] <- y
-    }
+    
+    df = total.receiving[[x]][[y]]$df
+    
+    Nreceiving[x, y] <- Nreceiving[x, y] + nrow(df)
   }
 }
+image.plot(Nreceiving)
 
 ## Give cells a receiving id
 receiving.id <- mask * 0
@@ -66,96 +70,29 @@ for (x in 1:dim(receiving.id)[1]) {
     if (is.na(mask[x, y])) {
       next
     }
-
+    
     receiving.id[x, y] <- id.counter
     id.counter <- id.counter + 1
   }
 }
+image.plot(receiving.id)
 
-Nreceiving <- mask * 0
-for (x in 1:dim(delta)[1]) {
-  for (y in 1:dim(delta)[2]) {
-    if (is.na(delta[x, y])) {
-      next
-    }
-
-    row.d <- which(delta.basin$delta == delta[x, y])
-    x.d <- delta.basin$x[row.d]
-    y.d <- delta.basin$y[row.d]
-    count.d <- delta.basin$count[row.d]
-
-    ## Remove cells in the main stem
-    if (count.d - 50 <= count[x, y]) {
-      next
-    }
-
-    Nreceiving[x.d, y.d] <- Nreceiving[x.d, y.d] + 1
-  }
-}
-image.plot(Nreceiving)
-
+## Make receiving
 receiving <- array(NA, dim = c(dim(mask), max(Nreceiving, na.rm = T)))
-for (x in 1:dim(delta)[1]) {
-  for (y in 1:dim(delta)[2]) {
-    if (is.na(delta[x, y])) {
+for (x in 1:dim(mask)[1]) {
+  for (y in 1:dim(mask)[2]) {
+    if (length(names(total.receiving[[x]][[y]])) == 0) {
       next
     }
-
-    row.d <- which(delta.basin$delta == delta[x, y])
-    x.d <- delta.basin$x[row.d]
-    y.d <- delta.basin$y[row.d]
-    count.d <- delta.basin$count[row.d]
-
-    if (count.d - 50 <= count[x, y]) {
-      next
-    }
-
-    for (z in 1:dim(receiving)[3]) {
-      if (is.na(receiving[x.d, y.d, z])) {
-        receiving[x.d, y.d, z] <- receiving.id[x, y]
-        break
-      }
+    
+    df = total.receiving[[x]][[y]]$df
+    
+    for(i in 1:nrow(df)){
+      receiving[x, y, i] <- receiving.id[df$x[i], df$y[i]]
     }
   }
 }
-image.plot(receiving[, , 32])
-
-# Visual check
-receiving.check <- array(NA, dim = dim(Nreceiving))
-for (x in 1:dim(receiving)[1]) {
-  for (y in 1:dim(receiving)[2]) {
-    if (is.na(Nreceiving[x, y]) || Nreceiving[x, y] == 0) {
-      next
-    }
-
-    for (z in 1:Nreceiving[x, y]) {
-      r.id <- receiving[x, y, z]
-
-      for (x2 in 1:dim(receiving.id)[1]) {
-        for (y2 in 1:dim(receiving.id)[2]) {
-          if (is.na(receiving.id[x2, y2])) {
-            next
-          }
-          if (receiving.id[x2, y2] != r.id) {
-            next
-          }
-
-          receiving.check[x2, y2] <- 1
-        }
-      }
-    }
-  }
-}
-image.plot(receiving.check)
-image.plot(delta)
-image.plot(delta[(720 * 0.7):(720 * 0.8), (360 * 0.5):(360 * 0.6)])
-image.plot(receiving.check[(720 * 0.7):(720 * 0.8), (360 * 0.5):(360 * 0.6)])
-image.plot(delta[(720 * 0.3):(720 * 0.4), (360 * 0.4):(360 * 0.5)])
-image.plot(receiving.check[(720 * 0.3):(720 * 0.4), (360 * 0.4):(360 * 0.5)])
-image.plot(delta[(720 * 0.2):(720 * 0.3), (360 * 0.5):(360 * 0.7)])
-image.plot(receiving.check[(720 * 0.2):(720 * 0.3), (360 * 0.5):(360 * 0.7)])
-image.plot(delta[(720 * 0.1):(720 * 0.2), (360 * 0.8):(360 * 1)])
-image.plot(receiving.check[(720 * 0.1):(720 * 0.2), (360 * 0.8):(360 * 1)])
+image.plot(receiving[, , 5])
 
 # Save
 dir.create(dirname(receiving.out))

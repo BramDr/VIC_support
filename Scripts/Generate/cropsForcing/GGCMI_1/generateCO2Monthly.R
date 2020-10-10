@@ -5,7 +5,7 @@ rm(list = ls())
 # Input
 co2.file <- "../../../../Data/Primary/GGCMI/Phase1/NASA.CO2.Monthly.1850-2013.csv"
 out.dir <- "../../../../Data/VIC/Forcing/global/GGCMI_1/co2_monthly/co2_monthly_"
-years <- 1850:2013
+years <- 1850:2014
 
 # Load
 co2 <- read.csv(co2.file, header = T, skip = 1)

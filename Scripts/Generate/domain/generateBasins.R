@@ -23,7 +23,8 @@ points <- data.frame(lat = numeric(), lon = numeric(), name = character(), strin
 #points[nrow(points) + 1, ] <- c(-1.75, -55.75, "Amazon")
 #points[nrow(points) + 1, ] <- c(32.25, -115.25, "Colorado")
 #points[nrow(points) + 1, ] <- c(31.75, 109.75, "Yangtze")
-points[nrow(points) + 1, ] <- c(26.75, 98.75, "KraBuri")
+#points[nrow(points) + 1, ] <- c(26.75, 98.75, "KraBuri")
+points[nrow(points) + 1, ] <- c(44.75, -117.75, "Columbia")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

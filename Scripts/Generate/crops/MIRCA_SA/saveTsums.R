@@ -72,9 +72,9 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
     if(tsum2 <= 0){
       tsum2 = 1
     }
-    if(tsum2 > 1300){
-      tsum1 = tsum1 + tsum2 - 1300
-      tsum2 = 1300
+    if(tsum2 > 1500){
+      tsum1 = tsum1 + tsum2 - 1500
+      tsum2 = 1500
     }
     return(c(tsum1, tsum2))
     
@@ -94,6 +94,10 @@ calcPhaseWOFOST <- function(Tair.dev, crop) {
   } else if(crop == "rice") {
     tsum1 = (tsumtot / 5) * 3
     tsum2 = (tsumtot / 5) * 2
+    if(tsum1 > 1000){
+      tsum2 = tsum2 + tsum1 - 1000
+      tsum1 = 1000
+    }
     return(c(tsum1, tsum2))
       
   }
@@ -173,11 +177,6 @@ for(i in 1:nrow(crops)) {
   plant.crop = plant[,,i,]
   harvest.crop = harvest[,,i,]
   
-  #image.plot(harvest.crop[,,5])
-  #harvest.crop = harvest.crop + 21
-  #image.plot(harvest.crop[,,5])
-  #harvest.crop[!is.na(harvest.crop) & harvest.crop > 365] = harvest.crop[!is.na(harvest.crop) & harvest.crop > 365] - 365
-  
   x = 378
   y = 188
   done=F
@@ -248,9 +247,6 @@ for(i in 1:nrow(crops)) {
         tsum1.map[x,y,i,o] = Tsums[1]
         tsum2.map[x,y,i,o] = Tsums[2]
         
-        #lengths = c(min(which(Tair.dev >= Tsums[1])), length(Tair.dev) - min(which(Tair.dev >= Tsums[1])))
-        #length1.map[x,y,i,o] = lengths[1]
-        #length2.map[x,y,i,o] = lengths[2]
         if(tsum1.map[x,y,i,o] < 0 || tsum1.map[x,y,i,o] < 0){
           stop("Error in calculation, tsum < 0")
         }
@@ -273,26 +269,8 @@ for(i in 1:nrow(crops)) {
     }
   }
   
-  # length1.map.plot = length1.map[,,i,5]
-  # length2.map.plot = length2.map[,,i,5]
-  # length1.map.plot[is.infinite(length1.map.plot)] = 0
-  # length2.map.plot[is.infinite(length2.map.plot)] = 0
-  # length.map.plot = length1.map.plot + length2.map.plot
-  #length1.calc.plot = 83.58 - 0.85 * length.map.plot + 0.006 * length.map.plot * length.map.plot
-  #length2.calc.plot = length.map.plot - length1.calc.plot
-  # length2.calc.plot = -306.52 + 344.83 * (1 - exp(-0.0432 * length.map.plot))
-  # length1.calc.plot = length.map.plot - length2.calc.plot
-  
   image.plot(tsum1.map[,,i,5], main = paste0(crops$name[i], " TSUM1"), zlim = c(0,2500))
-  #image.plot(tsum1.map[,,i,9], main = paste0(crops$name[i], " TSUM1"))
   image.plot(tsum2.map[,,i,5], main = paste0(crops$name[i], " TSUM2"), zlim = c(0,2500))
-  #image.plot(tsum2.map[,,i,9], main = paste0(crops$name[i], " TSUM2"))
-  # image.plot(length1.map.plot / length2.map.plot)
-  #image.plot(length1.map.plot, main = paste0(crops$name[i], " LEN1"), zlim = c(0,150))
-  # image.plot(length1.calc.plot, main = paste0(crops$name[i], " LEN1CALC"), zlim = c(0,150))
-  #image.plot(length2.map.plot, main = paste0(crops$name[i], " LEN2"), zlim = c(0,150))
-  # image.plot(length2.calc.plot, main = paste0(crops$name[i], " LEN2CALC"))
-  #image.plot(tsum1.map[,,i] + tsum2.map[,,i], main = paste0(crops$name[i], " TSUMTOT"))
 }
 
 # Save

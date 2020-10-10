@@ -18,7 +18,7 @@ tsum1 = readRDS(tsum1.file)
 tsum2 = readRDS(tsum2.file)
 
 nc = nc_open(template.file)
-mask.t = ncvar_get(nc, "mask")
+mask = ncvar_get(nc, "mask")
 nc_close(nc)
 
 # Setup
@@ -36,6 +36,12 @@ for(i in 1:nrow(crops)){
   #  next
   #}
   
+  na.map = is.na(Ncrop[,,i]) | Ncrop[,,i] == 0
+  #image.plot(na.map)
+  
+  ## Calculate    
+  mask.filled <- fillMap(map = mask, na.map = na.map, nearest.function = getNearestZero)
+    
   for(z in 1:noptions) {
     print(z)
     
@@ -46,13 +52,6 @@ for(i in 1:nrow(crops)){
     domain.out.tmp = gsub(x = domain.out, pattern = "domain_", replacement = paste0("domain_", crops$name[i], "_", crops$water[i], "_", crops$season[i], "_", z, "_"))
     dir.create(dirname(domain.out.tmp))
     file.copy(from = template.file, to = domain.out.tmp, overwrite = T)
-    
-    ## Calculate
-    na.map = is.na(Ncrop[,,i]) | Ncrop[,,i] == 0 | is.na(tsum1[,,i,z]) | is.na(tsum2[,,i,z])
-    mask = mask.t & !is.na(Ncrop[,,i]) & Ncrop[,,i] > 0 & !is.na(tsum1[,,i,z]) & !is.na(tsum2[,,i,z])
-    image.plot(mask)
-    
-    mask.filled <- fillMap(map = mask, na.map =na.map, nearest.function = getNearestMean)
     
     nc <- nc_open(domain.out.tmp, write = T)
     ncvar_put(nc = nc, varid = "mask", vals = mask.filled)
