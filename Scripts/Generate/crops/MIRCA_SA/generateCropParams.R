@@ -3,59 +3,59 @@ library(fields)
 rm(list = ls())
 
 # Input
-function.script = "../../../../Scripts/Support/mapFunctions.R"
+function.script <- "../../../../Scripts/Support/mapFunctions.R"
 mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
-crop.file = "./Saves/crop_mapping.csv"
-cc.file = "./Saves/cc_30min_global.RDS"
-Ncrop.file = "./Saves/Ncrop_30min_global.RDS"
-veg.class.file = "./Saves/cropVegClass_30min_global.RDS"
-plant.file = "./Saves/plantDay_30min_global.RDS"
-harvest.file = "./Saves/harvestDay_30min_global.RDS"
-tsum1.file = "./Saves/tsum1_30min_global.RDS"
-tsum2.file = "./Saves/tsum2_30min_global.RDS"
-tfactor.file = "./Saves/tfactor_30min_global.RDS"
-fert.dvs.file = "./Saves/fertilizerDVS_30min_global.RDS"
-fert.n.file = "./Saves/fertilizerN_30min_global.RDS"
-fert.p.file = "./Saves/fertilizerP_30min_global.RDS"
-fert.k.file = "./Saves/fertilizerK_30min_global.RDS"
-min.n.file = "./Saves/mineralizationN_30min_global.RDS"
-min.p.file = "./Saves/mineralizationP_30min_global.RDS"
-min.k.file = "./Saves/mineralizationK_30min_global.RDS"
-rec.n.file = "./Saves/recoveryN_30min_global.RDS"
-rec.p.file = "./Saves/recoveryP_30min_global.RDS"
-rec.k.file = "./Saves/recoveryK_30min_global.RDS"
-crop.out = "../../../../Data/VIC/Parameters/global/WOFOST_SA/crop_params_global.nc"
+crop.file <- "./Saves/crop_mapping.csv"
+cc.file <- "./Saves/cc_30min_global.RDS"
+Ncrop.file <- "./Saves/Ncrop_30min_global.RDS"
+veg.class.file <- "./Saves/cropVegClass_30min_global.RDS"
+plant.file <- "./Saves/plantDay_30min_global.RDS"
+harvest.file <- "./Saves/harvestDay_30min_global.RDS"
+tsum1.file <- "./Saves/tsum1_30min_global.RDS"
+tsum2.file <- "./Saves/tsum2_30min_global.RDS"
+tfactor.file <- "./Saves/tfactor_30min_global.RDS"
+fert.dvs.file <- "./Saves/fertilizerDVS_30min_global.RDS"
+fert.n.file <- "./Saves/fertilizerN_30min_global.RDS"
+fert.p.file <- "./Saves/fertilizerP_30min_global.RDS"
+fert.k.file <- "./Saves/fertilizerK_30min_global.RDS"
+min.n.file <- "./Saves/mineralizationN_30min_global.RDS"
+min.p.file <- "./Saves/mineralizationP_30min_global.RDS"
+min.k.file <- "./Saves/mineralizationK_30min_global.RDS"
+rec.n.file <- "./Saves/recoveryN_30min_global.RDS"
+rec.p.file <- "./Saves/recoveryP_30min_global.RDS"
+rec.k.file <- "./Saves/recoveryK_30min_global.RDS"
+crop.out <- "../../../../Data/VIC/Parameters/global/VICWOFOST_SA/crop_params_global.nc"
 
 # Load
-crops = read.csv(crop.file, stringsAsFactors = F)
-cc = readRDS(cc.file)
-Ncrop = readRDS(Ncrop.file)
-veg.class = readRDS(veg.class.file)
-plant = readRDS(plant.file)
-harvest = readRDS(harvest.file)
-tsum1 = readRDS(tsum1.file)
-tsum2 = readRDS(tsum2.file)
-tfactor = readRDS(tfactor.file)
-fert.dvs = readRDS(fert.dvs.file)
-fert.n = readRDS(fert.n.file)
-fert.p = readRDS(fert.p.file)
-fert.k = readRDS(fert.k.file)
-min.n = readRDS(min.n.file)
-min.p = readRDS(min.p.file)
-min.k = readRDS(min.k.file)
-rec.n = readRDS(rec.n.file)
-rec.p = readRDS(rec.p.file)
-rec.k = readRDS(rec.k.file)
+crops <- read.csv(crop.file, stringsAsFactors = F)
+cc <- readRDS(cc.file)
+Ncrop <- readRDS(Ncrop.file)
+veg.class <- readRDS(veg.class.file)
+plant <- readRDS(plant.file)
+harvest <- readRDS(harvest.file)
+tsum1 <- readRDS(tsum1.file)
+tsum2 <- readRDS(tsum2.file)
+tfactor <- readRDS(tfactor.file)
+fert.dvs <- readRDS(fert.dvs.file)
+fert.n <- readRDS(fert.n.file)
+fert.p <- readRDS(fert.p.file)
+fert.k <- readRDS(fert.k.file)
+min.n <- readRDS(min.n.file)
+min.p <- readRDS(min.p.file)
+min.k <- readRDS(min.k.file)
+rec.n <- readRDS(rec.n.file)
+rec.p <- readRDS(rec.p.file)
+rec.k <- readRDS(rec.k.file)
 
-nc = nc_open(mask.file)
-mask = ncvar_get(nc, "mask")
+nc <- nc_open(mask.file)
+mask <- ncvar_get(nc, "mask")
 nc_close(nc)
 
 # Setup
 source(function.script)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
-noptions = 16
+noptions <- 16
 
 # Create
 dim.lon <- ncdim_def(
@@ -234,48 +234,48 @@ var.K_recovery <- ncvar_def(
   compression = 5
 )
 
-na.map = apply(X = Ncrop, MARGIN = c(1,2), FUN = sum, na.rm = T)
-na.map = is.na(na.map) | na.map == 0
-#image.plot(na.map)
+na.map <- apply(X = Ncrop, MARGIN = c(1, 2), FUN = sum, na.rm = T)
+na.map <- is.na(na.map) | na.map == 0
+# image.plot(na.map)
 
 ## Calculate
 tfactor.filled <- fillMap(map = tfactor, na.map = na.map, nearest.function = getNearestZero)
 
-i = 1
-for(i in 1:nrow(crops)){
+i <- 1
+for (i in 1:nrow(crops)) {
   print(crops$name[i])
-  
-  #if(((crops$name[i] != "rice" || crops$water[i] != "irrigated") && (crops$name[i] != "maize" || crops$water[i] != "rainfed")) || crops$season[i] != 1) {
-  #if((crops$name[i] != "maize" || crops$water[i] != "rainfed") || crops$season[i] != 1) {
-  #  next
-  #}
-  
-  na.map = is.na(Ncrop[,,i]) | Ncrop[,,i] == 0
-  #image.plot(na.map)
-  
+
+  # if (crops$name[i] != "maize" || crops$water[i] != "irrigated") {
+  # next
+  # }
+
+  na.map <- is.na(Ncrop[, , i]) | Ncrop[, , i] == 0
+  # image.plot(na.map)
+
   ## Calculate
-  Ncrop.filled <- fillMap(map = Ncrop[,,i], na.map = na.map, nearest.function = getNearestZero)
-  fert.dvs.filled <- fillMap(map = fert.dvs[,,i], na.map = na.map, nearest.function = getNearestMean)
-  fert.n.filled <- fillMap(map = fert.n[,,i], na.map = na.map, nearest.function = getNearestMean)
-  fert.p.filled <- fillMap(map = fert.p[,,i], na.map = na.map, nearest.function = getNearestMean)
-  fert.k.filled <- fillMap(map = fert.k[,,i], na.map = na.map, nearest.function = getNearestMean)
-  min.n.filled <- fillMap(map = min.n[,,i], na.map = na.map, nearest.function = getNearestMean)
-  min.p.filled <- fillMap(map = min.p[,,i], na.map = na.map, nearest.function = getNearestMean)
-  min.k.filled <- fillMap(map = min.k[,,i], na.map = na.map, nearest.function = getNearestMean)
-  rec.n.filled <- fillMap(map = rec.n[,,i], na.map = na.map, nearest.function = getNearestMean)
-  rec.p.filled <- fillMap(map = rec.p[,,i], na.map = na.map, nearest.function = getNearestMean)
-  rec.k.filled <- fillMap(map = rec.k[,,i], na.map = na.map, nearest.function = getNearestMean)
-  cc.filled <- fillMap(map = cc[,,i,], na.map = na.map, nearest.function = getNearestZero)
-  veg.class.filled <- fillMap(map = veg.class[,,i], na.map = na.map, nearest.function = getNearestCount)
-  
-  for(z in 1:noptions) {
+  Ncrop.filled <- fillMap(map = Ncrop[, , i], na.map = na.map, nearest.function = getNearestZero)
+  fert.dvs.filled <- fillMap(map = fert.dvs[, , i], na.map = na.map, nearest.function = getNearestMean)
+  fert.n.filled <- fillMap(map = fert.n[, , i], na.map = na.map, nearest.function = getNearestMean)
+  fert.p.filled <- fillMap(map = fert.p[, , i], na.map = na.map, nearest.function = getNearestMean)
+  fert.k.filled <- fillMap(map = fert.k[, , i], na.map = na.map, nearest.function = getNearestMean)
+  min.n.filled <- fillMap(map = min.n[, , i], na.map = na.map, nearest.function = getNearestMean)
+  min.p.filled <- fillMap(map = min.p[, , i], na.map = na.map, nearest.function = getNearestMean)
+  min.k.filled <- fillMap(map = min.k[, , i], na.map = na.map, nearest.function = getNearestMean)
+  rec.n.filled <- fillMap(map = rec.n[, , i], na.map = na.map, nearest.function = getNearestMean)
+  rec.p.filled <- fillMap(map = rec.p[, , i], na.map = na.map, nearest.function = getNearestMean)
+  rec.k.filled <- fillMap(map = rec.k[, , i], na.map = na.map, nearest.function = getNearestMean)
+  cc.filled <- fillMap(map = cc[, , i, ], na.map = na.map, nearest.function = getNearestZero)
+  veg.class.filled <- fillMap(map = veg.class[, , i], na.map = na.map, nearest.function = getNearestCount)
+
+  z <- 1
+  for (z in 1:noptions) {
     print(z)
-    
-    #if (z != 5) {
-    #  next
-    #}
-    
-    crop.out.tmp = gsub(x = crop.out, pattern = "crop_params_", replacement = paste0("crop_params_", crops$name[i], "_", crops$water[i], "_", crops$season[i], "_", z, "_"))
+
+    # if (z != 5) {
+    # next
+    # }
+
+    crop.out.tmp <- gsub(x = crop.out, pattern = "crop_params_", replacement = paste0("crop_params_", crops$name[i], "_", crops$water[i], "_", crops$season[i], "_", z, "_"))
     dir.create(dirname(crop.out.tmp))
     nc <- nc_create(
       crop.out.tmp,
@@ -303,11 +303,11 @@ for(i in 1:nrow(crops)){
     nc_close(nc)
 
     ## Calculate
-    plant.filled <- fillMap(map = plant[,,i,z], na.map = na.map, nearest.function = getNearestMean)
-    harvest.filled <- fillMap(map = harvest[,,i,z], na.map = na.map, nearest.function = getNearestMean)
-    tsum1.filled <- fillMap(map = tsum1[,,i,z], na.map = na.map, nearest.function = getNearestMean)
-    tsum2.filled <- fillMap(map = tsum2[,,i,z], na.map = na.map, nearest.function = getNearestMean)
-    
+    plant.filled <- fillMap(map = plant[, , i, z], na.map = na.map, nearest.function = getNearestMean)
+    harvest.filled <- fillMap(map = harvest[, , i, z], na.map = na.map, nearest.function = getNearestMean)
+    tsum1.filled <- fillMap(map = tsum1[, , i, z], na.map = na.map, nearest.function = getNearestMean)
+    tsum2.filled <- fillMap(map = tsum2[, , i, z], na.map = na.map, nearest.function = getNearestMean)
+
     nc <- nc_open(crop.out.tmp, write = T)
     ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)
     ncvar_put(nc = nc, varid = var.Cc, vals = cc.filled)

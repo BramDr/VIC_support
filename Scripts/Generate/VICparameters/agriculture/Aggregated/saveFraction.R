@@ -35,9 +35,22 @@ cc.merge$avgf[cc.merge$crop %in% c(27:52)] <- cc.merge$meanfc[cc.merge$crop %in%
 max(cc.merge$avgf)
 min(cc.merge$avgf)
 
-avgf <- as.data.frame(cc.merge$avgf)
-colnames(avgf) <- "avgf"
+avgf.cell.paddy <- aggregate(formula = avgf ~ cell_ID, data = cc.merge[cc.merge$crop == 3, ], FUN = sum)
+avgf.cell.paddy$paddy.maxavgf <- avgf.cell.paddy$avgf
+avgf.cell.irr <- aggregate(formula = avgf ~ cell_ID, data = cc.merge[cc.merge$crop %in% c(1:2, 4:26), ], FUN = sum)
+avgf.cell.irr$irr.maxavgf <- avgf.cell.irr$avgf
+avgf.cell.rain <- aggregate(formula = avgf ~ cell_ID, data = cc.merge[cc.merge$crop %in% c(27:52), ], FUN = sum)
+avgf.cell.rain$rain.maxavgf <- avgf.cell.rain$avgf
+
+cc.merge <- join(cc.merge, avgf.cell.paddy[, c("cell_ID", "paddy.maxavgf")])
+cc.merge <- join(cc.merge, avgf.cell.irr[, c("cell_ID", "irr.maxavgf")])
+cc.merge <- join(cc.merge, avgf.cell.rain[, c("cell_ID", "rain.maxavgf")])
+
+cc.merge$maxavgf <- NA
+cc.merge$maxavgf[cc.merge$crop == 3] <- cc.merge$paddy.maxavgf[cc.merge$crop == 3]
+cc.merge$maxavgf[cc.merge$crop %in% c(1:2, 4:26)] <- cc.merge$irr.maxavgf[cc.merge$crop %in% c(1:2, 4:26)]
+cc.merge$maxavgf[cc.merge$crop %in% c(27:52)] <- cc.merge$rain.maxavgf[cc.merge$crop %in% c(27:52)]
 
 # Save
 dir.create(dirname(avgf.out))
-write.csv(cc.merge$avgf, avgf.out, row.names = F)
+write.csv(cc.merge[, c("avgf", "maxavgf")], avgf.out, row.names = F)

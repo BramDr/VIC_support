@@ -3,6 +3,7 @@ library(plyr)
 rm(list = ls())
 
 # Input
+crop.file <- "./Saves/crop_mapping.csv"
 cc.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_30min_global.csv"
 fixed.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_fixed_30min_global.csv"
 albedo.file <- "../../../../../Data/Transformed/LandUse/subcropCalendar_albedo_30min_global.csv"
@@ -20,17 +21,24 @@ albedo.out <- "Saves/cellParametersUniform_albedo.csv"
 LAI.out <- "Saves/cellParametersUniform_LAI.csv"
 veg_rough.out <- "Saves/cellParametersUniform_vegRough.csv"
 displacement.out <- "Saves/cellParametersUniform_displacement.csv"
-split = data.frame(name = c("wheatRainfed","wheatIrrigated",
-                            "maizeRainfed","maizeIrrigated",
-                            "riceRainfed","riceIrrigated",
-                            "soybeanRainfed","soybeanIrrigated"),
-                   id = c(27, 1,
-                          28, 2,
-                          29, 3,
-                          34, 8),
-                   stringsAsFactors = F)
+split <- data.frame(
+  name = c(
+    "wheatRainfed", "wheatIrrigated",
+    "maizeRainfed", "maizeIrrigated",
+    "riceRainfed", "riceIrrigated",
+    "soybeanRainfed", "soybeanIrrigated"
+  ),
+  id = c(
+    27, 1,
+    28, 2,
+    29, 3,
+    34, 8
+  ),
+  stringsAsFactors = F
+)
 
 # Load
+crops <- read.csv(crop.file, stringsAsFactors = F)
 cc <- read.csv(file = cc.file, header = TRUE, stringsAsFactors = F)
 fixed <- read.csv(file = fixed.file, header = TRUE, stringsAsFactors = F)
 albedo <- read.csv(file = albedo.file, header = TRUE, stringsAsFactors = F)
@@ -45,11 +53,16 @@ avgf <- read.csv(file = avgf.file, header = TRUE, stringsAsFactors = F)
 # Setup
 calc.values <- function(sel, name) {
   print(name)
-  
-  cv.sel <- aggregate(x = fc.cell[sel, paste0("fc.cell.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
-  cv.sel <- apply(X = cv.sel[, paste0("fc.cell.", 1:12)], MARGIN = 1, FUN = max)
+
+  cv.sel1 <- aggregate(x = fc.cell[sel, paste0("fc.cell.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
+  cv.sel2 <- apply(X = cv.sel1[, paste0("fc.cell.", 1:12)], MARGIN = 1, FUN = max)
+  cv.sel <- cv.sel1[, c("Group.1", "fc.cell.1")]
+  cv.sel[, 2] <- cv.sel2
+  colnames(cv.sel) <- c("Group.1", "fc.cell")
 
   fc.sel <- aggregate(x = fc.tile[sel, paste0("fc.tile.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
+  fcanopy2.sel <- aggregate(x = fcanopy2[sel, paste0("fcanopy2.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
+  fc.adj <- (fc.sel * 0 + 1) * fcanopy2.sel
 
   LAI.sel <- aggregate(x = LAI[sel, paste0("LAI.", 1:12)], by = list(cc$cell_ID[sel]), FUN = sum)
 
@@ -61,11 +74,6 @@ calc.values <- function(sel, name) {
 
   fixed.sel <- aggregate(x = fixed[sel, ], by = list(cc$cell_ID[sel]), FUN = sum)
   fixed.sel$overstory <- fixed.sel$overstory > 0.8
-
-  fc.adj <- fc.sel * 0 + 1
-  for (i in 1:ncol(fc.adj)) {
-    fc.adj[, i] <- fc.adj[, i] * fixed.sel$fcanopy2
-  }
 
   assign(x = paste0("Cv.", name), value = cv.sel, envir = .GlobalEnv)
   assign(x = paste0("fcanopy.", name), value = fc.adj, envir = .GlobalEnv)
@@ -105,7 +113,13 @@ save.values <- function(name, outname) {
   write.csv(get(x = paste0("displacement.", name)), tmp.displacement.out, row.names = F)
 }
 
+fcanopy2 <- LAI
+colnames(fcanopy2)[colnames(fcanopy2) %in% paste0("LAI.", 1:12)] <- paste0("fcanopy2.", 1:12)
+
 for (m in 1:12) {
+  fcanopy2[, m] <- fixed[, "fcanopy2"]
+  fcanopy2[, paste0("fcanopy2.", m)] <- fc.tile.monthly[, paste0("fc.tile.monthly.", m)] * fcanopy2[, paste0("fcanopy2.", m)]
+
   LAI[, paste0("LAI.", m)] <- fc.tile.monthly[, paste0("fc.tile.monthly.", m)] * LAI[, paste0("LAI.", m)]
   albedo[, paste0("albedo.", m)] <- fc.tile.monthly[, paste0("fc.tile.monthly.", m)] * albedo[, paste0("albedo.", m)]
 
@@ -113,31 +127,31 @@ for (m in 1:12) {
   veg_rough[, paste0("veg_rough.", m)] <- fc.tile.monthly[, paste0("fc.tile.monthly.", m)] * veg_rough[, paste0("veg_rough.", m)]
 }
 
-fixed[, "root_depth.1"] <- avgf * fixed[, "root_depth.1"]
-fixed[, "root_depth.2"] <- avgf * fixed[, "root_depth.2"]
-fixed[, "root_depth.3"] <- avgf * fixed[, "root_depth.3"]
-fixed[, "root_frac.1"] <- avgf * fixed[, "root_frac.1"]
-fixed[, "root_frac.2"] <- avgf * fixed[, "root_frac.2"]
-fixed[, "root_frac.3"] <- avgf * fixed[, "root_frac.3"]
-fixed[, "RGL"] <- avgf * fixed[, "RGL"]
-fixed[, "rarc"] <- avgf * fixed[, "rarc"]
-fixed[, "rad_atten"] <- avgf * fixed[, "rad_atten"]
-fixed[, "overstory"] <- avgf * fixed[, "overstory"]
-fixed[, "trunk_ratio"] <- avgf * fixed[, "trunk_ratio"]
-fixed[, "wind_atten"] <- avgf * fixed[, "wind_atten"]
-fixed[, "wind_h"] <- avgf * fixed[, "wind_h"]
-fixed[, "rmin"] <- avgf * fixed[, "rmin"]
-fixed[, "fcanopy2"] <- avgf * fixed[, "fcanopy2"]
+fixed[, "root_depth.1"] <- avgf$avgf * fixed[, "root_depth.1"] / avgf$maxavgf
+fixed[, "root_depth.2"] <- avgf$avgf * fixed[, "root_depth.2"] / avgf$maxavgf
+fixed[, "root_depth.3"] <- avgf$avgf * fixed[, "root_depth.3"] / avgf$maxavgf
+fixed[, "root_frac.1"] <- avgf$avgf * fixed[, "root_frac.1"] / avgf$maxavgf
+fixed[, "root_frac.2"] <- avgf$avgf * fixed[, "root_frac.2"] / avgf$maxavgf
+fixed[, "root_frac.3"] <- avgf$avgf * fixed[, "root_frac.3"] / avgf$maxavgf
+fixed[, "RGL"] <- avgf$avgf * fixed[, "RGL"] / avgf$maxavgf
+fixed[, "rarc"] <- avgf$avgf * fixed[, "rarc"] / avgf$maxavgf
+fixed[, "rad_atten"] <- avgf$avgf * fixed[, "rad_atten"] / avgf$maxavgf
+fixed[, "overstory"] <- avgf$avgf * fixed[, "overstory"] / avgf$maxavgf
+fixed[, "trunk_ratio"] <- avgf$avgf * fixed[, "trunk_ratio"] / avgf$maxavgf
+fixed[, "wind_atten"] <- avgf$avgf * fixed[, "wind_atten"] / avgf$maxavgf
+fixed[, "wind_h"] <- avgf$avgf * fixed[, "wind_h"] / avgf$maxavgf
+fixed[, "rmin"] <- avgf$avgf * fixed[, "rmin"] / avgf$maxavgf
 
 # Calculate
-sel.irr <- cc$crop %in% c(1:2, 4:26) & ! cc$crop %in% split$id
-sel.rain <- cc$crop %in% c(27:52) & ! cc$crop %in% split$id
+sel.irr <- cc$crop %in% c(1:2, 4:26) & !cc$crop %in% split$id
+sel.rain <- cc$crop %in% c(27:52) & !cc$crop %in% split$id
 
 calc.values(sel = sel.irr, name = "irr")
 calc.values(sel = sel.rain, name = "rain")
 
-for(i in 1:nrow(split)){
-  sel.split <- cc$crop %in% split$id[i]
+for (i in 1:nrow(split)) {
+  seasons <- crops$season[crops$mirca == split$id[i]]
+  sel.split <- cc$crop %in% split$id[i] & cc$subcrop %in% seasons
   calc.values(sel = sel.split, name = split$name[i])
 }
 
@@ -147,39 +161,51 @@ fixed.irr[, "wind_h"] <- displacement.max / 0.67 + 1
 displacement.max <- apply(X = displacement.rain[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
 fixed.rain[, "wind_h"] <- displacement.max / 0.67 + 1
 
-for(i in 1:nrow(split)){
-  displacement.split = get(x = paste0("displacement.", split$name[i]))
-  fixed.split = get(x = paste0("fixed.", split$name[i]))
+for (i in 1:nrow(split)) {
+  displacement.split <- get(x = paste0("displacement.", split$name[i]))
+  fixed.split <- get(x = paste0("fixed.", split$name[i]))
   displacement.max <- apply(X = displacement.split[, paste0("displacement.", 1:12)], MARGIN = 1, FUN = max)
   fixed.split[, "wind_h"] <- displacement.max / 0.67 + 1
   assign(x = paste0("fixed.", split$name[i]), fixed.split)
 }
 
-fcanopy.irr[fcanopy.irr > 1] <- 1
-fcanopy.rain[fcanopy.rain > 1] <- 1
+albedo.irr[, paste0("albedo.", 1:12)] <- albedo.irr[, paste0("albedo.", 1:12)] + 0.2 * (1 - fcanopy.irr[, paste0("fc.tile.", 1:12)])
+albedo.rain[, paste0("albedo.", 1:12)] <- albedo.rain[, paste0("albedo.", 1:12)] + 0.2 * (1 - fcanopy.rain[, paste0("fc.tile.", 1:12)])
 
-for(i in 1:nrow(split)){
-  fcanopy.split = get(x = paste0("fcanopy.", split$name[i]))
-  fcanopy.split[fcanopy.split > 1] <- 1
-  assign(x = paste0("fcanopy.", split$name[i]), fcanopy.split)
-}
-
-albedo.irr <- albedo.irr + 0.2 * (1 - fcanopy.irr)
-albedo.rain <- albedo.rain + 0.2 * (1 - fcanopy.rain)
-
-for(i in 1:nrow(split)){
-  albedo.split = get(x = paste0("albedo.", split$name[i]))
-  fcanopy.split = get(x = paste0("fcanopy.", split$name[i]))
-  albedo.split <- albedo.split + 0.2 * (1 - fcanopy.split)
+for (i in 1:nrow(split)) {
+  albedo.split <- get(x = paste0("albedo.", split$name[i]))
+  fcanopy.split <- get(x = paste0("fcanopy.", split$name[i]))
+  albedo.split[, paste0("albedo.", 1:12)] <- albedo.split[, paste0("albedo.", 1:12)] + 0.2 * (1 - fcanopy.split[, paste0("fc.tile.", 1:12)])
   assign(x = paste0("albedo.", split$name[i]), albedo.split)
 }
 
-fcanopy.irr[fcanopy.irr < 0.00011] <- 0.00011
-fcanopy.rain[fcanopy.rain < 0.00011] <- 0.00011
+fcanopy.sel <- fcanopy.irr > 1
+fcanopy.sel[, 1] <- FALSE
+fcanopy.irr[fcanopy.sel] <- 1
+fcanopy.sel <- fcanopy.rain > 1
+fcanopy.sel[, 1] <- FALSE
+fcanopy.rain[fcanopy.sel] <- 1
 
-for(i in 1:nrow(split)){
-  fcanopy.split = get(x = paste0("fcanopy.", split$name[i]))
-  fcanopy.split[fcanopy.split < 0.00011] <- 0.00011
+for (i in 1:nrow(split)) {
+  fcanopy.split <- get(x = paste0("fcanopy.", split$name[i]))
+  fcanopy.sel <- fcanopy.split > 1
+  fcanopy.sel[, 1] <- FALSE
+  fcanopy.split[fcanopy.sel] <- 1
+  assign(x = paste0("fcanopy.", split$name[i]), fcanopy.split)
+}
+
+fcanopy.sel <- fcanopy.irr < 0.00011
+fcanopy.sel[, 1] <- FALSE
+fcanopy.irr[fcanopy.sel] <- 0.00011
+fcanopy.sel <- fcanopy.rain < 0.00011
+fcanopy.sel[, 1] <- FALSE
+fcanopy.rain[fcanopy.sel] <- 0.00011
+
+for (i in 1:nrow(split)) {
+  fcanopy.split <- get(x = paste0("fcanopy.", split$name[i]))
+  fcanopy.sel <- fcanopy.split < 0.00011
+  fcanopy.sel[, 1] <- FALSE
+  fcanopy.split[fcanopy.sel] <- 0.00011
   assign(x = paste0("fcanopy.", split$name[i]), fcanopy.split)
 }
 
@@ -187,9 +213,12 @@ for(i in 1:nrow(split)){
 save.values(name = "irr", outname = "Irrigated")
 save.values(name = "rain", outname = "Rainfed")
 
-for(i in 1:nrow(split)){
-  save.values(name = split$name[i], 
-              outname = paste0(toupper(substring(text = split$name[i], first = 1, last = 1)), 
-                               substring(text = split$name[i], first = 2, last = nchar(split$name[i]))))
+for (i in 1:nrow(split)) {
+  save.values(
+    name = split$name[i],
+    outname = paste0(
+      toupper(substring(text = split$name[i], first = 1, last = 1)),
+      substring(text = split$name[i], first = 2, last = nchar(split$name[i]))
+    )
+  )
 }
-

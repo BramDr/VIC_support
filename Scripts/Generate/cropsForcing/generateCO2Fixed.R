@@ -35,11 +35,11 @@ lat.dim <- ncdim_def(
 # Calculate and save
 for (z in 1:length(years)) {
   year <- years[z]
-  
+
   out.file <- paste0(out.dir, year, ".nc")
-  
+
   times <- as.Date(paste0(year, "-01-01"))
-  
+
   time.dim <- ncdim_def(
     name = "time",
     units = "days since 1970-01-01",
@@ -47,7 +47,7 @@ for (z in 1:length(years)) {
     unlim = T,
     calendar = "standard"
   )
-  
+
   var <- ncvar_def(
     name = "co2",
     units = "ppm",
@@ -57,9 +57,9 @@ for (z in 1:length(years)) {
     prec = "double",
     compression = 9
   )
-  
+
   data <- array(370, dim = c(lon.dim$len, lat.dim$len, time.dim$len))
-  
+
   dir.create(dirname(out.file))
   nc <- nc_create(out.file, list(var))
   ncvar_put(nc, var, data)

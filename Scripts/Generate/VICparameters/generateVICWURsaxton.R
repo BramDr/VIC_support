@@ -1,12 +1,12 @@
 rm(list = ls())
 
 # Input
-elev.file = "/home/bram/Data/VIC/Parameters/global/elevation_params_Vliet_global.nc"
-calib.file = "/home/bram/Data/VIC/Parameters/global/calibration_params_Saxton_global.nc"
-misc.file = "/home/bram/Data/VIC/Parameters/global/miscellaneous_params_Vliet_global.nc"
-veg.file = "/home/bram/Data/VIC/Parameters/global/vegetation_params_MIRCAaggregated_global.nc"
-soil.file = "/home/bram/Data/VIC/Parameters/global/soil_params_Saxton_global.nc"
-out.file = "/home/bram/Data/VIC/Parameters/global/VIC_params_VICWURsaxton_global.nc"
+elev.file <- "/home/bram/Data/VIC/Parameters/global/elevation_params_Vliet_global.nc"
+calib.file <- "/home/bram/Data/VIC/Parameters/global/calibration_params_Saxton_global.nc"
+misc.file <- "/home/bram/Data/VIC/Parameters/global/miscellaneous_params_Vliet_global.nc"
+veg.file <- "/home/bram/Data/VIC/Parameters/global/vegetation_params_MIRCAaggregated_global.nc"
+soil.file <- "/home/bram/Data/VIC/Parameters/global/soil_params_Saxton_global.nc"
+out.file <- "/home/bram/Data/VIC/Parameters/global/VIC_params_VICWURsaxton_global.nc"
 
 # Save
 file.remove(out.file)

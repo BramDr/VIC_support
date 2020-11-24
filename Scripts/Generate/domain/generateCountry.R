@@ -16,11 +16,11 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- FALSE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-#points[nrow(points) + 1, ] <- c(-37.75, -66.25, "Argentina")
-#points[nrow(points) + 1, ] <- c(34.25, 105.75, "China")
-#points[nrow(points) + 1, ] <- c(23.25, 77.75, "India")
-#points[nrow(points) + 1, ] <- c(28.75, 30.75, "Egypt")
-#points[nrow(points) + 1, ] <- c(46.25, 25.25, "Romania")
+# points[nrow(points) + 1, ] <- c(-37.75, -66.25, "Argentina")
+# points[nrow(points) + 1, ] <- c(34.25, 105.75, "China")
+# points[nrow(points) + 1, ] <- c(23.25, 77.75, "India")
+# points[nrow(points) + 1, ] <- c(28.75, 30.75, "Egypt")
+# points[nrow(points) + 1, ] <- c(46.25, 25.25, "Romania")
 points[nrow(points) + 1, ] <- c(-9.75, -75.75, "Peru")
 
 points$lat <- as.numeric(points$lat)
@@ -30,24 +30,24 @@ points$lon <- as.numeric(points$lon)
 for (i in 1:nrow(points)) {
   x <- which.min(abs(lon - points$lon[i]))
   y <- which.min(abs(lat - points$lat[i]))
-  
-  id = NA
-  done = F
-  for(j in 1:length(cell)) {
-    country = names(cell)[j]
-    cell.country = cell[[j]]
-    
-    if(nrow(cell.country) == 0){
+
+  id <- NA
+  done <- F
+  for (j in 1:length(cell)) {
+    country <- names(cell)[j]
+    cell.country <- cell[[j]]
+
+    if (nrow(cell.country) == 0) {
       next
     }
-    
-    for(k in 1:nrow(cell.country)) {
-      if(cell.country$x[k] == x && cell.country$y[k] == y) {
+
+    for (k in 1:nrow(cell.country)) {
+      if (cell.country$x[k] == x && cell.country$y[k] == y) {
         id <- country
         break
       }
     }
-    if(done) {
+    if (done) {
       break
     }
   }
@@ -61,11 +61,11 @@ for (i in 1:nrow(points)) {
 
 mask <- array(NA, dim = c(length(lon), length(lat), nrow(points)))
 for (i in 1:nrow(points)) {
-  country = as.character(points$country[i])
-  cell.country = cell[[country]]
-  for(j in 1:nrow(cell.country)) {
-    x = cell.country$x[j]
-    y = cell.country$y[j]
+  country <- as.character(points$country[i])
+  cell.country <- cell[[country]]
+  for (j in 1:nrow(cell.country)) {
+    x <- cell.country$x[j]
+    y <- cell.country$y[j]
     mask[x, y, i] <- 1
   }
 }
@@ -103,7 +103,6 @@ if (combine) {
   nc <- nc_open(newname, write = T)
   ncvar_put(nc, nc$var$mask, mask.combine[min.x:max.x, min.y:max.y])
   nc_close(nc)
-  
 } else {
   for (i in 1:nrow(points)) {
     newname <- paste0(dir.out, "/", points$name[i], "/", "domain_", points$name[i], ".nc")

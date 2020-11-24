@@ -46,13 +46,12 @@ for (i in 1:length(root.text)) {
       Cv <- root.fields[2]
       root_depth <- c(root.fields[3], root.fields[5])
       root_fract <- c(root.fields[4], root.fields[6])
-      
+
       root.depth.map[x, y, veg_class, 1:2] <- root_depth
       root.fract.map[x, y, veg_class, 1:2] <- root_fract
 
       root.row <- TRUE
     } else {
-
       root.row <- FALSE
       if (j >= nveg) {
         mapping.row <- FALSE

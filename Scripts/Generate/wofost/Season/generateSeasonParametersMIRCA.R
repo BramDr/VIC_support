@@ -3,32 +3,32 @@ library(fields)
 rm(list = ls())
 
 # Input
-function.script = "../../Support/mapFunctions.R"
-crop.file = "./Saves/crop_mapping_single.csv"
+function.script <- "../../Support/mapFunctions.R"
+crop.file <- "./Saves/crop_mapping_single.csv"
 mask.file <- "../../../Data/Primary/VIC/domain_global.nc"
-start.file = "./Saves/plantDay_MIRCA_30min_global.RDS"
-end.file = "./Saves/harvestDay_MIRCA_30min_global.RDS"
-season.out = "../../../Data/WOFOST/Parameters/Season/global/SA/season_params_global_MIRCA.nc"
+start.file <- "./Saves/plantDay_MIRCA_30min_global.RDS"
+end.file <- "./Saves/harvestDay_MIRCA_30min_global.RDS"
+season.out <- "../../../Data/WOFOST/Parameters/Season/global/SA/season_params_global_MIRCA.nc"
 
 # Load
-crops = read.csv(crop.file, stringsAsFactors = F)
-start = readRDS(start.file)
-end = readRDS(end.file)
+crops <- read.csv(crop.file, stringsAsFactors = F)
+start <- readRDS(start.file)
+end <- readRDS(end.file)
 
-nc = nc_open(mask.file)
-na.map = ncvar_get(nc, nc$var$mask)
+nc <- nc_open(mask.file)
+na.map <- ncvar_get(nc, nc$var$mask)
 nc_close(nc)
-na.map = is.na(na.map) | na.map != 1
+na.map <- is.na(na.map) | na.map != 1
 
 # Setup
 source(function.script)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
 
-for(z in 1:nrow(crops)){
+for (z in 1:nrow(crops)) {
   print(z)
-  start[,,z] <- fillMap(map = start[,,z], na.map = na.map, nearest.function = getNearestMean)
-  end[,,z] <- fillMap(map = end[,,z], na.map = na.map, nearest.function = getNearestMean)
+  start[, , z] <- fillMap(map = start[, , z], na.map = na.map, nearest.function = getNearestMean)
+  end[, , z] <- fillMap(map = end[, , z], na.map = na.map, nearest.function = getNearestMean)
 }
 
 # Create
@@ -65,9 +65,9 @@ var.end <- ncvar_def(
 # Calculate & save
 for (i in 1:nrow(crops)) {
   print(crops$mirca.name[i])
-  
-  season.out.tmp = gsub(x = season.out, pattern = "params_", replacement = paste0("params_", crops$mirca.name[i], "_"))
-  
+
+  season.out.tmp <- gsub(x = season.out, pattern = "params_", replacement = paste0("params_", crops$mirca.name[i], "_"))
+
   dir.create(dirname(season.out.tmp))
   nc <- nc_create(
     season.out.tmp,
@@ -77,7 +77,7 @@ for (i in 1:nrow(crops)) {
     )
   )
   nc_close(nc)
-  
+
   # Save
   nc <- nc_open(season.out.tmp, write = T)
   ncatt_put(
@@ -86,8 +86,8 @@ for (i in 1:nrow(crops)) {
     attname = "Description",
     attval = "Season parameters for WOFOST. Created by Bram Droppers"
   )
-  
-  ncvar_put(nc = nc, varid = nc$var$start, vals = start[,,i])
-  ncvar_put(nc = nc, varid = nc$var$end, vals = end[,,i])
+
+  ncvar_put(nc = nc, varid = nc$var$start, vals = start[, , i])
+  ncvar_put(nc = nc, varid = nc$var$end, vals = end[, , i])
   nc_close(nc)
 }

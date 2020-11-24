@@ -4,7 +4,7 @@ misc.vars <- c(
   "annual_prec", "avg_T", "run_cell"
 )
 soil.vars <- c(
-  "Ksat", "Wcr_FRACT", "Wpwp_FRACT", "bubble", "bulk_density", 
+  "Ksat", "Wcr_FRACT", "Wpwp_FRACT", "bubble", "bulk_density",
   "expt", "init_moist", "phi_s", "quartz", "resid_moist",
   "soil_density", "rough", "snow_rough", "dp", "fs_active"
 )
@@ -25,7 +25,7 @@ unused.vars <- c(
 )
 
 unused.atts <- c(
-  "source", "username", "host", "nco_openmp_thread_number", 
+  "source", "username", "host", "nco_openmp_thread_number",
   "NCO", "history_of_appended_files", "history"
 )
 

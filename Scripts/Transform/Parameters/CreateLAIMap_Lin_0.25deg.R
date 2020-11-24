@@ -10,7 +10,7 @@ lai.out <- "../../../Data/Transformed/Parameters/LAI_Lin15min_30min_global.RDS"
 lai.text <- readLines(con = lai.file)
 
 mapping <- read.table(mapping.file)
-mapping[mapping[,4] > 180,4] = mapping[mapping[,4] > 180,4] - 360
+mapping[mapping[, 4] > 180, 4] <- mapping[mapping[, 4] > 180, 4] - 360
 
 # Setup
 lons.15min <- seq(from = -179.875, to = 179.875, by = 0.25)
@@ -29,16 +29,16 @@ for (x in 1:dim(mapping.map)[1]) {
     mapping.map[x, y, 2] <- y.map
   }
 }
-#image.plot(mapping.map[, , 1])
-#image.plot(mapping.map[, , 2])
+# image.plot(mapping.map[, , 1])
+# image.plot(mapping.map[, , 2])
 
-averageMap = function(map, count){
-  for(i in 1:dim(map)[3]) {
-   for(j in 1:dim(map)[4]) {
-      mapi = map[,,i,j]
-      mapi = mapi / count[,,i]
-      mapi[count[,,i] == 0] = NA
-      map[,,i,j] = mapi
+averageMap <- function(map, count) {
+  for (i in 1:dim(map)[3]) {
+    for (j in 1:dim(map)[4]) {
+      mapi <- map[, , i, j]
+      mapi <- mapi / count[, , i]
+      mapi[count[, , i] == 0] <- NA
+      map[, , i, j] <- mapi
     }
   }
   return(map)
@@ -58,12 +58,12 @@ for (i in 1:length(lai.text)) {
     cell <- lai.fields[1]
     nveg <- lai.fields[2]
     row <- which(mapping[, 2] == cell)
-    
+
     x.15min <- which(lons.15min == mapping[row, 4])
     y.15min <- which(lats.15min == mapping[row, 3])
-    
-    x <- mapping.map[x.15min,y.15min,1]
-    y <- mapping.map[x.15min,y.15min,2]
+
+    x <- mapping.map[x.15min, y.15min, 1]
+    y <- mapping.map[x.15min, y.15min, 2]
 
     if (nveg == 0) {
       next
@@ -81,7 +81,7 @@ for (i in 1:length(lai.text)) {
       lai.row <- TRUE
     } else {
       lai.map[x, y, veg_class, ] <- lai.map[x, y, veg_class, ] + lai.fields
-      count.map[x, y, veg_class] <- count.map[x,y,veg_class] + 1
+      count.map[x, y, veg_class] <- count.map[x, y, veg_class] + 1
 
       lai.row <- FALSE
       if (j >= nveg) {
@@ -92,7 +92,7 @@ for (i in 1:length(lai.text)) {
   }
 }
 
-lai.map.adj = averageMap(lai.map, count.map)
+lai.map.adj <- averageMap(lai.map, count.map)
 
 for (i in 1:nmonths) {
   image.plot(lai.map.adj[, , 2, i], main = i)

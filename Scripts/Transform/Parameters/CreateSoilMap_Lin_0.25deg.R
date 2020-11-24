@@ -1,5 +1,5 @@
 library(fields)
-#library(raster)
+# library(raster)
 rm(list = ls())
 
 # Input
@@ -9,7 +9,7 @@ soil.out <- "../../../Data/Transformed/Parameters/soil_Lin15min_30min_global.RDS
 
 # Load
 soil <- read.table(soil.file)
-soil[soil[,4] > 180,4] = soil[soil[,4] > 180,4] - 360
+soil[soil[, 4] > 180, 4] <- soil[soil[, 4] > 180, 4] - 360
 
 header <- read.table(header.file, stringsAsFactors = F)
 header <- c(unlist(header[, 1:27]), paste0("bubble[", 1:3, "]"), paste0("quartz[", 1:3, "]"), unlist(header[, 30:48]), "frozen_flag")
@@ -30,8 +30,8 @@ for (x in 1:dim(mapping.map)[1]) {
     mapping.map[x, y, 2] <- y.map
   }
 }
-#image.plot(mapping.map[, , 1])
-#image.plot(mapping.map[, , 2])
+# image.plot(mapping.map[, , 1])
+# image.plot(mapping.map[, , 2])
 
 expt.idx <- which(header == "N[1]")
 ksat.idx <- which(header == "Ksat[1]")
@@ -45,12 +45,12 @@ wp.idx <- which(header == "Wp[1]")
 residual.idx <- which(header == "residual[1]")
 init_moist.idx <- which(header == "init_moist[1]")
 
-averageMap = function(map, count){
+averageMap <- function(map, count) {
   for (i in 1:dim(map)[3]) {
-    mapi = map[,,i]
-    mapi = mapi / count
-    mapi[count == 0] = NA
-    map[,,i] = mapi
+    mapi <- map[, , i]
+    mapi <- mapi / count
+    mapi[count == 0] <- NA
+    map[, , i] <- mapi
   }
   return(map)
 }
@@ -71,12 +71,12 @@ count.map <- array(0, dim = c(length(lons.30min), length(lats.30min)))
 
 for (i in 1:nrow(soil)) {
   print(i)
-  
+
   x.15min <- which(lons.15min == soil[i, 4])
   y.15min <- which(lats.15min == soil[i, 3])
-  
-  x <- mapping.map[x.15min,y.15min,1]
-  y <- mapping.map[x.15min,y.15min,2]
+
+  x <- mapping.map[x.15min, y.15min, 1]
+  y <- mapping.map[x.15min, y.15min, 2]
 
   expt.map[x, y, 1] <- expt.map[x, y, 1] + soil[i, expt.idx]
   expt.map[x, y, 2] <- expt.map[x, y, 2] + soil[i, expt.idx + 1]
@@ -111,20 +111,20 @@ for (i in 1:nrow(soil)) {
   init_moist.map[x, y, 1] <- init_moist.map[x, y, 1] + soil[i, init_moist.idx]
   init_moist.map[x, y, 2] <- init_moist.map[x, y, 2] + soil[i, init_moist.idx + 1]
   init_moist.map[x, y, 3] <- init_moist.map[x, y, 3] + soil[i, init_moist.idx + 2]
-  count.map[x,y] = count.map[x,y] + 1
+  count.map[x, y] <- count.map[x, y] + 1
 }
 
-expt.map.adj = averageMap(expt.map, count.map)
-ksat.map.adj = averageMap(ksat.map, count.map)
-phi_s.map.adj = averageMap(phi_s.map, count.map)
-bubble.map.adj = averageMap(bubble.map, count.map)
-quartz.map.adj = averageMap(quartz.map, count.map)
-bulk_density.map.adj = averageMap(bulk_density.map, count.map)
-soil_density.map.adj = averageMap(soil_density.map, count.map)
-wcr.map.adj = averageMap(wcr.map, count.map)
-wp.map.adj = averageMap(wp.map, count.map)
-residual.map.adj = averageMap(residual.map, count.map)
-init_moist.map.adj = averageMap(init_moist.map, count.map)
+expt.map.adj <- averageMap(expt.map, count.map)
+ksat.map.adj <- averageMap(ksat.map, count.map)
+phi_s.map.adj <- averageMap(phi_s.map, count.map)
+bubble.map.adj <- averageMap(bubble.map, count.map)
+quartz.map.adj <- averageMap(quartz.map, count.map)
+bulk_density.map.adj <- averageMap(bulk_density.map, count.map)
+soil_density.map.adj <- averageMap(soil_density.map, count.map)
+wcr.map.adj <- averageMap(wcr.map, count.map)
+wp.map.adj <- averageMap(wp.map, count.map)
+residual.map.adj <- averageMap(residual.map, count.map)
+init_moist.map.adj <- averageMap(init_moist.map, count.map)
 
 for (i in 1:nlayers) {
   image.plot(wp.map.adj[, , i], main = i)

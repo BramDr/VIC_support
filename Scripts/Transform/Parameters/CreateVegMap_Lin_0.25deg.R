@@ -71,4 +71,3 @@ saveRDS(wndatn.map, veg.out.tmp)
 veg.out.tmp <- gsub(x = veg.out, pattern = "vegetation", replacement = "vegetationTrunkRatio")
 dir.create(dirname(veg.out.tmp))
 saveRDS(trunk.map, veg.out.tmp)
-

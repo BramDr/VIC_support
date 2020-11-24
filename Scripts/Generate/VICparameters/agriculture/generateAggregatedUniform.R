@@ -9,7 +9,7 @@ mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
 paddy.file <- "Aggregated/Saves/parametersUniformPaddy_30min_global.RDS"
 irr.file <- "Aggregated/Saves/parametersUniformIrrigated_30min_global.RDS"
 rain.file <- "Aggregated/Saves/parametersUniformRainfed_30min_global.RDS"
-vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietAlt_global.nc"
+vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietDouc_global.nc"
 vegetation.out <- "../../../../Data/VIC/Parameters/global/vegetation_params_MIRCAaggregatedUniform_global.nc"
 
 # Load
@@ -29,7 +29,7 @@ Cv.veg <- ncvar_get(nc, "Cv")
 nc_close(nc)
 
 # Setup
-na.map = is.na(mask) | mask == 0
+na.map <- is.na(mask) | mask == 0
 
 put.maps <- function(nc.file, maps, veg.idx) {
   nc <- nc_open(nc.file, write = T)
@@ -117,21 +117,21 @@ put.old <- function(nc.file, old.file) {
 
 # Calculate
 ## Fill variables
-irr.filled = list()
-for(i in 1:length(irr)){
-  irr.filled[[i]] = fillMap(irr[[i]], na.map, getNearestZero)
+irr.filled <- list()
+for (i in 1:length(irr)) {
+  irr.filled[[i]] <- fillMap(irr[[i]], na.map, getNearestZero)
 }
-names(irr.filled) = names(irr)
-paddy.filled = list()
-for(i in 1:length(paddy)){
-  paddy.filled[[i]] = fillMap(paddy[[i]], na.map, getNearestZero)
+names(irr.filled) <- names(irr)
+paddy.filled <- list()
+for (i in 1:length(paddy)) {
+  paddy.filled[[i]] <- fillMap(paddy[[i]], na.map, getNearestZero)
 }
-names(paddy.filled) = names(paddy)
-rain.filled = list()
-for(i in 1:length(rain)){
-  rain.filled[[i]] = fillMap(rain[[i]], na.map, getNearestZero)
+names(paddy.filled) <- names(paddy)
+rain.filled <- list()
+for (i in 1:length(rain)) {
+  rain.filled[[i]] <- fillMap(rain[[i]], na.map, getNearestZero)
 }
-names(rain.filled) = names(rain)
+names(rain.filled) <- names(rain)
 
 ## Calculate adjusted Cv fractions
 Cv.new <- array(0, dim = c(dim(mask)[1], dim(mask)[2], dim(Cv.veg)[3] + 2))
@@ -148,12 +148,12 @@ for (x in 1:dim(mask)[1]) {
     crop.f <- irr.filled[["Cv"]][x, y] + paddy.filled[["Cv"]][x, y] + rain.filled[["Cv"]][x, y]
     veg.f <- sum(Cv.veg[x, y, c(1:10)])
     nat.f <- sum(Cv.veg[x, y, c(1:10, 12)])
-    
+
     if (crop.f > 1) {
-      Cv.new[x, y,] <- Cv.new[x, y,] / crop.f
+      Cv.new[x, y, ] <- Cv.new[x, y, ] / crop.f
       crop.f <- 1
-    } 
-    
+    }
+
     if (veg.f <= 0) {
       if (crop.f == 1) {
         next
@@ -171,21 +171,21 @@ for (x in 1:dim(mask)[1]) {
         Cv.new[x, y, c(1:10, dim(Cv.new)[3])] <- Cv.veg[x, y, c(1:10, 12)] * rescale.f
       }
     }
-    
+
     ## Add bare soil to crop tiles for the coverage forcing
-    if(crop.f > 0 && Cv.new[x, y, dim(Cv.new)[3]] == 0){
-      if(crop.f > 0.01){
+    if (crop.f > 0 && Cv.new[x, y, dim(Cv.new)[3]] == 0) {
+      if (crop.f > 0.01) {
         rescale.f <- (sum(Cv.new[x, y, 11:13]) - 0.01) / sum(Cv.new[x, y, 11:13])
-        Cv.new[x, y, dim(Cv.new)[3]] = Cv.new[x, y, dim(Cv.new)[3]] + 0.01
-        Cv.new[x, y, 11:13] = Cv.new[x, y, 11:13] * rescale.f
+        Cv.new[x, y, dim(Cv.new)[3]] <- Cv.new[x, y, dim(Cv.new)[3]] + 0.01
+        Cv.new[x, y, 11:13] <- Cv.new[x, y, 11:13] * rescale.f
       } else {
         rescale.f <- 0.5
-        Cv.new[x, y, dim(Cv.new)[3]] = Cv.new[x, y, dim(Cv.new)[3]] + sum(Cv.new[x, y, 11:13]) * (1 - rescale.f)
-        Cv.new[x, y, 11:13] = Cv.new[x, y, 11:13] * rescale.f
+        Cv.new[x, y, dim(Cv.new)[3]] <- Cv.new[x, y, dim(Cv.new)[3]] + sum(Cv.new[x, y, 11:13]) * (1 - rescale.f)
+        Cv.new[x, y, 11:13] <- Cv.new[x, y, 11:13] * rescale.f
       }
     }
-    
-    Cv.new[x,y,] = Cv.new[x,y,] / sum(Cv.new[x,y,])
+
+    Cv.new[x, y, ] <- Cv.new[x, y, ] / sum(Cv.new[x, y, ])
   }
 }
 Cv.sum <- apply(X = Cv.new, MARGIN = c(1, 2), FUN = sum)

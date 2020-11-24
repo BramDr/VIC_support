@@ -15,34 +15,34 @@ nc <- nc_open(mask.file)
 mask <- ncvar_get(nc, "mask")
 nc_close(nc)
 
-delta.receiving = readRDS(delta.receiving.file)
-neighbour.receiving = readRDS(neighbour.receiving.file)
+delta.receiving <- readRDS(delta.receiving.file)
+neighbour.receiving <- readRDS(neighbour.receiving.file)
 
 # Calculate
 ## receiving
-total.receiving = vector(mode = "list", length = 720)
-for(x in 1:dim(mask)[1]){
-  total.receiving[[x]] = vector(mode = "list", length = 360)
+total.receiving <- vector(mode = "list", length = 720)
+for (x in 1:dim(mask)[1]) {
+  total.receiving[[x]] <- vector(mode = "list", length = 360)
 }
 for (x in 1:dim(mask)[1]) {
   for (y in 1:dim(mask)[2]) {
     if (length(names(neighbour.receiving[[x]][[y]])) == 0 &&
-        length(names(delta.receiving[[x]][[y]])) == 0) {
+      length(names(delta.receiving[[x]][[y]])) == 0) {
       next
     }
-    
-    df = data.frame(x = numeric(), y = numeric())
-    
+
+    df <- data.frame(x = numeric(), y = numeric())
+
     if (length(names(neighbour.receiving[[x]][[y]])) != 0) {
-      df = rbind(df, neighbour.receiving[[x]][[y]]$df)
+      df <- rbind(df, neighbour.receiving[[x]][[y]]$df)
     }
-    
+
     if (length(names(delta.receiving[[x]][[y]])) != 0) {
-      df = rbind(df, delta.receiving[[x]][[y]]$df)
+      df <- rbind(df, delta.receiving[[x]][[y]]$df)
     }
-    
-    df = unique(df)
-    
+
+    df <- unique(df)
+
     total.receiving[[x]][[y]]$df <- df
   }
 }
@@ -54,9 +54,9 @@ for (x in 1:dim(mask)[1]) {
     if (length(names(total.receiving[[x]][[y]])) == 0) {
       next
     }
-    
-    df = total.receiving[[x]][[y]]$df
-    
+
+    df <- total.receiving[[x]][[y]]$df
+
     Nreceiving[x, y] <- Nreceiving[x, y] + nrow(df)
   }
 }
@@ -70,7 +70,7 @@ for (x in 1:dim(receiving.id)[1]) {
     if (is.na(mask[x, y])) {
       next
     }
-    
+
     receiving.id[x, y] <- id.counter
     id.counter <- id.counter + 1
   }
@@ -84,10 +84,10 @@ for (x in 1:dim(mask)[1]) {
     if (length(names(total.receiving[[x]][[y]])) == 0) {
       next
     }
-    
-    df = total.receiving[[x]][[y]]$df
-    
-    for(i in 1:nrow(df)){
+
+    df <- total.receiving[[x]][[y]]$df
+
+    for (i in 1:nrow(df)) {
       receiving[x, y, i] <- receiving.id[df$x[i], df$y[i]]
     }
   }

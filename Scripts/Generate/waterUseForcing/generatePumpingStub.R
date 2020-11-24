@@ -39,7 +39,7 @@ lat.dim <- ncdim_def(
 )
 
 # Calculate
-pumping.tot = array(99999, dim = c(length(lons), length(lats)))
+pumping.tot <- array(99999, dim = c(length(lons), length(lats)))
 
 # Save
 for (z in 1:length(years)) {

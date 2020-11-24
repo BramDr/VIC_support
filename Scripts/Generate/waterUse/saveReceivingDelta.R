@@ -21,19 +21,19 @@ delta <- readRDS(delta.file)
 downstream <- readRDS(downstream.file)
 
 # Setup
-check.in.stream = function(xfrom, yfrom, xto, yto){
+check.in.stream <- function(xfrom, yfrom, xto, yto) {
   cur <- c(xfrom, yfrom)
   nex <- downstream[cur[1], cur[2], ]
-  
-  goes = F
+
+  goes <- F
   while (TRUE) {
-    if (cur[1] == xto && cur[2] == yto){
+    if (cur[1] == xto && cur[2] == yto) {
       return(T)
     }
     if (cur[1] == nex[1] && cur[2] == nex[2]) {
       return(F)
     }
-    
+
     cur <- nex
     nex <- downstream[cur[1], cur[2], ]
   }
@@ -48,16 +48,16 @@ for (x in 1:dim(delta)[1]) {
     if (is.na(delta[x, y])) {
       next
     }
-    
-    delta.basin[nrow(delta.basin) + 1,] = c(delta[x,y], basin[x,y])
+
+    delta.basin[nrow(delta.basin) + 1, ] <- c(delta[x, y], basin[x, y])
   }
 }
-delta.basin = unique(delta.basin)
+delta.basin <- unique(delta.basin)
 
 ## Get the basin outflow points associated with the deltas
-delta.basin$count = 0
-delta.basin$x = NA
-delta.basin$y = NA
+delta.basin$count <- 0
+delta.basin$x <- NA
+delta.basin$y <- NA
 for (x in 1:dim(basin)[1]) {
   for (y in 1:dim(basin)[2]) {
     if (is.na(basin[x, y])) {
@@ -66,7 +66,7 @@ for (x in 1:dim(basin)[1]) {
     if (!basin[x, y] %in% delta.basin$basin) {
       next
     }
-    
+
     row <- which(delta.basin$basin == basin[x, y])
     if (count[x, y] > delta.basin$count[row]) {
       delta.basin$count[row] <- count[x, y]
@@ -77,52 +77,52 @@ for (x in 1:dim(basin)[1]) {
 }
 
 ## Get delta cells
-delta.receiving = vector(mode = "list", length = 720)
-for(x in 1:dim(downstream)[1]){
-  delta.receiving[[x]] = vector(mode = "list", length = 360)
+delta.receiving <- vector(mode = "list", length = 720)
+for (x in 1:dim(downstream)[1]) {
+  delta.receiving[[x]] <- vector(mode = "list", length = 360)
 }
-for(i in 1:nrow(delta.basin)) {
-  deltas = data.frame(x = numeric(), y = numeric())
-  
-  for(x in 1:dim(delta)[1]){
-    for(y in 1:dim(delta)[2]){
-      if(is.na(delta[x,y])){
+for (i in 1:nrow(delta.basin)) {
+  deltas <- data.frame(x = numeric(), y = numeric())
+
+  for (x in 1:dim(delta)[1]) {
+    for (y in 1:dim(delta)[2]) {
+      if (is.na(delta[x, y])) {
         next
       }
-      if(is.na(basin[x,y])){
+      if (is.na(basin[x, y])) {
         next
       }
-      
+
       ## Check delta
-      if(delta.basin$delta[i] != delta[x,y]){
+      if (delta.basin$delta[i] != delta[x, y]) {
         next
       }
-      
+
       ## Check basin
-      if(delta.basin$basin[i] != basin[x,y]){
+      if (delta.basin$basin[i] != basin[x, y]) {
         next
       }
-      
+
       ## Check if delta goes to outflow
-      if(check.in.stream(x,y,delta.basin$x[i],delta.basin$y[i])){
+      if (check.in.stream(x, y, delta.basin$x[i], delta.basin$y[i])) {
         next
       }
-      
+
       ## Check if outflow goes to delta
-      if(check.in.stream(delta.basin$x[i],delta.basin$y[i],x,y)){
+      if (check.in.stream(delta.basin$x[i], delta.basin$y[i], x, y)) {
         next
       }
-      
-      deltas[nrow(deltas) + 1,] = c(x, y)
+
+      deltas[nrow(deltas) + 1, ] <- c(x, y)
     }
   }
-  
-  deltas = unique(deltas)
-  
-  if(nrow(deltas) == 0){
+
+  deltas <- unique(deltas)
+
+  if (nrow(deltas) == 0) {
     next
   }
-  
+
   delta.receiving[[delta.basin$x[i]]][[delta.basin$y[i]]]$df <- deltas
 }
 
@@ -133,9 +133,9 @@ for (x in 1:dim(downstream)[1]) {
     if (length(names(delta.receiving[[x]][[y]])) == 0) {
       next
     }
-    
-    df = delta.receiving[[x]][[y]]$df
-    
+
+    df <- delta.receiving[[x]][[y]]$df
+
     Nreceiving[x, y] <- Nreceiving[x, y] + nrow(df)
   }
 }
