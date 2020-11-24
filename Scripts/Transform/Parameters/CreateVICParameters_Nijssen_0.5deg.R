@@ -4,10 +4,10 @@ rm(list = ls())
 
 # Input
 support.script <- "../../Support/mapFunctions.R"
-dir <- "./Saves"
+dir <- "../../../Data/Transformed/Parameters"
 pattern <- "Nijssen30min"
 vic.file <- "../../../Data/Primary/VIC/VIC_params_global.nc"
-vic.out <- "../../../Data/Transformed/VIC/Parameters/Other/VIC_params_Nijssen30min_global.nc"
+vic.out <- "../../../Data/VIC/Parameters/global/VIC_params_Nijssen30min_global.nc"
 
 # Load
 source(support.script)
@@ -40,7 +40,6 @@ wcr <- readRDS(grep(files, pattern = "Wcr", value = T))
 wp <- readRDS(grep(files, pattern = "Wp", value = T))
 residual <- readRDS(grep(files, pattern = "Residual", value = T))
 init_moist <- readRDS(grep(files, pattern = "InitMoist", value = T))
-fs_active <- readRDS(grep(files, pattern = "frozen", value = T))
 nveg <- apply(cv, c(1, 2), function(x) {
   return(sum(x[1:(length(x) - 1)] > 0, na.rm = T))
 })
@@ -123,11 +122,6 @@ nveg.fill <- fillMap(
   map = nveg,
   na.map = na.map,
   nearest.function = getNearestZero
-)
-fs_active.fill <- fillMap(
-  map = fs_active,
-  na.map = na.map,
-  nearest.function = getNearestMax
 )
 
 lai.fill <- lai.missing
@@ -342,5 +336,4 @@ ncvar_put(nc, "soil_density", soil_density.fill)
 # ncvar_put(nc, "Wpwp_FRACT", wp.fill)
 # ncvar_put(nc, "resid_moist", residual.fill)
 ncvar_put(nc, "init_moist", init_moist.fill)
-ncvar_put(nc, "fs_active", fs_active.fill)
 nc_close(nc)

@@ -6,7 +6,7 @@ calib.file <- "../../../Data/Primary/Nijssen2001/2deg/soil_cal_tran.merged.txt"
 uncalib.file <- "../../../Data/Primary/Nijssen2001/2deg/soil_uncal.txt"
 mapping.file <- "../../../Data/Primary/Nijssen2001/2deg/soil_cal_tran.merged.txt"
 header.file <- "../../../Data/Primary/Nijssen2001/2deg/world.soil.parameter.hdr"
-factor.out <- "./Saves/factor_Nijssen120min_30min_global.RDS"
+factor.out <- "../../../Data/Transformed/Parameters/factor_Nijssen120min_30min_global.RDS"
 
 # Load
 calib <- read.table(calib.file)

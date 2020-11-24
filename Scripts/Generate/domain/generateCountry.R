@@ -16,11 +16,12 @@ lat <- seq(from = -89.75, to = 89.75, by = 0.5)
 combine <- FALSE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(-37.75, -66.25, "Argentina")
-points[nrow(points) + 1, ] <- c(34.25, 105.75, "China")
-points[nrow(points) + 1, ] <- c(23.25, 77.75, "India")
-points[nrow(points) + 1, ] <- c(28.75, 30.75, "Egypt")
-points[nrow(points) + 1, ] <- c(46.25, 25.25, "Romania")
+# points[nrow(points) + 1, ] <- c(-37.75, -66.25, "Argentina")
+# points[nrow(points) + 1, ] <- c(34.25, 105.75, "China")
+# points[nrow(points) + 1, ] <- c(23.25, 77.75, "India")
+# points[nrow(points) + 1, ] <- c(28.75, 30.75, "Egypt")
+# points[nrow(points) + 1, ] <- c(46.25, 25.25, "Romania")
+points[nrow(points) + 1, ] <- c(-9.75, -75.75, "Peru")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

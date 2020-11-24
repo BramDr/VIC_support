@@ -16,7 +16,7 @@ days.per.month <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
 get.kc <- function(x, columns) {
   x <- as.numeric(x)
-  # print(x[columns == "rowname"])
+  print(x[columns == "rowname"])
 
   row <- which((x[columns == "crop"] - 1) %% 26 + 1 == fao$number)
 

@@ -19,7 +19,7 @@ add.fc.tile <- function(x, columns) {
   x <- as.numeric(x)
   # print(x[columns == "rowname"])
 
-  maxValue <- x[columns == "tilearea"]
+  maxValue <- x[columns == "maxtilearea"]
   out <- x[columns %in% paste0("area.", 1:12)] / maxValue
 
   return(out)
@@ -28,7 +28,7 @@ add.fc.tile.monthly <- function(x, columns) {
   x <- as.numeric(x)
   # print(x[columns == "rowname"])
 
-  maxValues <- x[columns %in% paste0("croparea.", 1:12)]
+  maxValues <- x[columns %in% paste0("tilearea.", 1:12)]
   out <- rep(0, 12)
   out2 <- x[columns %in% paste0("area.", 1:12)] / maxValues
   out[maxValues > 0] <- out2[maxValues > 0]
@@ -64,20 +64,20 @@ cc.merge <- cc
 cc.merge <- join(cc.merge, cc.cell.paddy[, c("cell_ID", "maxpaddyarea", paste0("paddyarea.", 1:12))])
 cc.merge <- join(cc.merge, cc.cell.irr[, c("cell_ID", "maxirrarea", paste0("irrarea.", 1:12))])
 cc.merge <- join(cc.merge, cc.cell.rain[, c("cell_ID", "maxrainarea", paste0("rainarea.", 1:12))])
-cc.merge$croparea <- NA
 cc.merge$tilearea <- NA
+cc.merge$maxmaxtilearea <- NA
 
-cc.merge[cc.merge$crop == 3, paste0("croparea.", 1:12)] <-
+cc.merge[cc.merge$crop == 3, paste0("tilearea.", 1:12)] <-
   cc.merge[cc.merge$crop == 3, paste0("paddyarea.", 1:12)]
-cc.merge$tilearea[cc.merge$crop == 3] <- cc.merge$maxpaddyarea[cc.merge$crop == 3]
+cc.merge$maxtilearea[cc.merge$crop == 3] <- cc.merge$maxpaddyarea[cc.merge$crop == 3]
 
-cc.merge[cc.merge$crop %in% c(1:2, 4:26), paste0("croparea.", 1:12)] <-
+cc.merge[cc.merge$crop %in% c(1:2, 4:26), paste0("tilearea.", 1:12)] <-
   cc.merge[cc.merge$crop %in% c(1:2, 4:26), paste0("irrarea.", 1:12)]
-cc.merge$tilearea[cc.merge$crop %in% c(1:2, 4:26)] <- cc.merge$maxirrarea[cc.merge$crop %in% c(1:2, 4:26)]
+cc.merge$maxtilearea[cc.merge$crop %in% c(1:2, 4:26)] <- cc.merge$maxirrarea[cc.merge$crop %in% c(1:2, 4:26)]
 
-cc.merge[cc.merge$crop %in% c(27:52), paste0("croparea.", 1:12)] <-
+cc.merge[cc.merge$crop %in% c(27:52), paste0("tilearea.", 1:12)] <-
   cc.merge[cc.merge$crop %in% c(27:52), paste0("rainarea.", 1:12)]
-cc.merge$tilearea[cc.merge$crop %in% c(27:52)] <- cc.merge$maxrainarea[cc.merge$crop %in% c(27:52)]
+cc.merge$maxtilearea[cc.merge$crop %in% c(27:52)] <- cc.merge$maxrainarea[cc.merge$crop %in% c(27:52)]
 
 ## Calculate coverage
 fc.tile <- apply(X = cc.merge, MARGIN = 1, FUN = add.fc.tile, columns = colnames(cc.merge))

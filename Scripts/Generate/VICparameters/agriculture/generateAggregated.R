@@ -9,7 +9,7 @@ mask.file <- "../../../../Data/Primary/VIC/domain_global.nc"
 paddy.file <- "Aggregated/Saves/parametersPaddy_30min_global.RDS"
 irr.file <- "Aggregated/Saves/parametersIrrigated_30min_global.RDS"
 rain.file <- "Aggregated/Saves/parametersRainfed_30min_global.RDS"
-vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietAlt_global.nc"
+vegetation.file <- "../../../../Data/VIC/Parameters/global/vegetation_params_VlietDouc_global.nc"
 vegetation.out <- "../../../../Data/VIC/Parameters/global/vegetation_params_MIRCAaggregated_global.nc"
 
 # Load

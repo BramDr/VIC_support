@@ -13,12 +13,13 @@ basin <- readRDS(path.basin)
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
 lat <- seq(from = -89.75, to = 89.75, by = 0.5)
-combine <- FALSE
+combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
 points[nrow(points) + 1, ] <- c(15.25, 105.75, "MekongDelta")
-points[nrow(points) + 1, ] <- c(18.75, 95.25, "IrrawaddyDelta")
-points[nrow(points) + 1, ] <- c(1.75, 17.25, "CongoDelta")
+# points[nrow(points) + 1, ] <- c(18.75, 95.25, "Irrawaddy")
+# points[nrow(points) + 1, ] <- c(1.75, 17.25, "Congo")
+# points[nrow(points) + 1, ] <- c(68.75, 15.75, "Error")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

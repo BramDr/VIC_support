@@ -49,35 +49,26 @@ load.values("Rainfed", "rain")
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 
-loc.paddy <- aggregate(
-  x = cc[cc$crop == 3, c("lon", "lat", "row", "column")],
-  by = list(cc$cell_ID[cc$crop == 3]), FUN = mean
-)
-loc.irr <- aggregate(
-  x = cc[cc$crop %in% c(1:2, 4:26), c("lon", "lat", "row", "column")],
-  by = list(cc$cell_ID[cc$crop %in% c(1:2, 4:26)]), FUN = mean
-)
-loc.rain <- aggregate(
-  x = cc[cc$crop %in% c(27:52), c("lon", "lat", "row", "column")],
-  by = list(cc$cell_ID[cc$crop %in% c(27:52)]), FUN = mean
-)
+loc <- aggregate(x = cc[, c("lon", "lat", "row", "column")], by = list(cc$cell_ID), FUN = mean)
 
-create.map <- function(values, lons.v, lats.v) {
+create.map <- function(values) {
+  # print(colnames(values)[2])
+
   map <- array(NA, dim = c(720, 360))
 
-  for (j in 1:length(values)) {
-    x <- which(lons == lons.v[j])
-    y <- which(lats == lats.v[j])
-    map[x, y] <- values[j]
+  values <- merge(values, loc, by.x = 1, by.y = 1)
+
+  for (j in 1:nrow(values)) {
+    x <- which(lons == values$lon[j])
+    y <- which(lats == values$lat[j])
+    map[x, y] <- values[j, 2]
   }
 
   return(map)
 }
-
 map.values <- function(name) {
   print(name)
 
-  loc.sel <- get(paste0("loc.", name))
   Cv.sel <- get(paste0("Cv.", name))
   fcanopy.sel <- get(paste0("fcanopy.", name))
   fixed.sel <- get(paste0("fixed.", name))
@@ -87,39 +78,40 @@ map.values <- function(name) {
   veg_rough.sel <- get(paste0("veg_rough.", name))
 
   maps <- list()
-  maps[["Cv"]] <- create.map(Cv.sel[, 1], loc.sel$lon, loc.sel$lat)
+  maps[["Cv"]] <- create.map(Cv.sel[, c("Group.1", "fc.cell")])
 
+  group.idx <- which(colnames(fixed.sel) == "Group.1")
   for (i in 2:ncol(fixed.sel)) {
-    maps[[colnames(fixed.sel)[i]]] <- create.map(fixed.sel[, i], loc.sel$lon, loc.sel$lat)
+    maps[[colnames(fixed.sel)[i]]] <- create.map(fixed.sel[, c(group.idx, i)])
   }
 
   map.m <- array(NA, dim = c(720, 360, 12))
   for (m in 1:12) {
-    map.m[, , m] <- create.map(albedo.sel[, paste0("albedo.", m)], loc.sel$lon, loc.sel$lat)
+    map.m[, , m] <- create.map(albedo.sel[, c("Group.1", paste0("albedo.", m))])
   }
   maps[["albedo"]] <- map.m
 
   map.m <- array(NA, dim = c(720, 360, 12))
   for (m in 1:12) {
-    map.m[, , m] <- create.map(LAI.sel[, paste0("LAI.", m)], loc.sel$lon, loc.sel$lat)
+    map.m[, , m] <- create.map(LAI.sel[, c("Group.1", paste0("LAI.", m))])
   }
   maps[["LAI"]] <- map.m
 
   map.m <- array(NA, dim = c(720, 360, 12))
   for (m in 1:12) {
-    map.m[, , m] <- create.map(displacement.sel[, paste0("displacement.", m)], loc.sel$lon, loc.sel$lat)
+    map.m[, , m] <- create.map(displacement.sel[, c("Group.1", paste0("displacement.", m))])
   }
   maps[["displacement"]] <- map.m
 
   map.m <- array(NA, dim = c(720, 360, 12))
   for (m in 1:12) {
-    map.m[, , m] <- create.map(veg_rough.sel[, paste0("veg_rough.", m)], loc.sel$lon, loc.sel$lat)
+    map.m[, , m] <- create.map(veg_rough.sel[, c("Group.1", paste0("veg_rough.", m))])
   }
   maps[["veg_rough"]] <- map.m
 
   map.m <- array(NA, dim = c(720, 360, 12))
   for (m in 1:12) {
-    map.m[, , m] <- create.map(fcanopy.sel[, paste0("fc.tile.", m)], loc.sel$lon, loc.sel$lat)
+    map.m[, , m] <- create.map(fcanopy.sel[, c("Group.1", paste0("fc.tile.", m))])
   }
   maps[["fcanopy"]] <- map.m
 

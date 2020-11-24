@@ -9,11 +9,11 @@ dir.out <- "../../../Data/VIC/Parameters/"
 # Setup
 lon <- seq(from = -179.75, to = 179.75, by = 0.5)
 lat <- seq(from = -89.75, to = 89.75, by = 0.5)
-combine <- FALSE
+combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(14.75, -12.25, "Ballou")
-points[nrow(points) + 1, ] <- c(63.25, 96.25, "Error")
+# points[nrow(points) + 1, ] <- c(14.75, -12.25, "Ballou")
+points[nrow(points) + 1, ] <- c(47.25, -118.25, "Error")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

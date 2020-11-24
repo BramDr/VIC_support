@@ -80,3 +80,23 @@ Hamman, J., Nijssen, B., Roberts, A., Craig, A., Maslowski, W., and Osinski, R. 
 Nijssen, B., O'Donnell, G.M., Hamlet, A.F. et al. Hydrologic Sensitivity of Global Rivers to Climate Change. Climatic Change 50, 143–175 (2001). https://doi.org/10.1023/A:1010616428763  
 [VIC input parameters 0.5 degree](https://vic.readthedocs.io/en/master/Datasets/Datasets/):
 van Vliet, M. T., Franssen, W. H., Yearsley, J. R., Ludwig, F., Haddeland, I., Lettenmaier, D. P., & Kabat, P. (2013). Global river discharge and water temperature under climate change. Global Environmental Change, 23(2), 450-464. https://doi.org/10.1016/j.gloenvcha.2012.11.002  
+
+**Global CO2-concentration dataset**
+[ISIMIP input data](https://www.isimip.org/gettingstarted/#input-data-bias-correction)  
+
+**Global fertilizer dataset**
+[GGCMI input data](http://www.rdcep.org/research-projects/ggcmi):
+Mueller, N., Gerber, J., Johnston, M. et al. Closing yield gaps through nutrient and water management. Nature 490, 254–257 (2012). https://doi.org/10.1038/nature11420  
+Hurtt, G. C., Chini, L., Sahajpal, R., Frolking, S., Bodirsky, B. L., Calvin, K., Doelman, J. C., Fisk, J., Fujimori, S., Klein Goldewijk, K., Hasegawa, T., Havlik, P., Heinimann, A., Humpenöder, F., Jungclaus, J., Kaplan, J. O., Kennedy, J., Krisztin, T., Lawrence, D., Lawrence, P., Ma, L., Mertz, O., Pongratz, J., Popp, A., Poulter, B., Riahi, K., Shevliakova, E., Stehfest, E., Thornton, P., Tubiello, F. N., van Vuuren, D. P., and Zhang, X.: Harmonization of global land use change and management for the period 850–2100 (LUH2) for CMIP6, Geosci. Model Dev., 13, 5425–5464, https://doi.org/10.5194/gmd-13-5425-2020, 2020.  
+Zhang, B., Tian, H., Lu, C., Dangal, S. R. S., Yang, J., and Pan, S.: Global manure nitrogen production and application in cropland during 1860–2014: a 5 arcmin gridded global dataset for Earth system modeling, Earth Syst. Sci. Data, 9, 667–678, https://doi.org/10.5194/essd-9-667-2017, 2017.  
+
+**WOFOST input files**
+[crop files](https://github.com/ajwdewit/WOFOST_crop_parameters):
+Allard de Wit, Hendrik Boogaard, Davide Fumagalli, Sander Janssen, Rob Knapen, Daniel van Kraalingen, Iwan Supit, Raymond van der Wijngaart, Kees van Diepen (2019), 25 years of the WOFOST cropping systems model, Agricultural Systems, 168, 154-167, doi.org/10.1016/j.agsy.2018.06.018.  
+
+**Global soil dataset**
+[ISRIC-WISE soil properties 30 seconds](https://data.isric.org/geonetwork/srv/eng/catalog.search#/home):
+N.H. Batjes, Harmonized soil property values for broad-scale modelling (WISE30sec) with estimates of global soil carbon stocks, Geoderma, Volume 269, 2016, Pages 61-68, ISSN 0016-7061, https://doi.org/10.1016/j.geoderma.2016.01.034.  
+
+**Crop yield per country per year**  
+[FAOSTAT database](http://www.fao.org/faostat/en/#data)  
