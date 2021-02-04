@@ -24,6 +24,8 @@ min.k.file <- "./Saves/mineralizationK_30min_global.RDS"
 rec.n.file <- "./Saves/recoveryN_30min_global.RDS"
 rec.p.file <- "./Saves/recoveryP_30min_global.RDS"
 rec.k.file <- "./Saves/recoveryK_30min_global.RDS"
+carbon.file <- "./Saves/carbon_30min_global.RDS"
+ph.file <- "./Saves/ph_30min_global.RDS"
 crop.out <- "../../../../Data/VIC/Parameters/global/crop_params_VICWOFOST_global.nc"
 
 # Load
@@ -46,6 +48,8 @@ min.k <- readRDS(min.k.file)
 rec.n <- readRDS(rec.n.file)
 rec.p <- readRDS(rec.p.file)
 rec.k <- readRDS(rec.k.file)
+carbon <- readRDS(carbon.file)
+ph <- readRDS(ph.file)
 
 nc <- nc_open(mask.file)
 mask <- ncvar_get(nc, "mask")
@@ -232,6 +236,22 @@ var.K_recovery <- ncvar_def(
   longname = "N mineralization recovery rate",
   compression = 5
 )
+var.carbon <- ncvar_def(
+  name = "carbon",
+  units = "g kg-1",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "Organic carbon content for top 20 cm of soil",
+  compression = 5
+)
+var.ph <- ncvar_def(
+  name = "pH",
+  units = "-",
+  dim = list(dim.lon, dim.lat),
+  missval = -1,
+  longname = "pH for top 20 cm of soil",
+  compression = 5
+)
 
 dir.create(dirname(crop.out))
 nc <- nc_create(
@@ -254,7 +274,9 @@ nc <- nc_create(
     var.P_mins,
     var.P_recovery,
     var.K_mins,
-    var.K_recovery
+    var.K_recovery,
+    var.carbon,
+    var.ph
   )
 )
 nc_close(nc)
@@ -267,9 +289,13 @@ na.map <- is.na(mask) | mask == 0
 ## Calculate
 Ncrop.filled <- fillMap(map = Ncrop, na.map = na.map, nearest.function = getNearestZero)
 tfactor.filled <- fillMap(map = tfactor, na.map = na.map, nearest.function = getNearestZero)
+carbon.filled <- fillMap(map = carbon, na.map = na.map, nearest.function = getNearestMean)
+ph.filled <- fillMap(map = ph, na.map = na.map, nearest.function = getNearestMean)
 
 ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)
 ncvar_put(nc = nc, varid = var.Tfactor, vals = tfactor.filled)
+ncvar_put(nc = nc, varid = var.carbon, vals = carbon.filled)
+ncvar_put(nc = nc, varid = var.ph, vals = ph.filled)
 
 i <- 1
 for (i in 1:nrow(crops)) {

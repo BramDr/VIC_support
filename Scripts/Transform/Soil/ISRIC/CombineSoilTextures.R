@@ -8,10 +8,10 @@ out.sand <- "../../../../Data/Transformed/Soil/ISRIC/sand_30min_global.RDS"
 out.silt <- "../../../../Data/Transformed/Soil/ISRIC/silt_30min_global.RDS"
 out.bulk <- "../../../../Data/Transformed/Soil/ISRIC/bulk_30min_global.RDS"
 
-clay.files <- list.files(gen.dir, pattern = "clay_", full.names = T)
-sand.files <- list.files(gen.dir, pattern = "sand_", full.names = T)
-silt.files <- list.files(gen.dir, pattern = "silt_", full.names = T)
-bulk.files <- list.files(gen.dir, pattern = "bulk_", full.names = T)
+clay.files <- list.files(gen.dir, pattern = "clay_.*30min_global", full.names = T)
+sand.files <- list.files(gen.dir, pattern = "sand_.*30min_global", full.names = T)
+silt.files <- list.files(gen.dir, pattern = "silt_.*30min_global", full.names = T)
+bulk.files <- list.files(gen.dir, pattern = "bulk_.*30min_global", full.names = T)
 
 combine.files <- function(file.list) {
   map <- array(NA, dim = c(360, 720, 7))

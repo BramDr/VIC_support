@@ -263,7 +263,7 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
     rad_atten <- c(rep(0.5, veg.dim$len - 1), 0)
   }
   if (is.null(rmin)) {
-    rmin <- c(rep(100, veg.dim$len - 1), 0)
+    rmin <- c(rep(80, veg.dim$len - 1), 0)
   }
   if (is.null(rarc)) {
     rarc <- c(rep(2, veg.dim$len - 1), 0)
@@ -292,15 +292,15 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
   }
   # -
   if (is.null(LAI)) {
-    LAI <- c(rep(2, veg.dim$len - 1), 0)
+    LAI <- c(rep(3, veg.dim$len - 1), 0)
     for (i in 2:12) {
-      LAI <- cbind(LAI, c(rep(2, veg.dim$len - 1), 0))
+      LAI <- cbind(LAI, c(rep(3, veg.dim$len - 1), 0))
     }
   }
   if (is.null(height)) {
-    height <- c(rep(2, veg.dim$len - 1), 0)
+    height <- c(rep(1, veg.dim$len - 1), 0)
     for (i in 2:12) {
-      height <- cbind(height, c(rep(2, veg.dim$len - 1), 0))
+      height <- cbind(height, c(rep(1, veg.dim$len - 1), 0))
     }
   }
   if (is.null(albedo)) {
@@ -339,6 +339,7 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
     }
   }
   na.map <- is.na(Cv[, , 1])
+  dim(na.map) <- dim(Cv)[1:2]
 
   # Create Nveg
   Nveg <- apply(X = Cv, MARGIN = c(1, 2), FUN = function(x) {
@@ -370,4 +371,63 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
     addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$veg_rough, value = height[, i] * 0.123, na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
     addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$albedo, value = albedo[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
   }
+}
+
+cropyCreateVariable = function(base.file = NULL, base.name = NULL, base.variable = NULL,
+                               name = NULL, units = NULL, 
+                               dim = NULL, missval = NULL, longname = NULL, 
+                               prec = NULL, shuffle = NULL, compression = NULL, 
+                               chunksizes = NULL){
+
+  if((is.null(base.file) || is.null(base.name)) && is.null(base.variable)){
+    stop("Need more data")
+    return(NULL)
+  }
+  
+  if(is.null(base.variable)){
+    nc = nc_open(base.file)
+    base.variable = nc$var[[base.name]]
+    nc_close(nc)
+  }
+  
+  if(is.null(name)){
+    name = base.variable$name
+  }
+  if(is.null(units)){
+    units = base.variable$units
+  }
+  if(is.null(dim)){
+    dim = base.variable$dim
+  }
+  if(is.null(missval)){
+    missval = base.variable$missval
+  }
+  if(is.null(longname)){
+    longname = base.variable$longname
+  }
+  if(is.null(prec)){
+    prec = base.variable$prec
+    if(prec == "int"){
+      prec = "integer"
+    }
+  }
+  if(is.null(shuffle)){
+    shuffle = base.variable$shuffle
+  }
+  if(is.null(compression)){
+    compression = base.variable$compression
+  }
+  if(is.null(chunksizes)){
+    chunksizes = base.variable$chunksizes
+  }
+  new.variable = ncvar_def(name = name,
+                            units = units, 
+                            dim = dim, 
+                            missval = missval, 
+                            longname = longname, 
+                            prec = prec, 
+                            shuffle = shuffle, 
+                            compression = compression, 
+                            chunksizes = chunksizes)
+  return(new.variable)
 }

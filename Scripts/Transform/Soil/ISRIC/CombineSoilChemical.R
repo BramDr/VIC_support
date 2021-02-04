@@ -8,10 +8,10 @@ out.ph <- "../../../../Data/Transformed/Soil/ISRIC/ph_30min_global.RDS"
 out.tnit <- "../../../../Data/Transformed/Soil/ISRIC/tnit_30min_global.RDS"
 out.cnrat <- "../../../../Data/Transformed/Soil/ISRIC/cnrat_30min_global.RDS"
 
-ocar.files <- list.files(gen.dir, pattern = "ocar_", full.names = T)
-ph.files <- list.files(gen.dir, pattern = "ph_", full.names = T)
-tnit.files <- list.files(gen.dir, pattern = "tnit_", full.names = T)
-cnrat.files <- list.files(gen.dir, pattern = "cnrat_", full.names = T)
+ocar.files <- list.files(gen.dir, pattern = "ocar_.*30min_global", full.names = T)
+ph.files <- list.files(gen.dir, pattern = "ph_.*30min_global", full.names = T)
+tnit.files <- list.files(gen.dir, pattern = "tnit_.*30min_global", full.names = T)
+cnrat.files <- list.files(gen.dir, pattern = "cnrat_.*30min_global", full.names = T)
 
 combine.files <- function(file.list) {
   map <- array(NA, dim = c(360, 720, 7))

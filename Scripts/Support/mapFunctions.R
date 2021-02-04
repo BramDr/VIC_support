@@ -69,8 +69,8 @@ getNearestMean <- function(map, x, y, itirs = 1000) {
 
 fillMap <- function(map, na.map, nearest.function, ...) {
   if (max(dim(map)[1:2] != dim(na.map))) {
-    print(paste0("map: ", paste0(dim(map)[1:2], collapse(", "))))
-    print(paste0("na.map: ", paste0(dim(na.map), collapse(", "))))
+    print(paste0("map: ", paste0(dim(map)[1:2], collapse = ", ")))
+    print(paste0("na.map: ", paste0(dim(na.map), collapse= ", ")))
     stop("map and na.map dimensions do not match")
   }
 

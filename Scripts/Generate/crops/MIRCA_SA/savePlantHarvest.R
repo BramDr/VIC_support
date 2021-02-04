@@ -32,10 +32,6 @@ set.plant.harvest <- function(x, columns, idx) {
   x.idx <- x[columns == "x"]
   y.idx <- x[columns == "y"]
 
-  if (start == end) {
-    print("SAME")
-  }
-
   start.alt <- start + 1
   end.alt <- end + 1
   if (start.alt > 12) {
@@ -68,6 +64,7 @@ set.plant.harvest <- function(x, columns, idx) {
 # Calculate
 plant_day <- array(NA, dim = c(length(lons), length(lats), nrow(crops), noptions))
 harvest_day <- array(NA, dim = c(length(lons), length(lats), nrow(crops), noptions))
+i = 1
 for (i in 1:nrow(crops)) {
   print(crops$name[i])
 
