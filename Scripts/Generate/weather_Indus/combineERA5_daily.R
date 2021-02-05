@@ -19,7 +19,7 @@ tmp.files = list.files(weather.dir.tmp, pattern = "ERA5", full.names = T, recurs
 #}
 
 # Disaggregate
-out.file = out.files[241]
+out.file = out.files[1]
 for(out.file in out.files){
   tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
   
@@ -62,11 +62,18 @@ for(out.file in out.files){
     rm(in.prev)
   }
   if(exists("in.spinup")){
-    #in.data = abind(in.spinup, in.data, along = 3)
-    if(length(dim(in.spinup)) == 3){
-      in.data[,,1:dim(in.spinup)[3]] = in.spinup
-    } else {
-      in.data[,,1] = in.spinup
+    if(dim(in.this)[3] == length(out.time)){
+      if(length(dim(in.spinup)) == 3){
+        in.data[,,1:dim(in.spinup)[3]] = in.spinup
+      } else {
+        in.data[,,1] = in.spinup
+      }
+    } else if(length(dim(in.spinup)) == 3 && dim(in.this)[3] + dim(in.spinup)[3] == length(out.time)) {
+      in.data = abind(in.spinup, in.data, along = 3)
+    } else if(length(dim(in.spinup)) == 2 && dim(in.this)[3] + 1 == length(out.time)) {
+      in.data = abind(in.spinup, in.data, along = 3)
+    } else{
+      stop("in.this and in.prev do not match output length")
     }
     rm(in.spinup)
   }
