@@ -19,7 +19,7 @@ tmp.files = list.files(weather.dir.tmp, pattern = "ERA5", full.names = T, recurs
 #}
 
 # Disaggregate
-out.file = out.files[1]
+out.file = out.files[41]
 for(out.file in out.files){
   tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
   
@@ -42,14 +42,11 @@ for(out.file in out.files){
     next
   }
   
-  print(basename(in.this.file))
   in.this = readRDS(in.this.file)
   if(length(in.spinup.file) > 0){
-    print(basename(in.spinup.file))
     in.spinup = readRDS(in.spinup.file)
   }
   if(length(in.prev.file) > 0){
-    print(basename(in.prev.file))
     in.prev = readRDS(in.prev.file)
   }
   
@@ -62,18 +59,14 @@ for(out.file in out.files){
     rm(in.prev)
   }
   if(exists("in.spinup")){
-    if(dim(in.this)[3] == length(out.time)){
-      if(length(dim(in.spinup)) == 3){
-        in.data[,,1:dim(in.spinup)[3]] = in.spinup
-      } else {
-        in.data[,,1] = in.spinup
-      }
-    } else if(length(dim(in.spinup)) == 3 && dim(in.this)[3] + dim(in.spinup)[3] == length(out.time)) {
-      in.data = abind(in.spinup, in.data, along = 3)
-    } else if(length(dim(in.spinup)) == 2 && dim(in.this)[3] + 1 == length(out.time)) {
-      in.data = abind(in.spinup, in.data, along = 3)
-    } else{
-      stop("in.this and in.prev do not match output length")
+    add.size = (length(out.time) - dim(in.data)[3])
+    copy.size = dim(in.spinup)[3] - add.size
+    
+    if(add.size > 0) {
+      in.data = abind(in.spinup[,,1:add.size], in.data, along = 3)
+    }
+    if(copy.size > 0){
+      in.data[,,(add.size + 1):(add.size + copy.size)] = in.spinup[,,(add.size + copy.size)]
     }
     rm(in.spinup)
   }

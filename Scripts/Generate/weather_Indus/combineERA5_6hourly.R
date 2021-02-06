@@ -59,11 +59,14 @@ for(out.file in out.files){
     rm(in.prev)
   }
   if(exists("in.spinup")){
-    #in.data = abind(in.spinup, in.data, along = 3)
-    if(length(dim(in.spinup)) == 3){
-      in.data[,,1:dim(in.spinup)[3]] = in.spinup
-    } else {
-      in.data[,,1] = in.spinup
+    add.size = (length(out.time) - dim(in.data)[3])
+    copy.size = dim(in.spinup)[3] - add.size
+    
+    if(add.size > 0) {
+      in.data = abind(in.spinup[,,1:add.size], in.data, along = 3)
+    }
+    if(copy.size > 0){
+      in.data[,,(add.size + 1):(add.size + copy.size)] = in.spinup[,,(add.size + copy.size)]
     }
     rm(in.spinup)
   }

@@ -12,9 +12,8 @@ weather.dir.tmp = "./Saves/Disaggregated_daily/"
 timestep = 24
 variable.merge = data.frame(HIAWARE = c("pr", "lwra", "swra", "tas", "tasmin", "tasmax"),
                             VIC = c("pr", "lwdown", "swdown", "tas", "tasmin", "tasmax"),
-                            factor = c(24 / timestep,24 / timestep,24 / timestep,24 / timestep,24 / timestep,24 / timestep),
+                            factor = c(1,24 / timestep,24 / timestep,24 / timestep,24 / timestep,24 / timestep),
                             offset = c(0,0,0,0,0,0),
-                            units = c("mm", "W m-2", "W m-2", "degrees_celsius", "degrees_celsius", "degrees_celsius"),
                             stringsAsFactors = F)
 
 # Load
@@ -72,7 +71,7 @@ for(in.file in in.files){
       
       out.year = in.year
         
-      out.file = grep(x = out.files, pattern = paste0(".*", out.varname, "_.*", out.year), value = T)
+      out.file = grep(x = out.files, pattern = paste0(".*/", out.varname, "_.*", out.year), value = T)
       tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
       tmp.file = gsub(x = tmp.file, pattern = "ERA5", replacement = "HIAWARE")
       if(length(out.file) == 0){
@@ -156,7 +155,7 @@ for(in.file in in.files){
         image.plot(out.weather.sum, main = paste0("out: ", out.varname))
       } else {
         # Check for instantanious variables
-        in.weather.sum = apply(X = in.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
+        in.weather.sum = apply(X = in.weather * out.factor, MARGIN = c(1,2), FUN = mean, na.rm = T)
         out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
         image.plot(in.weather.sum, main = paste0("in: ", in.varname))
         image.plot(out.weather.sum, main = paste0("out: ", out.varname))

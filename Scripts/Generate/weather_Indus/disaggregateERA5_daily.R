@@ -51,7 +51,7 @@ for(in.file in in.files){
     in.time.sel = which(in.years == in.year)
     in.time.year = in.time[in.time.sel]
     
-    in.varname = in.varnames[3]
+    in.varname = in.varnames[1]
     for(in.varname in in.varnames) {
       print(in.varname)
     
@@ -67,7 +67,7 @@ for(in.file in in.files){
       for(out.year in in.year + c(0, 1)) {
         print(paste0("in.year ", in.year, " -> out.year ", out.year))
         
-        out.file = grep(x = out.files, pattern = paste0(".*", out.varname, "_.*", out.year), value = T)
+        out.file = grep(x = out.files, pattern = paste0(".*/", out.varname, "_.*", out.year), value = T)
         tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
         tmp.file = gsub(x = tmp.file, pattern = ".nc", replacement = paste0(".", in.year, ".RDS"))
         if(length(out.file) == 0){
@@ -215,13 +215,14 @@ for(in.file in in.files){
             # Fill first 6 hours of the first day, with first 6 hours of last day
             missing.start = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
             missing.end = as.POSIXct(paste0("1979-01-01 ", "06:00:00"), tz = "GMT")
-            missing.z = which(as.POSIXct(out.time) >= missing.start & as.POSIXct(out.time) <= missing.end)
+            missing.z = 1:min(which(as.POSIXct(out.time) >= missing.end))
             fill.start = as.POSIXct(paste0("1979-12-31 ", "00:00:00"), tz = "GMT")
             fill.end = as.POSIXct(paste0("1979-12-31 ", "06:00:00"), tz = "GMT")
             fill.z = which(as.POSIXct(out.time) >= fill.start & as.POSIXct(out.time) <= fill.end)
             
             # Get fill data
-            fill.weather = out.weather[,,fill.z - out.z.start + 1]
+            fill.weather = array(NA, dim = c(dim(out.weather)[1:2], length(missing.z)))
+            fill.weather[,,1:length(missing.z)] = out.weather[,,fill.z - out.z.start + 1]
             
             # Save
             saveRDS(fill.weather, tmp.file)
@@ -238,16 +239,17 @@ for(in.file in in.files){
             dir.create(dirname(tmp.file), recursive = T)
             print(basename(tmp.file))
             
-            # Fill first 6 hours of the first day, with first 6 hours of last day
+            # Fill first hour of the first day, with first hour of last day
             missing.start = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
             missing.end = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
-            missing.z = which(as.POSIXct(out.time) >= missing.start & as.POSIXct(out.time) <= missing.end)
+            missing.z = 1:min(which(as.POSIXct(out.time) >= missing.end))
             fill.start = as.POSIXct(paste0("1979-12-31 ", "00:00:00"), tz = "GMT")
             fill.end = as.POSIXct(paste0("1979-12-31 ", "00:00:00"), tz = "GMT")
             fill.z = which(as.POSIXct(out.time) >= fill.start & as.POSIXct(out.time) <= fill.end)
             
             # Get fill data
-            fill.weather = out.weather[,,fill.z - out.z.start + 1]
+            fill.weather = array(NA, dim = c(dim(out.weather)[1:2], length(missing.z)))
+            fill.weather[,,1:length(missing.z)] = out.weather[,,fill.z - out.z.start + 1]
             
             # Save
             saveRDS(fill.weather, tmp.file)
