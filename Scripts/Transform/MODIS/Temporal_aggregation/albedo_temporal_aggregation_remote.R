@@ -6,8 +6,8 @@ library(raster)
 library(Rcpp)
 
 tile.file = "../tileset_indus.txt"
-in.dir = "/mnt/annuna/lustre/backup/WUR/ESG/dropp001/MODIS/MOTA/MCD43A3.006/"
-lai.dir = "/mnt/annuna/lustre/backup/WUR/ESG/dropp001/MODIS/MOTA/MCD15A2H.006/"
+in.dir = "/mnt/annuna/lustre/backup/WUR/ESG/dropp001/Backup/MODIS/MOTA/MCD43A3.006/"
+lai.dir = "/mnt/annuna/lustre/backup/WUR/ESG/dropp001/Backup/MODIS/MOTA/MCD15A2H.006/"
 out.file = "./Saves/albedo/albedo_500m.RDS"
 days.step = 8
 days.per.month = c(31,28,31,30,31,30,31,31,30,31,30,31)
@@ -29,7 +29,7 @@ lai.months = as.numeric(format.Date(lai.dates, "%m"))
 lai.days = as.numeric(format.Date(lai.dates, "%d"))
 lai.doy = as.numeric(format.Date(lai.dates, "%j"))
  
-tile = tiles[1,1]
+tile = tiles[6,1]
 for(tile in tiles[,1]){
   print(tile)
   
@@ -55,7 +55,7 @@ for(tile in tiles[,1]){
   data.sum = array(0, dim = c(dim(data), length(unique(in.months))))
   data.count = array(0, dim = c(dim(data), length(unique(in.months))))
   
-  m = 2
+  m = 5
   for(m in unique(in.months)){
     print(m)
     
@@ -90,6 +90,10 @@ for(tile in tiles[,1]){
       }
       
       lai.idx = intersect(lai.month.sel, lai.date.sel)
+      if(length(lai.idx) == 0){
+        print("LAI DATE NOT FOUND")
+        next
+      }
       
       print(basename(in.files[idx]))
       

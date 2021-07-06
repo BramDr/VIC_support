@@ -17,7 +17,7 @@ getNearestCount <- function(map, x, y, itirs = 1000) {
     val <- map[x.min:x.max, y.min:y.max]
     val <- table(val)
 
-    if (!length(val) != 0) {
+    if (length(val) != 0) {
       idx <- order(val, decreasing = T)[1]
       val <- as.numeric(names(val)[idx])
 
@@ -74,20 +74,21 @@ fillMap <- function(map, na.map, nearest.function, ...) {
     stop("map and na.map dimensions do not match")
   }
 
+  map.adj = map
   for (x in 1:dim(na.map)[1]) {
     for (y in 1:dim(na.map)[2]) {
       if (na.map[x, y]) {
         if (length(dim(map)) == 2) {
-          map[x, y] <- NA
+          map.adj[x, y] <- NA
         }
         else if (length(dim(map)) == 3) {
-          map[x, y, ] <- NA
+          map.adj[x, y, ] <- NA
         }
         else if (length(dim(map)) == 4) {
-          map[x, y, , ] <- NA
+          map.adj[x, y, , ] <- NA
         }
         else if (length(dim(map)) == 5) {
-          map[x, y, , , ] <- NA
+          map.adj[x, y, , , ] <- NA
         }
         else {
           stop("Map dimensions not implemented")
@@ -97,13 +98,13 @@ fillMap <- function(map, na.map, nearest.function, ...) {
 
       if (length(dim(map)) == 2) {
         if (is.na(map[x, y])) {
-          map[x, y] <- nearest.function(map, x, y, ...)
+          map.adj[x, y] <- nearest.function(map, x, y, ...)
         }
       }
       else if (length(dim(map)) == 3) {
         for (z in 1:dim(map)[3]) {
           if (is.na(map[x, y, z])) {
-            map[x, y, z] <- nearest.function(map[, , z], x, y, ...)
+            map.adj[x, y, z] <- nearest.function(map[, , z], x, y, ...)
           }
         }
       }
@@ -111,7 +112,7 @@ fillMap <- function(map, na.map, nearest.function, ...) {
         for (z in 1:dim(map)[3]) {
           for (k in 1:dim(map)[4]) {
             if (is.na(map[x, y, z, k])) {
-              map[x, y, z, k] <- nearest.function(map[, , z, k], x, y, ...)
+              map.adj[x, y, z, k] <- nearest.function(map[, , z, k], x, y, ...)
             }
           }
         }
@@ -121,7 +122,7 @@ fillMap <- function(map, na.map, nearest.function, ...) {
           for (k in 1:dim(map)[4]) {
             for (l in 1:dim(map)[5]) {
               if (is.na(map[x, y, z, k, l])) {
-                map[x, y, z, k, l] <- nearest.function(map[, , z, k, l], x, y, ...)
+                map.adj[x, y, z, k, l] <- nearest.function(map[, , z, k, l], x, y, ...)
               }
             }
           }
@@ -133,5 +134,5 @@ fillMap <- function(map, na.map, nearest.function, ...) {
     }
   }
 
-  return(map)
+  return(map.adj)
 }

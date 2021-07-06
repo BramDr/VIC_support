@@ -8,7 +8,6 @@ tile.file = "../tileset_indus.txt"
 landuse.dir = "../Temporal_aggregation/Saves"
 in.dir = "../Temporal_aggregation/Saves"
 in.vars = c("LAI", "NDVI", "albedo")
-in.vars = c("NDVI")
 mapping.dir = "./Saves"
 out.dir = "./Saves"
 resolution = 1 / 12
@@ -18,6 +17,7 @@ nlanduse = 16
 nmonths = 12
 sourceCpp("./Rcpp_support.cpp")
 
+var = in.vars[1]
 for(var in in.vars) {
   print(var)
   
@@ -80,10 +80,12 @@ for(var in in.vars) {
   output.avg[output.count <= 5] = NA
 
   output.avg.mean = apply(X = output.avg, MARGIN = c(1,2,3), FUN = mean)
-  plot(raster(output.avg.mean[,,3]))
+  plot(raster(output.avg.mean[,,13]))
   
   # Cleanup albedo
   if(var == "albedo") {
+    output.avg.adj = output.avg
+    
     for(z in 1:dim(output.avg)[3]){
       data.tmp = output.avg[,,z,]
       
@@ -95,8 +97,12 @@ for(var in in.vars) {
       threshold = data.mean + 4 * data.sd
       data.tmp[data.tmp > threshold] = NA
       
-      output.avg[,,z,] = data.tmp
+      output.avg.adj[,,z,] = data.tmp
     }
+    output.avg.adj.mean = apply(X = output.avg.adj, MARGIN = c(1,2,3), FUN = mean)
+    plot(raster(output.avg.adj.mean[,,13]))
+    
+    output.avg = output.avg.adj
   }
   
   out.file = paste0(out.dir, "/", var, "_5min_Indus.RDS")

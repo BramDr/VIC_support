@@ -22,9 +22,9 @@ tnit.files <- list.files(gen.dir, pattern = "tnit_.*5min_Indus", full.names = T)
 cnrat.files <- list.files(gen.dir, pattern = "cnrat_.*5min_Indus", full.names = T)
 
 combine.files <- function(file.list) {
-  map <- array(NA, dim = c(length(out.lats), length(out.lons), 7))
+  map <- array(NA, dim = c(length(out.lats), length(out.lons)))
 
-  for (layer in 1:7) {
+  for (layer in 1) {
     file.list.layer <- grep(file.list, pattern = paste0("_", layer, "_"), value = T)
 
     map.layer <- array(NA, dim = c(length(out.lats), length(out.lons)))
@@ -43,7 +43,7 @@ combine.files <- function(file.list) {
       map.layer[sel.overlap] <- (map.layer[sel.overlap] + map.new[sel.overlap]) / 2
     }
 
-    map[, , layer] <- map.layer
+    map <- map.layer
   }
 
   return(map)
@@ -54,10 +54,10 @@ ph <- combine.files(ph.files)
 tnit <- combine.files(tnit.files)
 cnrat <- combine.files(cnrat.files)
 
-image.plot(ocar[, , 1])
-image.plot(ph[, , 1])
-image.plot(tnit[, , 1])
-image.plot(cnrat[, , 1])
+image.plot(ocar)
+image.plot(ph)
+image.plot(tnit)
+image.plot(cnrat)
 
 dir.create(dirname(out.ocar))
 dir.create(dirname(out.ph))

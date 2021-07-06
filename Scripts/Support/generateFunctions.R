@@ -6,7 +6,7 @@ misc.vars <- c(
 soil.vars <- c(
   "Ksat", "Wcr_FRACT", "Wpwp_FRACT", "bubble", "bulk_density",
   "expt", "init_moist", "phi_s", "quartz", "resid_moist",
-  "soil_density", "rough", "snow_rough", "dp", "fs_active"
+  "soil_density", "rough", "snow_rough", "dp", "fs_active", "depth"
 )
 veg.vars <- c(
   "Nveg", "Cv", "wind_atten",
@@ -15,7 +15,7 @@ veg.vars <- c(
   "LAI", "displacement", "veg_rough", "albedo"
 )
 calib.vars <- c(
-  "Ds", "Dsmax", "Ws", "c", "depth", "infilt"
+  "Ds", "Dsmax", "Ws", "c", "infilt"
 )
 elev.vars <- c(
   "AreaFract", "Pfactor", "elev", "elevation"
@@ -159,6 +159,35 @@ addVegVars <- function(nc.file, nveg_class = NULL) {
   nc_close(nc = nc)
 }
 
+addCo2Vars <- function(nc.file, nveg_class = NULL) {
+  # Get dimensions
+  nc <- nc_open(filename = nc.file)
+  lon.dim <- nc$dim$lon
+  lat.dim <- nc$dim$lat
+  if (is.null(nveg_class)) {
+    veg.dim <- nc$dim$veg_class
+  } else {
+    veg.dim <- ncdim_def(
+      name = "veg_class", units = "class", vals = 1:nveg_class,
+      longname = "Vegetation class"
+    )
+  }
+  nc_close(nc = nc)
+
+  # Create variables
+  # -
+  b.co2.var <- ncvar_def(
+    name = "b_co2", units = "fraction",
+    longname = "CO2 transpiration parameter",
+    dim = list(lon.dim, lat.dim, veg.dim), missval = -1, prec = "double", compression = 1
+  )
+
+  # Add variables
+  nc <- nc_open(filename = nc.file, write = TRUE)
+  nc <- ncvar_add(nc, b.co2.var)
+  nc_close(nc = nc)
+}
+
 addVegDefaultDatum <- function(nc.file, nc.var,
                                value = NULL, datum = NULL, na.map = NULL,
                                start = NULL, count = NULL) {
@@ -245,7 +274,8 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
                               root_depth = NULL,
                               LAI = NULL,
                               height = NULL,
-                              albedo = NULL) {
+                              albedo = NULL,
+                              fcanopy = NULL) {
   # Get dimensions
   nc <- nc_open(filename = nc.file)
   lon.dim <- nc$dim$lon
@@ -309,6 +339,12 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
       albedo <- cbind(albedo, c(rep(0.1, veg.dim$len - 1), 0.2))
     }
   }
+  if (is.null(fcanopy)) {
+    fcanopy <- c(rep(1, veg.dim$len - 1), 0.0001)
+    for (i in 2:12) {
+      fcanopy <- cbind(fcanopy, c(rep(1, veg.dim$len - 1), 0.0001))
+    }
+  }
 
   # Check or create Cv
   if (is.null(Cv)) {
@@ -370,6 +406,9 @@ addVegDefaultData <- function(nc.file, Cv = NULL, na.map = NULL,
     addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$displacement, value = height[, i] * 0.67, na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
     addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$veg_rough, value = height[, i] * 0.123, na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
     addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$albedo, value = albedo[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    if("fcanopy" %in% names(nc$var)){
+      addVegDefaultDatum(nc.file = nc.file, nc.var = nc$var$fcanopy, value = fcanopy[, i], na.map = na.map, start = c(1, 1, i, 1), count = c(-1, -1, 1, -1))
+    }
   }
 }
 

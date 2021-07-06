@@ -1,7 +1,7 @@
 rm(list = ls())
 
 # Input
-nijssen.file <- "../../../../Data/Primary/Nijssen2001/vic_global_2001/config/vicveg/world_newveg_lib.txt/world_newveg_lib.txt"
+nijssen.file <- "../../../../Data/Primary/Nijssen2001/0.5deg/world_veg_lib.txt"
 vegetation.out <- "./Saves/vegetation_mapping.csv"
 
 # Load
@@ -53,13 +53,15 @@ vegetation = data.frame(
   root.frac.1 = c(0, rep(0.3, 5), 0.6, rep(0.7, 2), 0.6, rep(0.8, 5), 0),
   root.frac.2 = c(0, rep(0.7, 5), 0.4, rep(0.3, 2), 0.4, rep(0.2, 5), 0),
   overstory = c(0, rep(1, 5), rep(0,10)),
-  rarc = c(0, 50, 25, 40, 40, 40, 3, 2.5, 3, 2, 2, 2.5, 2, 2, 2, 0),
-  rmin = c(0, 120, 80, 120, 80, 100, 110, 110, 110, 110, 80, 110, 80, 80, 80, 0),
-  rgl = c(0, rep(30, 4), 50, rep(75, 4), 100, 75, 100, 75, 100, 0),
+  #rarc = c(0, 60, 60, 60, 60, 60, 50, 50, 40, 25, 25, 25, 20, 25, 20, 100),
+  rarc = c(0, 50, 50, 40, 40, 45, 3, 2.5, 3, 2, 2, 2.5, 2, 3, 2, 100),
+  #rmin = c(0, 250, 250, 150, 150, 200, 135, 135, 125, 120, 120, 120, 100, 120, 100, 0),
+  rmin = c(0, 120, 80, 120, 80, 100, 135, 135, 110, 80, 80, 135, 80, 135, 80, 0),
+  rgl = c(0, rep(30, 4), 50, rep(75, 3), rep(100, 6), 0),
   sol.atten = rep(0.5, 16),
   wind.atten = rep(0.5, 16),
   trunk.ratio = c(0, rep(0.2, 14), 0),
-  wind.h = c(0, 20, 30, 10, 20, 15, 5, 5, 2.5, 1, 0.5, 1, 2, 0.5, 2, 0) + 2
+  wind.h = rep(10, 16)
 )
 
 # Save

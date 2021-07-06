@@ -54,9 +54,6 @@ for(in.file in in.files){
   for(in.year in unique(in.years)){
     print(in.year)
     
-    in.time.sel = which(in.years == in.year)
-    in.time.year = in.time[in.time.sel]
-    
     in.varname = in.varnames[1]
     for(in.varname in in.varnames) {
       print(in.varname)
@@ -73,7 +70,7 @@ for(in.file in in.files){
         
       out.file = grep(x = out.files, pattern = paste0(".*/", out.varname, "_.*", out.year), value = T)
       tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
-      tmp.file = gsub(x = tmp.file, pattern = "ERA5", replacement = "HIAWARE")
+      tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_daily"), replacement = paste0(out.varname, "_daily_HIAWARE"))
       if(length(out.file) == 0){
         print(paste0("Could not find VIC forcing for variable name ", out.varname, " and year ", out.year))
         next
@@ -97,7 +94,7 @@ for(in.file in in.files){
       # Mapping
       mapping.x = rep(NA, length(out.lons))
       mapping.y = rep(NA, length(out.lats))
-      mapping.z = rep(NA, length(in.time.year))
+      mapping.z = rep(NA, length(in.time))
       for(x in 1:length(out.lons)){
         x.dist = abs(in.lons - out.lons[x])
         if(min(x.dist) > in.lon.res / 2){
@@ -116,7 +113,7 @@ for(in.file in in.files){
         }
         mapping.y[y] = which.min(y.dist)
       }
-      mapping.z = 1:length(in.time.year)
+      mapping.z = 1:length(in.time)
       
       if(length(na.omit(mapping.z)) == 0){
         print(paste0("No HIAWARE data for year ", in.year, " in VIC forcing year ", out.year))
@@ -149,16 +146,16 @@ for(in.file in in.files){
       # Check
       if( out.varname %in% c("pr")) {
         # Check for accumulated variables
-        in.weather.sum = apply(X = in.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
-        out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
-        image.plot(in.weather.sum, main = paste0("in: ", in.varname))
-        image.plot(out.weather.sum, main = paste0("out: ", out.varname))
+        #in.weather.sum = apply(X = in.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
+        #out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
+        #image.plot(in.weather.sum, main = paste0("in: ", in.varname))
+        #image.plot(out.weather.sum, main = paste0("out: ", out.varname))
       } else {
         # Check for instantanious variables
-        in.weather.sum = apply(X = in.weather * out.factor, MARGIN = c(1,2), FUN = mean, na.rm = T)
-        out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
-        image.plot(in.weather.sum, main = paste0("in: ", in.varname))
-        image.plot(out.weather.sum, main = paste0("out: ", out.varname))
+        #in.weather.sum = apply(X = in.weather * out.factor, MARGIN = c(1,2), FUN = mean, na.rm = T)
+        #out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
+        #image.plot(in.weather.sum, main = paste0("in: ", in.varname))
+        #image.plot(out.weather.sum, main = paste0("out: ", out.varname))
       }
       
       # Save

@@ -1,9 +1,9 @@
-library(ncdf4)
 library(fields)
+library(raster)
 rm(list = ls())
 
 # Input
-path.basin <- "../../../Data/Transformed/Routing/basins_5min_Indus.RDS"
+direction.file <- "../../../Data/Primary/Hydro1kHydroSHEDS/DRT_12th_FDR_globe.asc"
 mask.out <- "../../../Data/Transformed/Routing/mask_5min_Indus.RDS"
 resolution = 1 / 12
 out.lon.range = c(min = 66, max = 83)
@@ -14,39 +14,21 @@ global.lats = seq(from = -90 + resolution / 2, to = 90 - resolution / 2, by = re
 out.lons = global.lons[global.lons <= out.lon.range["max"] & global.lons >= out.lon.range["min"]]
 out.lats = global.lats[global.lats <= out.lat.range["max"] & global.lats >= out.lat.range["min"]]
 
+extent.out <- extent(min(out.lons) - resolution / 2, 
+                     max(out.lons) + resolution / 2, 
+                     min(out.lats) - resolution / 2, 
+                     max(out.lats) + resolution / 2)
+
 # Load
-basin <- readRDS(path.basin)
-
-# Setup
-points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(29.75, 70.75, "Indus")
-
-points$lat <- as.numeric(points$lat)
-points$lon <- as.numeric(points$lon)
+direction <- raster(direction.file)
+direction <- crop(direction, extent.out)
+direction <- as.matrix(direction)
+direction <- t(direction[dim(direction)[1]:1,])
+image.plot(direction)
 
 # Calculate
-for (i in 1:nrow(points)) {
-  x <- which.min(abs(out.lons - points$lon[i]))
-  y <- which.min(abs(out.lats - points$lat[i]))
-  
-  id <- basin[x, y]
-  
-  if (!is.na(id)) {
-    points$basin[i] <- id
-    points$size[i] <- sum(na.omit(c(basin)) == id)
-  } else {
-    print(paste0("Point ", points[i, ], " falls outside of basin mask"))
-  }
-}
-
-mask <- array(NA, dim = c(dim(basin)))
-for (x in 1:dim(basin)[1]) {
-  for (y in 1:dim(basin)[2]) {
-    if (!is.na(basin[x, y]) && basin[x, y] == points$basin[i]) {
-      mask[x, y] <- 1
-    }
-  }
-}
+mask <- direction
+mask[!is.na(mask)] = 1
 image.plot(mask)
 
 # Save

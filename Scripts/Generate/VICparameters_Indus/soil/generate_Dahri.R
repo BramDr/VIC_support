@@ -17,6 +17,7 @@ Wpwp.file <- "../../../../Data/Transformed/Parameters/soilWp_Dahri_5min_Indus.RD
 bubble.file <- "../../../../Data/Transformed/Parameters/soilBubble_Dahri_5min_Indus.RDS"
 soil.dens.file <- "../../../../Data/Transformed/Parameters/soilSoilDensity_Dahri_5min_Indus.RDS"
 resid.moist.file <- "../../../../Data/Transformed/Parameters/soilResidual_Dahri_5min_Indus.RDS"
+init.moist.file <- "../../../../Data/Transformed/Parameters/soilInitMoist_Dahri_5min_Indus.RDS"
 depth.file <- "../../../../Data/Transformed/Parameters/depth_Dahri_5min_Indus.RDS"
 dp.file <- "../../../../Data/Transformed/Parameters/soilDp_Dahri_5min_Indus.RDS"
 fs.active.file <- "../../../../Data/Transformed/Parameters/soilFrozenFlag_Dahri_5min_Indus.RDS"
@@ -49,6 +50,7 @@ Wpwp <- readRDS(Wpwp.file)
 bubble <- readRDS(bubble.file)
 soil.dens <- readRDS(soil.dens.file)
 resid.moist <- readRDS(resid.moist.file)
+init.moist <- readRDS(init.moist.file)
 depth = readRDS(depth.file)
 fs.active = readRDS(fs.active.file)
 dp = readRDS(dp.file)
@@ -71,6 +73,7 @@ Wpwp.fill <- fillMap(Wpwp, na.map, getNearestMean)
 bubble.fill <- fillMap(bubble, na.map, getNearestMean)
 soil.dens.fill <- fillMap(soil.dens, na.map, getNearestMean)
 resid.moist.fill <- fillMap(resid.moist, na.map, getNearestMean)
+init.moist.fill <- fillMap(init.moist, na.map, getNearestMean)
 depth.fill <- fillMap(depth, na.map, getNearestMean)
 
 fs.active.fill <- fillMap(fs.active, na.map, getNearestMean)
@@ -78,15 +81,9 @@ dp.fill <- fillMap(dp, na.map, getNearestMean)
 rough.fill <- fillMap(rough, na.map, getNearestMean)
 snow.rough.fill <- fillMap(snow.rough, na.map, getNearestMean)
 
-porosity <- 1 - bulk.dens.fill / soil.dens.fill
-Wpwp.fill[!is.na(Wpwp.fill) & Wpwp.fill < resid.moist.fill / porosity] <- resid.moist.fill[!is.na(Wpwp.fill) & Wpwp.fill < resid.moist.fill / porosity] / porosity - 1e-6
-Wcr.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] <- Wpwp.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] + 1e-6
-
-# Set third layer depth to contain 100 mm
-depth.fill[, , 3] <- 100 / ((1 - bulk.dens.fill[, , 3] / soil.dens.fill[, , 3]) * 1000)
-
-max.moist <- (1 - bulk.dens.fill / soil.dens.fill) * 1000 * depth
-init.moist.fill <- (Wcr.fill + (1 - Wcr.fill) * 0.5) * max.moist
+#porosity <- 1 - bulk.dens.fill / soil.dens.fill
+#Wpwp.fill[!is.na(Wpwp.fill) & Wpwp.fill < resid.moist.fill / porosity] <- resid.moist.fill[!is.na(Wpwp.fill) & Wpwp.fill < resid.moist.fill / porosity] / porosity - 1e-6
+#Wcr.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] <- Wpwp.fill[!is.na(Wcr.fill) & Wcr.fill < Wpwp.fill] + 1e-6
 
 # Create
 dim.lon <- ncdim_def(

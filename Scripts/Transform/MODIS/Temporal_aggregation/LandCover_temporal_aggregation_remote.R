@@ -7,7 +7,7 @@ library(Rcpp)
 
 tile.file = "../tileset_indus.txt"
 landuse.dir = "/mnt/annuna/lustre/backup/WUR/ESG/dropp001/MODIS/MOTA/MCD12Q1.006"
-landuse.out = "./Saves/LandCover/landcover_500m_Africa.RDS"
+landuse.out = "./Saves/LandCover/landcover_500m.RDS"
 sourceCpp("./Rcpp_support.cpp")
 
 tiles = read.table(tile.file, stringsAsFactors = F)

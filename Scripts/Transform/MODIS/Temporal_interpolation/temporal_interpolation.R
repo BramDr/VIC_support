@@ -6,13 +6,11 @@ cv.file = "../../../../Data/Transformed/MODIS/Cv_5min_Indus.RDS"
 in.files = c("../Spatial_aggregation/Saves/LAI_5min_Indus.RDS",
              "../Spatial_aggregation/Saves/NDVI_5min_Indus.RDS",
              "../Spatial_aggregation/Saves/albedo_5min_Indus.RDS")
-in.files = c("../Spatial_aggregation/Saves/LAI_5min_Indus.RDS",
-             "../Spatial_aggregation/Saves/NDVI_5min_Indus.RDS")
 out.dir = "./Saves"
 
 cv = readRDS(cv.file)
 
-in.file = in.files[2]
+in.file = in.files[1]
 for(in.file in in.files) {
   print(basename(in.file))
   

@@ -5,8 +5,8 @@ library(PCICt)
 
 weather.out = "./Saves/Setup_6hourly/"
 timestep = 6
-variables = c("psurf", "tas", "swdown", "lwdown", "vp", "wind100", "wind10", "pr", "tdew", "uwind100", "vwind100", "uwind10", "vwind10", "qair")
-units = c("kPa", "degrees_celsius", "W m-2", "W m-2", "kPa", "m s-1", "m s-1", "mm", "degrees_celsius", "m s-1", "m s-1", "m s-1", "m s-1", "kg kg-1")
+variables = c("psurf", "tas", "swdown", "lwdown", "vp", "wind100", "wind10", "pr", "tdew", "uwind100", "vwind100", "uwind10", "vwind10", "qair", "hurs")
+units = c("kPa", "degrees_celsius", "W m-2", "W m-2", "kPa", "m s-1", "m s-1", "mm", "degrees_celsius", "m s-1", "m s-1", "m s-1", "m s-1", "%")
 longname = c(paste0("Average of hourly instantaneous surface atmospheric pressure (average over the previous ", timestep, " hours)"), 
              paste0("Average of hourly instantaneous 2m above surface air temperature (average over the previous ", timestep, " hours)"), 
              paste0("Rate of hourly accumulated surface downward longwave radiation (rate over the previous ", timestep, " hours)"),
@@ -20,7 +20,8 @@ longname = c(paste0("Average of hourly instantaneous surface atmospheric pressur
              paste0("Average of hourly instantaneous 100m above surface wind speed northward component (average over the previous ", timestep, " hours)"),
              paste0("Average of hourly instantaneous 10m above surface wind speed eastward component (average over the previous ", timestep, " hours)"),
              paste0("Average of hourly instantaneous 10m above surface wind speed northward component (average over the previous ", timestep, " hours)"),
-             paste0("Average of hourly instantaneous 2m above surface specific humidity (average over the previous ", timestep, " hours)"))
+             paste0("Average of hourly instantaneous 2m above surface specific humidity (average over the previous ", timestep, " hours)"),
+             paste0("Average of hourly instantaneous 2m above surface relative humidity (average over the previous ", timestep, " hours)"))
 
 # Setup
 years = 1979:2018
@@ -39,8 +40,8 @@ for(year in years){
   print(year)
   
   # For the reanalysis, the accumulation period is over the 1 hour up to the validity date and time
-  year.start = as.POSIXct(paste0(year, "-01-01 ", "00:00:00"))
-  year.end = as.POSIXct(paste0(year, "-12-31 ", 24 - timestep, ":00:00"))
+  year.start = as.POSIXct(paste0(year, "-01-01 ", "00:00:00"), tz = "GMT")
+  year.end = as.POSIXct(paste0(year, "-12-31 ", 24 - timestep, ":00:00"), tz = "GMT")
   out.time = seq(from = year.start, to = year.end, by = paste0(timestep, " hour"))
   
   # Create
@@ -58,7 +59,7 @@ for(year in years){
   )
   dim.time = ncdim_def(
     name = "time",
-    units = paste0("seconds since 1970-01-01 01:00:00"),
+    units = paste0("seconds since 1970-01-01 00:00:00"),
     vals = as.numeric(out.time),
     calendar = "standard"
   )
@@ -68,7 +69,7 @@ for(year in years){
     print(variable)
     z = which(variables == variable)
     
-    weather.out.tmp = paste0(weather.out, "/", variable, "_", timestep, "hourly_ERA5/", variable, "_", timestep, "hourly_ERA5_", year, ".nc")
+    weather.out.tmp = paste0(weather.out, "/", variable, "_", timestep, "hourly/", variable, "_", timestep, "hourly_", year, ".nc")
     if(file.exists(weather.out.tmp)){
       next
     }

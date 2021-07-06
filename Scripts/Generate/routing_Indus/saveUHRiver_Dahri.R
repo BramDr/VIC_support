@@ -13,10 +13,10 @@ distance <- readRDS(distance.file)
 area <- readRDS(area.file)
 
 # Setup
-max.days = 2
+max.days = 5
 steps.per.day = 48
-velocity <- 1
-diffusion <- 2000
+velocity <- 1.5
+diffusion <- 800
 times <- cumsum(rep(60 * 60 * 24 / steps.per.day, steps.per.day * max.days))
 times <- c(0, times)
 

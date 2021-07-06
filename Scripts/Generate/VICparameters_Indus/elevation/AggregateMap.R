@@ -7,7 +7,7 @@ out.elevation.file = "./Saves/elevation_5min_Indus.RDS"
 out.elev.file = "./Saves/elev_5min_Indus.RDS"
 out.nelev.file = "./Saves/Nelev_5min_Indus.RDS"
 out.areafract.file = "./Saves/AreaFract_5min_Indus.RDS"
-dem.range = 200
+dem.range = 1000
 
 resolution = 1 / 12
 out.lon.range = c(min = 66, max = 83)

@@ -1,7 +1,6 @@
+rm(list = ls())
 library(ncdf4)
 library(fields)
-library(raster)
-rm(list = ls())
 
 # Input
 vegatation.file <- "./Saves/vegetation_mapping.csv"
@@ -43,10 +42,10 @@ for(i in 1:nrow(vegetation)){
     albedo.modis.tmp = albedo.modis[,,i,z]
     ndvi.modis.tmp = ndvi.modis[,,i,z]
     
-    lai.tmp = lai[,1:168,vegetation$vic[i],z]
-    albedo.tmp = albedo[,1:168,vegetation$vic[i],z]
-    ndvi.tmp = ndvi[,1:168,vegetation$vic[i],z]
-    count.tmp = count[,1:168,vegetation$vic[i],z]
+    lai.tmp = lai[,,vegetation$vic[i],z]
+    albedo.tmp = albedo[,,vegetation$vic[i],z]
+    ndvi.tmp = ndvi[,,vegetation$vic[i],z]
+    count.tmp = count[,,vegetation$vic[i],z]
     
     sel = !is.na(lai.modis.tmp)
     lai.tmp[sel] = lai.tmp[sel] + lai.modis.tmp[sel]
@@ -54,29 +53,27 @@ for(i in 1:nrow(vegetation)){
     ndvi.tmp[sel] = ndvi.tmp[sel] + ndvi.modis.tmp[sel]
     count.tmp[sel] = count.tmp[sel] + 1
     
-    lai[,1:168,vegetation$vic[i],z] = lai.tmp
-    albedo[,1:168,vegetation$vic[i],z] = albedo.tmp
-    ndvi[,1:168,vegetation$vic[i],z] = ndvi.tmp
-    count[,1:168,vegetation$vic[i],z] = count.tmp
+    lai[,,vegetation$vic[i],z] = lai.tmp
+    albedo[,,vegetation$vic[i],z] = albedo.tmp
+    ndvi[,,vegetation$vic[i],z] = ndvi.tmp
+    count[,,vegetation$vic[i],z] = count.tmp
   }
 }
 lai[count > 1] = lai[count > 1] / count[count > 1]
 albedo[count > 1] = albedo[count > 1] / count[count > 1]
 ndvi[count > 1] = ndvi[count > 1] / count[count > 1]
 
-for(z in 169:180){
-  lai[,z,,] = lai[,168,,]
-  albedo[,z,,] = albedo[,168,,]
-  ndvi[,z,,] = ndvi[,168,,]
-}
+lai[count == 0] = NA
+albedo[count == 0] = NA
+ndvi[count == 0] = NA
 
 # Calculate fcanopy
-fcanopy = ((ndvi - 0.1) / (0.8 - 0.1)) ^ 2
+fcanopy = ((ndvi - 0.1) / (0.8 - 0.1))
 fcanopy[!is.na(fcanopy) & fcanopy > 1] = 1
 fcanopy[!is.na(fcanopy) & fcanopy < 0.01] = 0.01
 
 # Calculate buildup/urban land LAI
-lai[,,14,] = 8 * (fcanopy[,,14,] - 0.1) ^ 2
+lai[,,13,] = 8 * (ndvi[,,13,] - 0.1) ^ 2
 
 lai.mean = apply(X = lai, MARGIN = c(1,2,3), FUN = mean, na.rm = T)
 lai.forest = apply(X = lai.mean[,,1:5], MARGIN = c(1,2), FUN = mean, na.rm = T)
@@ -108,3 +105,4 @@ dir.create(dirname(fcanopy.out))
 saveRDS(lai, lai.out)
 saveRDS(albedo, albedo.out)
 saveRDS(fcanopy, fcanopy.out)
+

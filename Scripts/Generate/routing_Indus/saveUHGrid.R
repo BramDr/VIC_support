@@ -3,7 +3,7 @@ library(ncdf4)
 rm(list = ls())
 
 # Input
-slope.file <- "../../../Data/Transformed/Routing/slope_5min_Indus.RDS"
+slope.angle.file <- "../../../Data/Transformed/Routing/slope_angle_5min_Indus.RDS"
 area.file <- "../../../Data/Transformed/Routing/area_5min_Indus.RDS"
 uh.file <- "../../../Data/Primary/SCS/dimensionless_unitHydrograph.csv"
 distance.file <- "../../../Data/Transformed/Routing/distance_5min_Indus.RDS"
@@ -11,22 +11,21 @@ uh.out <- "Saves/UH_grid.RDS"
 
 # Load
 distance <- readRDS(distance.file)
-slope <- readRDS(slope.file)
+slope.angle <- readRDS(slope.angle.file)
 area <- readRDS(area.file)
 uh <- read.table(uh.file, sep = ";")
 colnames(uh) = c("t_tp", "q_qp", "-")
 
 # Setup
-max.days = 2
-steps.per.day = 48
+max.days = 3
+steps.per.day = 24
 times <- cumsum(rep(60 * 60 * 24 / steps.per.day, steps.per.day * max.days))
 times <- c(0, times)
 
-# image.plot(distance < min(sqrt(area)))
-# image.plot(slope < 1e-4)
-slope[is.na(slope) | slope < 1e-4] = 1e-4 # limit minimum slope
+min.angle = min(slope.angle[slope.angle > 0], na.rm = T)
+slope.angle[is.na(slope.angle) | slope.angle < min.angle] = min.angle # limit minimum slope
 distance[!is.na(distance) & distance < min(sqrt(area))] = min(sqrt(area)) # limit minimum distance (to straight flow)
-image.plot(slope)
+image.plot(slope.angle)
 image.plot(distance)
 
 interp <- function(x, x1, x2, y1, y2) {
@@ -45,11 +44,11 @@ interp <- function(x, x1, x2, y1, y2) {
 }
 
 get.grid.tp <- function(distance, slope) {
-  # Tc calculation based on: Kirpich, Z. P. (1940), Time of concentration of small agricultural watersheds
-  # Review of calculation methods in Fang, X., Thompson, D. B., Cleveland, T. G., Pradhan, P., & Malla, R. (2008), Time of concentration estimated using watershed parameters determined by automated and manual methods
-  tc <- 0.01947 * distance^0.770 / (slope^0.385) # Tc in seconds
-  tp <- 0.6 * tc
-  tp <- tp * 60
+  # https://edx.hydrolearn.org/courses/course-v1:HydroLearn+HydroLearn412+2019_S2/course/#block-v1:HydroLearn+HydroLearn412+2019_S2+type@sequential+block@440e61ae52cf48f39779a550527dbeef
+  # https://edx.hydrolearn.org/courses/course-v1:HydroLearn+HydroLearn412+2019_S2/courseware/c4c7ff4fdd554e22b5a2fd057cce795d/440e61ae52cf48f39779a550527dbeef/4
+  tl = 0.000326 * (distance / sqrt(sin(slope * (pi / 180)))) ^ 0.79
+  tp <- (1 / 0.9) * tl
+  tp <- tp * 60 * 60 # h to sec
   return(tp)
 }
 
@@ -97,12 +96,12 @@ for (x in 1:dim(tp.grid.map)[1]) {
       next
     }
 
-    tp.grid <- get.grid.tp(distance[x, y], slope[x, y])
+    tp.grid <- get.grid.tp(distance[x, y], slope.angle[x, y])
     tp.grid.map[x, y] <- tp.grid
   }
 }
-image.plot(tp.grid.map / 60 / 60 / 24 * 5, main = "total time [days]")
-image.plot(tp.grid.map / 60 / 60 / 24 * 5 > 2)
+image.plot(tp.grid.map / 60 / 60 / 24 * 5, main = "total time [days]", zlim = c(0,5))
+image.plot(tp.grid.map / 60 / 60 < 1, main = "peak time [hours]")
 
 uh.grid.map <- array(NA, dim = c(dim(distance)[1], dim(distance)[2], length(times)))
 x = 1

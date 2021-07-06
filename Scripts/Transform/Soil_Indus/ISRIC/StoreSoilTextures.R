@@ -73,6 +73,11 @@ for (i in 1:length(soil.files)) {
   sand <- get.char(map, mapping, soil, "SDTO")
   silt <- get.char(map, mapping, soil, "STPC")
   bulk <- get.char(map, mapping, soil, "BULK")
+  
+  clay[clay < 0] = NA
+  sand[sand < 0] = NA
+  silt[silt < 0] = NA
+  bulk[bulk < 0] = NA
 
   clay.agg <- agg.map(clay, factor)
   sand.agg <- agg.map(sand, factor)

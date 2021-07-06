@@ -3,7 +3,7 @@ library(fields)
 rm(list = ls())
 
 # Input
-path.domain <- "../../../Data/VIC/Parameters/Indus_5min/domain_Dahri_Indus.nc"
+path.domain <- "../../../Data/VIC/Parameters/Indus_5min/domain_Indus.nc"
 dir.out <- "../../../Data/VIC/Parameters/"
 
 resolution = 1 / 12
@@ -23,7 +23,7 @@ nc_close(nc)
 combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
-points[nrow(points) + 1, ] <- c(34.875, 73.625, "IndusCheck_5min")
+points[nrow(points) + 1, ] <- c(30.625, 74.875, "IndusCheck_5min")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

@@ -34,7 +34,7 @@ for (x in 1:dim(area)[1]) {
     }
   }
 }
-image.plot(accumulation, zlim = c(0,1e11))
+image.plot(accumulation, zlim = c(0,1e12))
 
 # Save
 dir.create(dirname(accumulation.out))

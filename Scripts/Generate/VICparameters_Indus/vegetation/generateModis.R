@@ -6,7 +6,7 @@ rm(list = ls())
 # Input
 map.support.file <- "../../../../Scripts/Support/mapFunctions.R"
 generate.support.file <- "../../../../Scripts/Support/generateFunctions.R"
-mask.file <- "../../../../Data/Transformed/Routing/distance_5min_Indus.RDS"
+mask.file <- "../../../../Data/Transformed/Routing/mask_5min_Indus.RDS"
 
 cv.file <- "./Saves/Cv_5min_Indus.RDS"
 
@@ -65,47 +65,31 @@ wind.h <- readRDS(wind.h.file)
 # Setup
 na.map <- is.na(mask) | mask == 0
 
+# Set vegetation without LAI, fcanopy, or albedo to NA
+v = 13
+for(v in 1:(dim(cv)[3] - 1)){
+  lai.tmp = lai[,,v,]
+  fcanopy.tmp = fcanopy[,,v,]
+  albedo.tmp = albedo[,,v,]
+  
+  lai.tmp[lai.tmp == 0] = NA
+  fcanopy.tmp[fcanopy.tmp == 0] = NA
+  albedo.tmp[albedo.tmp == 0] = NA
+  
+  lai[,,v,] = lai.tmp
+  fcanopy[,,v,] = fcanopy.tmp
+  albedo[,,v,] = albedo.tmp
+}
+
 # Set bare soil lai to 0
-m = 1
-for(m in 1:dim(lai)[4]){
-  z = dim(lai)[3]
-  
-  lai.tmp = lai[,,z,m]
-  
-  sel = cv[,,z] > 0
-  lai.tmp[sel] = 0
-  
-  lai[,,z,m] = lai.tmp
-}
-image.plot(lai[,,13,1])
-
-# Set bare soil fcanopy to 0.1
-m = 1
-for(m in 1:dim(fcanopy)[4]){
-  z = dim(fcanopy)[3]
-  
-  fcanopy.tmp = fcanopy[,,z,m]
-  
-  sel = cv[,,z] > 0
-  fcanopy.tmp[sel] = 0.01
-  
-  fcanopy[,,z,m] = fcanopy.tmp
-}
-image.plot(fcanopy[,,13,1])
-
+lai[,,14,] = 0
+# Set bare soil fcanopy to 0.0001
+fcanopy[,,14,] = 0.0001
 # Set bare soil albedo to 0.2
-m = 1
-for(m in 1:dim(albedo)[4]){
-  z = dim(albedo)[3]
-  
-  albedo.tmp = albedo[,,z,m]
-  
-  sel = cv[,,z] > 0
-  albedo.tmp[sel] = 0.2
-  
-  albedo[,,z,m] = albedo.tmp
-}
-image.plot(albedo[,,dim(albedo)[3],1])
+albedo[,,14,] = 0.2
+
+# Set minimum fcanopy
+fcanopy[fcanopy < 0.0001] = 0.0001
 
 # Calculate
 Nveg <- apply(X = cv, MARGIN = c(1, 2), FUN = function(x) {
@@ -114,32 +98,50 @@ Nveg <- apply(X = cv, MARGIN = c(1, 2), FUN = function(x) {
 
 Nveg.fill <- fillMap(Nveg, na.map, getNearestZero)
 cv.fill <- fillMap(cv, na.map, getNearestZero)
-root.fract.fill <- fillMap(root.fract, na.map, getNearestMean)
-root.depth.fill <- fillMap(root.depth, na.map, getNearestMean)
-lai.fill <- fillMap(lai, na.map, getNearestMean)
-displacement.fill <- fillMap(displacement, na.map, getNearestMean)
-veg.rough.fill <- fillMap(veg.rough, na.map, getNearestMean)
-albedo.fill <- fillMap(albedo, na.map, getNearestMean)
-fcanopy.fill <- fillMap(fcanopy, na.map, getNearestMean)
-overstory.fill <- fillMap(overstory, na.map, getNearestMean)
-rarc.fill <- fillMap(rarc, na.map, getNearestMean)
-rmin.fill <- fillMap(rmin, na.map, getNearestMean)
-rgl.fill <- fillMap(rgl, na.map, getNearestMean)
-sol.atten.fill <- fillMap(sol.atten, na.map, getNearestMean)
-wind.atten.fill <- fillMap(wind.atten, na.map, getNearestMean)
-trunk.ratio.fill <- fillMap(trunk.ratio, na.map, getNearestMean)
-wind.h.fill <- fillMap(wind.h, na.map, getNearestMean)
 
-# Set filled Cv to bare soil and normalize
-cv.sum = apply(X = cv.fill, MARGIN = c(1,2), FUN = sum)
-cv.bare = cv.fill[,,dim(cv.fill)[3]]
-cv.bare[cv.sum == 0] = 1
-cv.fill[,,dim(cv.fill)[3]] = cv.bare
-
-cv.sum = apply(X = cv.fill, MARGIN = c(1,2), FUN = sum)
-for(z in 1:dim(cv.fill)[3]){
-  cv.fill[,,z] = cv.fill[,,z] / cv.sum
+root.fract.fill <- root.fract
+root.depth.fill <- root.depth
+lai.fill <- lai
+displacement.fill <- displacement
+veg.rough.fill <- veg.rough
+albedo.fill <- albedo
+fcanopy.fill <- fcanopy
+overstory.fill <- overstory
+rarc.fill <- rarc
+rmin.fill <- rmin
+rgl.fill <- rgl
+sol.atten.fill <- sol.atten
+wind.atten.fill <- wind.atten
+trunk.ratio.fill <- trunk.ratio
+wind.h.fill <- wind.h
+for(v in 1:(dim(cv.fill)[3] - 1)){
+  na.map = is.na(cv.fill[,,v]) | cv.fill[,,v] <= 0
+  root.fract.fill[,,v,] <- fillMap(root.fract[,,v,], na.map, getNearestMean)
+  root.depth.fill[,,v,] <- fillMap(root.depth[,,v,], na.map, getNearestMean)
+  lai.fill[,,v,] <- fillMap(lai[,,v,], na.map, getNearestMean)
+  displacement.fill[,,v,] <- fillMap(displacement[,,v,], na.map, getNearestMean)
+  veg.rough.fill[,,v,] <- fillMap(veg.rough[,,v,], na.map, getNearestMean)
+  albedo.fill[,,v,] <- fillMap(albedo[,,v,], na.map, getNearestMean)
+  fcanopy.fill[,,v,] <- fillMap(fcanopy[,,v,], na.map, getNearestMean)
+  overstory.fill[,,v] <- fillMap(overstory[,,v], na.map, getNearestMean)
+  rarc.fill[,,v] <- fillMap(rarc[,,v], na.map, getNearestMean)
+  rmin.fill[,,v] <- fillMap(rmin[,,v], na.map, getNearestMean)
+  rgl.fill[,,v] <- fillMap(rgl[,,v], na.map, getNearestMean)
+  sol.atten.fill[,,v] <- fillMap(sol.atten[,,v], na.map, getNearestMean)
+  wind.atten.fill[,,v] <- fillMap(wind.atten[,,v], na.map, getNearestMean)
+  trunk.ratio.fill[,,v] <- fillMap(trunk.ratio[,,v], na.map, getNearestMean)
+  wind.h.fill[,,v] <- fillMap(wind.h[,,v], na.map, getNearestMean)
 }
+
+# Adjust vegetation with fractional LAI < 1
+fcanopy.fill.tmp = fcanopy.fill[,,1:13,]
+lai.fill.tmp = lai.fill[,,1:13,]
+sel = !is.na(lai.fill.tmp) & lai.fill.tmp / fcanopy.fill.tmp < 1  & fcanopy.fill.tmp > 0.0001
+fcanopy.fill.tmp[sel] = lai.fill.tmp[sel]
+fcanopy.fill[,,1:13,] = fcanopy.fill.tmp
+
+# Set minimum fcanopy
+fcanopy.fill[fcanopy.fill < 0.0001] = 0.0001
 
 # Create
 dim.lon <- ncdim_def(

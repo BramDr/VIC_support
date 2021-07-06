@@ -43,7 +43,7 @@ for(x in 1:dim(downstream)[1]){
 }
 
 # Setup
-steps.per.day = 48
+steps.per.day = 24
 time <- (1:dim(uh.grid)[3] - 1) * 60 * 60 * 24 / steps.per.day
 
 downstream.id <- array(NA, dim = c(dim(downstream)[1], dim(downstream)[2]))

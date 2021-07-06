@@ -4,6 +4,7 @@ library(fields)
 rm(list = ls())
 
 slope.file <- "../../../Data/Primary/worldBank/Slope/slope.tif"
+slope.angle.out <- "../../../Data/Transformed/Routing/slope_angle_5min_Indus.RDS"
 slope.out <- "../../../Data/Transformed/Routing/slope_5min_Indus.RDS"
 resolution = 1 / 12
 out.lon.range = c(min = 66, max = 83)
@@ -29,6 +30,8 @@ image.plot(slope)
 slope.fin <- tan(slope * (pi / 180))
 image.plot(slope.fin)
 
+dir.create(dirname(slope.angle.out))
+saveRDS(slope, slope.angle.out)
 dir.create(dirname(slope.out))
 saveRDS(slope.fin, slope.out)
 

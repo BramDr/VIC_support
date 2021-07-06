@@ -1,7 +1,6 @@
+rm(list = ls())
 library(ncdf4)
 library(fields)
-library(raster)
-rm(list = ls())
 
 # Input
 vegatation.file <- "./Saves/vegetation_mapping.csv"
@@ -22,21 +21,25 @@ out.lats = global.lats[global.lats <= out.lat.range["max"] & global.lats >= out.
 vegetation = read.csv(vegatation.file, stringsAsFactors = F)
 cv.modis = readRDS(cv.file)
 
+# Setup
+cv.modis.sum = apply(X = cv.modis, MARGIN = c(1,2), FUN = sum)
+image.plot(cv.modis.sum)
+
 # Calculate
 cv = array(0, dim = c(length(out.lons), length(out.lats), length(na.omit(unique(vegetation$vic)))))
 frac = array(0, dim = c(length(out.lons), length(out.lats)))
 for(i in 1:nrow(vegetation)){
   if(is.na(vegetation$vic[i])){
-    frac[,1:168] = frac[,1:168] + cv.modis[,,i]
+    frac = frac + cv.modis[,,i]
     next
   }
-  cv[,1:168,vegetation$vic[i]] = cv[,1:168,vegetation$vic[i]] + cv.modis[,,i]
-}
-for(z in 169:180){
-  cv[,z,] = cv[,168,]
-  frac[,z] = frac[,168]
+  cv[,,vegetation$vic[i]] = cv[,,vegetation$vic[i]] + cv.modis[,,i]
 }
 image.plot(frac, main = "frac")
+
+# Set leftover Cv to bare soil
+cv.sum = apply(X = cv, MARGIN = c(1,2), FUN = sum)
+cv[,,dim(cv)[3]] = cv[,,dim(cv)[3]] + (1 - cv.sum)
 
 cv.forest = apply(X = cv[,,1:5], MARGIN = c(1,2), FUN = sum)
 cv.low = apply(X = cv[,,c(6:11)], MARGIN = c(1,2), FUN = sum)

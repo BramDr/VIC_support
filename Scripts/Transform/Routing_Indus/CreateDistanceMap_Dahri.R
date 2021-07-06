@@ -38,7 +38,7 @@ for(x in 1:dim(downstream)[1]){
     colnames(pts) = c("lon", "lat")
     colnames(pt) = c("lon", "lat")
     dist = spDistsN1(pts, pt, longlat = T)
-    distance[x,y] = dist * 1e3
+    distance[x,y] = dist * 1e3 # km to m
   }
 }
 

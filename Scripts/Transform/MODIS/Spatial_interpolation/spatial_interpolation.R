@@ -6,8 +6,6 @@ cv.file = "../../../../Data/Transformed/MODIS/Cv_5min_Indus.RDS"
 in.files = c("../Temporal_interpolation/Saves/LAI_5min_Indus.RDS",
              "../Temporal_interpolation/Saves/NDVI_5min_Indus.RDS",
              "../Temporal_interpolation/Saves/albedo_5min_Indus.RDS")
-in.files = c("../Temporal_interpolation/Saves/LAI_5min_Indus.RDS",
-             "../Temporal_interpolation/Saves/NDVI_5min_Indus.RDS")
 out.dir = "../../../../Data/Transformed/MODIS"
 resolution = 1 / 12
 out.lon.range = c(min = 66, max = 83)

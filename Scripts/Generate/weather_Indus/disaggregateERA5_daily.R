@@ -12,7 +12,7 @@ weather.dir.tmp = "./Saves/Disaggregated_daily/"
 timestep = 24
 variable.merge = data.frame(ERA5 = c("tp", "sp", "t2m", "ssrd", "strd", "d2m", "u100", "v100", "u10", "v10"),
                             VIC = c("pr", "psurf", "tas", "swdown", "lwdown", "tdew", "uwind100", "vwind100", "uwind10", "vwind10"),
-                            factor = c(1e-3, timestep * 1e3, timestep, timestep * 3600, timestep * 3600, timestep, timestep, timestep, timestep, timestep),
+                            factor = c(1 * 1e3, 1 / timestep * 1e-3, 1 / timestep, 1 / timestep * 1 / 3600, 1 / timestep * 1 / 3600, 1 / timestep, 1 / timestep, 1 / timestep, 1 / timestep, 1 / timestep),
                             offset = c(0, 0, -273.15, 0, 0, -273.15, 0, 0, 0, 0),
                             stringsAsFactors = F)
 
@@ -28,7 +28,7 @@ tmp.files = list.files(weather.dir.tmp, pattern = "ERA5", full.names = T, recurs
 #}
 
 # Disaggregate
-in.file = in.files[1]
+in.file = in.files[7]
 for(in.file in in.files){
   print(basename(in.file))
   
@@ -45,11 +45,9 @@ for(in.file in in.files){
   
   in.years = as.numeric(format(in.time, "%Y"))
   in.year = in.years[1]
+  in.year = 2001
   for(in.year in unique(in.years)){
     print(in.year)
-    
-    in.time.sel = which(in.years == in.year)
-    in.time.year = in.time[in.time.sel]
     
     in.varname = in.varnames[1]
     for(in.varname in in.varnames) {
@@ -65,10 +63,15 @@ for(in.file in in.files){
       
       out.year = in.year
       for(out.year in in.year + c(0, 1)) {
+        if(out.year > 2018) {
+          next
+        }
+      
         print(paste0("in.year ", in.year, " -> out.year ", out.year))
         
         out.file = grep(x = out.files, pattern = paste0(".*/", out.varname, "_.*", out.year), value = T)
         tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
+        tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_daily"), replacement = paste0(out.varname, "_daily_ERA5"))
         tmp.file = gsub(x = tmp.file, pattern = ".nc", replacement = paste0(".", in.year, ".RDS"))
         if(length(out.file) == 0){
           print(paste0("Could not find VIC forcing for variable name ", out.varname, " and year ", out.year))
@@ -95,7 +98,7 @@ for(in.file in in.files){
         # Mapping
         mapping.x = rep(NA, length(out.lons))
         mapping.y = rep(NA, length(out.lats))
-        mapping.z = rep(NA, length(in.time.year))
+        mapping.z = rep(NA, length(in.time))
         for(x in 1:length(out.lons)){
           x.dist = abs(in.lons - out.lons[x])
           if(min(x.dist) > in.lon.res / 2){
@@ -112,36 +115,18 @@ for(in.file in in.files){
           }
           mapping.y[y] = which.min(y.dist)
         }
-        if(out.varname %in% c("pr", "swdown", "lwdown")){
-          # Accumulated variables
-          for(z in 1:length(in.time.year)){
-            z.sel = which(out.time >= in.time.year[z])
-            if(length(z.sel) == 0){
-              # skip if the time exceeds the output time
-              next
-            }
-            z.dist = abs(out.time[min(z.sel)] - in.time.year[z])
-            if(min(z.dist) >= out.time.res){
-              # skip if the time preceeds the output time
-              next
-            }
-            mapping.z[z] = min(z.sel)
+        for(z in 1:length(in.time)){
+          z.sel = which(out.time >= in.time[z])
+          if(length(z.sel) == 0){
+            # skip if the time exceeds the output time
+            next
           }
-        } else {
-          # Instantanious variables
-          for(z in 1:length(in.time.year)){
-            z.sel = which(out.time > in.time.year[z])
-            if(length(z.sel) == 0){
-              # skip if the time exceeds the output time
-              next
-            }
-            z.dist = abs(out.time[min(z.sel)] - in.time.year[z])
-            if(min(z.dist) > out.time.res){
-              # skip if the time preceeds the output time
-              next
-            }
-            mapping.z[z] = min(z.sel)
+          z.dist = abs(out.time[min(z.sel)] - in.time[z])
+          if(min(z.dist) >= out.time.res){
+            # skip if the time preceeds the output time
+            next
           }
+          mapping.z[z] = min(z.sel)
         }
         
         if(length(na.omit(mapping.z)) == 0){
@@ -152,6 +137,9 @@ for(in.file in in.files){
         # Get input
         in.z.start = min(which(!is.na(mapping.z)))
         in.z.count = sum(!is.na(mapping.z))
+        in.time[in.z.start]
+        in.time[in.z.start + in.z.count - 1]
+        
         nc = nc_open(in.file)
         in.weather = ncvar_get(nc = nc, varid = in.varname,
                               start = c(1,1,in.z.start),
@@ -159,11 +147,14 @@ for(in.file in in.files){
                               collapse_degen = F)
         nc_close(nc)
         
-        in.weather = (in.weather + out.offset) / out.factor
+        in.weather = (in.weather + out.offset) * out.factor
         
         # Get output
         out.z.start = min(mapping.z, na.rm = T)
         out.z.count = length(na.omit(unique(mapping.z)))
+        out.time[out.z.start]
+        out.time[out.z.start + out.z.count - 1]
+        
         nc = nc_open(out.file)
         out.weather = ncvar_get(nc = nc, varid = out.varname,
                               start = c(1,1,out.z.start),
@@ -186,14 +177,14 @@ for(in.file in in.files){
           # Check for accumulated variables
           in.weather.sum = apply(X = in.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
           out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = sum, na.rm = T)
-          image.plot(in.weather.sum, main = paste0("in: ", in.varname))
-          image.plot(out.weather.sum, main = paste0("out: ", out.varname))
+          image.plot(in.weather.sum, main = paste0("in: ", in.varname, " ", in.year, " -> ", out.year))
+          image.plot(out.weather.sum, main = paste0("out: ", out.varname, " ", in.year, " -> ", out.year))
         } else {
           # Check for instantanious variables
-          in.weather.sum = apply(X = in.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
+          in.weather.sum = apply(X = in.weather / out.factor, MARGIN = c(1,2), FUN = mean, na.rm = T)
           out.weather.sum = apply(X = out.weather, MARGIN = c(1,2), FUN = mean, na.rm = T)
-          image.plot(in.weather.sum, main = paste0("in: ", in.varname))
-          image.plot(out.weather.sum, main = paste0("out: ", out.varname))
+          image.plot(in.weather.sum, main = paste0("in: ", in.varname, " ", in.year, " -> ", out.year))
+          image.plot(out.weather.sum, main = paste0("out: ", out.varname, " ", in.year, " -> ", out.year))
         }
         
         # Save
@@ -204,6 +195,7 @@ for(in.file in in.files){
             # Spinup for accumulated variables
             out.file = grep(x = out.files, pattern = paste0(".*", out.varname, "_.*", in.year), value = T)
             tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
+            tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_daily"), replacement = paste0(out.varname, "_daily_ERA5"))
             tmp.file = gsub(x = tmp.file, pattern = ".nc", replacement = paste0(".spinup", ".RDS"))
             
             if(file.exists(tmp.file)){
@@ -212,7 +204,7 @@ for(in.file in in.files){
             dir.create(dirname(tmp.file), recursive = T)
             print(basename(tmp.file))
             
-            # Fill first 6 hours of the first day, with first 6 hours of last day
+            # Fill first day, with last day
             missing.start = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
             missing.end = as.POSIXct(paste0("1979-01-01 ", "06:00:00"), tz = "GMT")
             missing.z = 1:min(which(as.POSIXct(out.time) >= missing.end))
@@ -231,6 +223,7 @@ for(in.file in in.files){
             
             out.file = grep(x = out.files, pattern = paste0(".*", out.varname, "_.*", in.year), value = T)
             tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
+            tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_daily"), replacement = paste0(out.varname, "_daily_ERA5"))
             tmp.file = gsub(x = tmp.file, pattern = ".nc", replacement = paste0(".spinup", ".RDS"))
             
             if(file.exists(tmp.file)){
@@ -239,7 +232,7 @@ for(in.file in in.files){
             dir.create(dirname(tmp.file), recursive = T)
             print(basename(tmp.file))
             
-            # Fill first hour of the first day, with first hour of last day
+            # Fill first day, with last day
             missing.start = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
             missing.end = as.POSIXct(paste0("1979-01-01 ", "00:00:00"), tz = "GMT")
             missing.z = 1:min(which(as.POSIXct(out.time) >= missing.end))

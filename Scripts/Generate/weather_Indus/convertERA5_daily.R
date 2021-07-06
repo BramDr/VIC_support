@@ -27,6 +27,7 @@ for(year in years){
   in.file.vcomponent = grep(x = in.files, pattern = paste0("/vwind10_.*", year), value = T)
   out.file.wind = grep(x = out.files, pattern = paste0("/wind10_.*", year), value = T)
   tmp.file.wind = gsub(x = out.file.wind, pattern = weather.dir.out, replacement = weather.dir.tmp)
+  tmp.file.wind = gsub(x = tmp.file.wind, pattern = "wind10_daily", replacement = "wind10_daily_ERA5")
   
   if(file.exists(tmp.file.wind)){
     next
@@ -61,6 +62,7 @@ for(year in years){
   in.file.vcomponent = grep(x = in.files, pattern = paste0("/vwind10_.*", year), value = T)
   out.file.wind = grep(x = out.files, pattern = paste0("/wind100_.*", year), value = T)
   tmp.file.wind = gsub(x = out.file.wind, pattern = weather.dir.out, replacement = weather.dir.tmp)
+  tmp.file.wind = gsub(x = tmp.file.wind, pattern = "wind100_daily", replacement = "wind100_daily_ERA5")
   
   if(file.exists(tmp.file.wind)){
     next
@@ -94,8 +96,9 @@ for(year in years){
   in.file.tdew = grep(x = in.files, pattern = paste0("/tdew_.*", year), value = T)
   out.file.vp = grep(x = out.files, pattern = paste0("/vp_.*", year), value = T)
   tmp.file.vp = gsub(x = out.file.vp, pattern = weather.dir.out, replacement = weather.dir.tmp)
+  tmp.file.vp = gsub(x = tmp.file.vp, pattern = "vp_daily", replacement = "vp_daily_ERA5")
   
-  if(file.exists(tmp.file.wind)){
+  if(file.exists(tmp.file.vp)){
     next
   }
   if(length(in.file.tdew) == 0){

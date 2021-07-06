@@ -27,7 +27,7 @@ for(year in years){
   in.file.tasmax = grep(x = in.files, pattern = paste0("/tasmax_.*", year), value = T)
   out.file.tas = grep(x = out.files, pattern = paste0("/tas_.*", year), value = T)
   tmp.file.tas = gsub(x = out.file.tas, pattern = weather.dir.out, replacement = weather.dir.tmp)
-  tmp.file.tas = gsub(x = tmp.file.tas, pattern = "ERA5", replacement = "Dahri")
+  tmp.file.tas = gsub(x = tmp.file.tas, pattern = paste0("tas", "_daily"), replacement = paste0("tas", "_daily_Dahri"))
   if(file.exists(tmp.file.tas)){
     next
   }
@@ -67,7 +67,7 @@ for(year in years){
   in.file.psurf = grep(x = in.files, pattern = paste0("/psurf_.*", year), value = T)
   out.file.vp = grep(x = out.files, pattern = paste0("/vp_.*", year), value = T)
   tmp.file.vp = gsub(x = out.file.vp, pattern = weather.dir.out, replacement = weather.dir.tmp)
-  tmp.file.vp = gsub(x = tmp.file.vp, pattern = "ERA5", replacement = "Dahri")
+  tmp.file.vp = gsub(x = tmp.file.vp, pattern = paste0("vp", "_daily"), replacement = paste0("vp", "_daily_Dahri"))
   if(file.exists(tmp.file.vp)){
     next
   }
@@ -100,3 +100,36 @@ for(year in years){
   nc_close(nc)
 }
 rm(qair, tasmin, tasmax, psurf, tas, svp, psi, vp)
+
+# Fix NA's
+year = years[3]
+for(year in years){
+  in.file.tasmin = grep(x = in.files, pattern = paste0("/tasmin_.*", year), value = T) # as mask
+  in.file.pr = grep(x = in.files, pattern = paste0("/pr_.*", year), value = T)
+  out.file.pr = grep(x = out.files, pattern = paste0("/pr_.*", year), value = T)
+  tmp.file.pr = gsub(x = out.file.pr, pattern = weather.dir.out, replacement = weather.dir.tmp)
+  tmp.file.pr = gsub(x = tmp.file.pr, pattern = paste0("pr", "_daily"), replacement = paste0("pr", "_daily_Dahri"))
+  if(file.exists(tmp.file.pr)){
+    next
+  }
+  
+  nc = nc_open(in.file.tasmin)
+  tasmin = ncvar_get(nc, nc$var[[1]])
+  nc_close(nc)
+  nc = nc_open(in.file.pr)
+  pr = ncvar_get(nc, nc$var[[1]])
+  nc_close(nc)
+  
+  sel = is.na(pr) & !is.na(tasmin)
+  #image.plot(apply(X = sel, MARGIN = c(1,2), FUN = sum))
+  pr[sel] = 0
+  
+  print(basename(tmp.file.pr))
+  dir.create(dirname(tmp.file.pr), recursive = T)
+  file.copy(out.file.pr, tmp.file.pr)
+  
+  nc = nc_open(tmp.file.pr, write = T)
+  ncvar_put(nc, nc$var[[1]], pr)
+  nc_close(nc)
+}
+rm(tasmin, pr)

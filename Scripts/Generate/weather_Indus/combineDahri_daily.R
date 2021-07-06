@@ -22,7 +22,7 @@ tmp.files = list.files(weather.dir.tmp, pattern = "Dahri", full.names = T, recur
 #  file.remove(tmp.file)
 #}
 
-year = years[1]
+year = years[3]
 for(year in years) {
   print(year)
   
@@ -32,6 +32,7 @@ for(year in years) {
   in.varnames = names(in.weather)
   
   in.varname = in.varnames[1]
+  in.varname = "pr"
   for(in.varname in in.varnames) {
     print(in.varname)
     
@@ -39,7 +40,7 @@ for(year in years) {
     
     out.file = grep(x = out.files, pattern = paste0("/", out.varname, "_.*_", year), value = T)
     tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
-    tmp.file = gsub(x = tmp.file, pattern = "ERA5", replacement = "Dahri")
+    tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_daily"), replacement = paste0(out.varname, "_daily_Dahri"))
     if(file.exists(tmp.file)){
       next
     }

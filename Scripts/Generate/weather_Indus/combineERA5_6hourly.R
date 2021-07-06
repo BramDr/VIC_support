@@ -20,17 +20,18 @@ tmp.files = list.files(weather.dir.tmp, pattern = "ERA5", full.names = T, recurs
 
 # Disaggregate
 out.file = out.files[1]
-for(out.file in out.files){
-  tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
-  
-  if(file.exists(tmp.file)){
-    next
-  }
-  
+for(out.file in out.files){  
   nc = nc_open(out.file)
   out.time = nc.get.time.series(nc)
   out.varname = nc$var[[1]]$name
   nc_close(nc)
+  
+  tmp.file = gsub(x = out.file, pattern = weather.dir.out, replacement = weather.dir.tmp)
+  tmp.file = gsub(x = tmp.file, pattern = paste0(out.varname, "_6hourly"), replacement = paste0(out.varname, "_6hourly_ERA5"))
+  
+  if(file.exists(tmp.file)){
+    next
+  }
   
   out.year = as.numeric(unique(format(out.time, "%Y")))
   
@@ -53,9 +54,12 @@ for(out.file in out.files){
   # Combine
   in.data = in.this
   if(exists("in.prev")){
-    in.data.tmp = in.data[,,1:dim(in.prev)[3], drop = F]
-    in.data.tmp = in.data.tmp + in.prev
-    in.data[,,1:dim(in.prev)[3]] = in.data.tmp
+    if(dim(in.prev)[3] != dim(in.data)[3]){
+      print("Using data from previous year (debug for testing)")
+      in.data.tmp = in.data[,,1:dim(in.prev)[3], drop = F]
+      in.data.tmp = in.data.tmp + in.prev
+      in.data[,,1:dim(in.prev)[3]] = in.data.tmp
+    }
     rm(in.prev)
   }
   if(exists("in.spinup")){

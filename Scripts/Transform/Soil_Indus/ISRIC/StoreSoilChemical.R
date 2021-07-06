@@ -72,7 +72,12 @@ for (i in 1:length(soil.files)) {
   ph <- get.char(map, mapping, soil, "PHAQ")
   tnit <- get.char(map, mapping, soil, "TOTN")
   cnrat <- get.char(map, mapping, soil, "CNrt")
-
+  
+  ocar[ocar < 0] = NA
+  ph[ph < 0] = NA
+  tnit[tnit < 0] = NA
+  cnrat[cnrat < 0] = NA
+  
   ocar.agg <- agg.map(ocar, factor)
   ph.agg <- agg.map(ph, factor)
   tnit.agg <- agg.map(tnit, factor)

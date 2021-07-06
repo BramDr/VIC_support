@@ -45,7 +45,7 @@ for (x in 1:dim(downstream)[1]) {
     }
   }
 }
-image.plot(basin, zlim = c(0,15))
+image.plot(basin)
 
 # Save
 dir.create(dirname(basin.out))

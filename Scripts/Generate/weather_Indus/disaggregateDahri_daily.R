@@ -35,6 +35,7 @@ out.lats = nc$dim$lat$vals
 nc_close(nc)
 
 in.year = in.years[1]
+in.year = 1981
 for (in.year in unique(in.years)) {
   print(in.year)
   
@@ -46,7 +47,10 @@ for (in.year in unique(in.years)) {
   
   out.maps = list()
   for (in.varname in in.varnames) {
-    if(! (in.varname %in% variable.merge$Dahri)){
+  
+    out.varname = variable.merge$VIC[!is.na(variable.merge$Dahri) & variable.merge$Dahri == in.varname]
+    if(length(out.varname) == 0){
+      print(paste0("Could not merge Dahri variable name ", in.varname))
       next
     }
       
@@ -67,17 +71,19 @@ for (in.year in unique(in.years)) {
     x = which.min(abs(in.lon - out.lons))
     y = which.min(abs(in.lat - out.lats))
   
-    in.weather = read.table(in.file)
+    in.weather = read.table(in.file)[in.years == in.year,]
     colnames(in.weather) = c("PREC", "TMAX", "TMIN", "WIND", "SHORTWAVE", "LONGWAVE", "QAIR", "PRESSURE")
     
     for (in.varname in in.varnames) {
     
-      if(! (in.varname %in% variable.merge$Dahri)){
+      out.varname = variable.merge$VIC[!is.na(variable.merge$Dahri) & variable.merge$Dahri == in.varname]
+      if(length(out.varname) == 0){
+        print(paste0("Could not merge Dahri variable name ", in.varname))
         next
       }
       
       out.map = out.maps[[in.varname]]
-      out.map[x,y,] = in.weather[in.years == in.year, in.varname]
+      out.map[x,y,] = in.weather[, in.varname]
       out.maps[[in.varname]] = out.map
     } 
   }
