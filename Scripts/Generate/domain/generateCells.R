@@ -13,7 +13,8 @@ combine <- TRUE
 
 points <- data.frame(lat = numeric(), lon = numeric(), name = character(), stringsAsFactors = F)
 # points[nrow(points) + 1, ] <- c(14.75, -12.25, "Ballou")
-points[nrow(points) + 1, ] <- c(47.25, -118.25, "Error")
+#points[nrow(points) + 1, ] <- c(47.25, -118.25, "Error")
+points[nrow(points) + 1, ] <- c(51.75, 5.75, "Wageningen")
 
 points$lat <- as.numeric(points$lat)
 points$lon <- as.numeric(points$lon)

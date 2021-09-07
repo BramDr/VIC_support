@@ -9,6 +9,7 @@ out.ocar <- "./Saves/ocar_30min_global.RDS"
 out.ph <- "./Saves/ph_30min_global.RDS"
 out.tnit <- "./Saves/tnit_30min_global.RDS"
 out.cnrat <- "./Saves/cnrat_30min_global.RDS"
+factor <- 60
 
 extent.isel <- extent(-4.75, 8.25, 42.75, 54.75)
 extent.out <- extent(-180, 180, -90, 90)
@@ -58,10 +59,10 @@ for (i in 1:length(soil.files)) {
   tnit <- get.char(map, mapping, soil, "TOTN")
   cnrat <- get.char(map, mapping, soil, "CNrt")
 
-  ocar.agg <- agg.map(ocar, 60)
-  ph.agg <- agg.map(ph, 60)
-  tnit.agg <- agg.map(tnit, 60)
-  cnrat.agg <- agg.map(cnrat, 60)
+  ocar.agg <- agg.map(ocar, factor)
+  ph.agg <- agg.map(ph, factor)
+  tnit.agg <- agg.map(tnit, factor)
+  cnrat.agg <- agg.map(cnrat, factor)
 
   extent.print <- paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
 

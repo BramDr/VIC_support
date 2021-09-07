@@ -9,6 +9,7 @@ out.clay <- "./Saves/clay_30min_global.RDS"
 out.sand <- "./Saves/sand_30min_global.RDS"
 out.silt <- "./Saves/silt_30min_global.RDS"
 out.bulk <- "./Saves/bulk_30min_global.RDS"
+factor <- 60
 
 extent.isel <- extent(-4.75, 8.25, 42.75, 54.75)
 extent.out <- extent(-180, 180, -90, 90)
@@ -58,10 +59,10 @@ for (i in 1:length(soil.files)) {
   silt <- get.char(map, mapping, soil, "STPC")
   bulk <- get.char(map, mapping, soil, "BULK")
 
-  clay.agg <- agg.map(clay, 60)
-  sand.agg <- agg.map(sand, 60)
-  silt.agg <- agg.map(silt, 60)
-  bulk.agg <- agg.map(bulk, 60)
+  clay.agg <- agg.map(clay, factor)
+  sand.agg <- agg.map(sand, factor)
+  silt.agg <- agg.map(silt, factor)
+  bulk.agg <- agg.map(bulk, factor)
 
   extent.print <- paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
 
