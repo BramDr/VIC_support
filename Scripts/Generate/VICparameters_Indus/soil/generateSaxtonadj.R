@@ -104,7 +104,7 @@ snow.rough.fill <- fillMap(snow.rough, na.map, getNearestMean)
 depth.fill[, , 3] <- 1000 / max.moist.fill[,,3] * 1e-3
 
 # Calculate misc
-init.moist.fill <- Wpwp.fill * max.moist.fill * depth.fill * 1e3
+init.moist.fill <- Wcr.fill * max.moist.fill * depth.fill * 1e3
 soil.dens.fill <- bulk.dens.fill / (1 - max.moist.fill)
 
 # Correct fractions

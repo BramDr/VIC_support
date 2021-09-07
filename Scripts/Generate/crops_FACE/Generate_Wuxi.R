@@ -115,7 +115,7 @@ ncvar_put(nc, var.crop_veg_class, 1)
 ncvar_put(nc, var.Tfactor, 0)
 ncvar_put(nc, var.carbon, soil$ocar[1])
 ncvar_put(nc, var.ph, soil$ph[1])
-ncvar_put(nc, var.mineralization_period, 120)
+ncvar_put(nc, var.mineralization_period, 60)
 
 ncatt_put(
   nc = nc,

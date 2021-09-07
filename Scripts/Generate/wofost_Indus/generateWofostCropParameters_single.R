@@ -18,7 +18,7 @@ in.files2 <- list.files(path = in.dir, pattern = ".DATp", full.names = T)
 i <- 4
 for (i in 1:nrow(crops)) {
   print(crops$name[i])
-  if(!(crops$name[i] %in% c("wheat", "rice"))){
+  if(!(crops$name[i] %in% c("wheat", "rice", "maize", "cotton"))){
     next
   }
 
@@ -124,6 +124,14 @@ for (i in 1:nrow(crops)) {
         }
         if (param.desc$name[k] == "TDWI") {
           value <- 100
+        }
+      }
+      if (crops$name[i] == "maize") {
+        if (param.desc$name[k] == "MinStomResist") {
+          value <- 100
+        }
+        if (param.desc$name[k] == "MaxArchResist") {
+          value <- 5
         }
       }
 

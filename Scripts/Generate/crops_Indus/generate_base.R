@@ -1,26 +1,30 @@
 library(ncdf4)
+library(fields)
 rm(list = ls())
 
 # Input
-soil.file <- "../VICparameters_FACE/Soil/Saves/soil_Arizona.RDS"
-crop.out <- "../../../Data/VIC/Parameters/FACE/Arizona/crop_params_Arizona.nc"
+crop.out <- "../../../Data/VIC/Parameters/Indus_5min/single/crop_params_base_Indus.nc"
 
-point <- c(33.0628, -111.9826) # lat-lon
+resolution = 1 / 12
+out.lon.range = c(min = 66, max = 83)
+out.lat.range = c(min = 23, max = 38)
 
-# Load
-soil = readRDS(soil.file)
+global.lons = seq(from = -180 + resolution / 2, to = 180 - resolution / 2, by = resolution)
+global.lats = seq(from = -90 + resolution / 2, to = 90 - resolution / 2, by = resolution)
+out.lons = global.lons[global.lons <= out.lon.range["max"] & global.lons >= out.lon.range["min"]]
+out.lats = global.lats[global.lats <= out.lat.range["max"] & global.lats >= out.lat.range["min"]]
 
 # Create
 dim.lon <- ncdim_def(
   name = "lon",
   units = "degrees_east",
-  vals = point[2],
+  vals = out.lons,
   longname = "longitude of grid cell center"
 )
 dim.lat <- ncdim_def(
   name = "lat",
   units = "degrees_north",
-  vals = point[1],
+  vals = out.lats,
   longname = "latitude of grid cell center"
 )
 dim.crop <- ncdim_def(
@@ -68,31 +72,16 @@ var.Tfactor <- ncvar_def(
   longname = "Temperature factor due to elevation",
   compression = 5
 )
-var.carbon <- ncvar_def(
-  name = "carbon",
-  units = "g kg-1",
-  dim = list(dim.lon, dim.lat),
-  missval = -1,
-  longname = "Organic carbon content for top 20 cm of soil",
-  compression = 5
-)
-var.ph <- ncvar_def(
-  name = "pH",
-  units = "-",
-  dim = list(dim.lon, dim.lat),
-  missval = -1,
-  longname = "pH for top 20 cm of soil",
-  compression = 5
-)
-var.mineralization_period <- ncvar_def(
-  name = "mineralization_period",
-  units = "days",
-  dim = list(dim.lon, dim.lat, dim.crop),
-  missval = -1,
-  longname = "mineralization reference period",
-  compression = 5
-)
 
+## Calculate
+template = array(0, dim = c(length(out.lons), length(out.lats)))
+template.monthly = array(0, dim = c(length(out.lons), length(out.lats), 12))
+  
+Ncrop.filled <- template + 1
+cc.filled <- template.monthly + 1
+veg.class.filled <- template + 1
+tfactor.filled <- template
+  
 dir.create(dirname(crop.out))
 nc <- nc_create(
   crop.out,
@@ -100,22 +89,16 @@ nc <- nc_create(
     var.Ncrop,
     var.Cc,
     var.crop_veg_class,
-    var.Tfactor,
-    var.carbon,
-    var.ph,
-    var.mineralization_period
+    var.Tfactor
   )
 )
 nc_close(nc)
 
 nc <- nc_open(crop.out, write = T)
-ncvar_put(nc, var.Ncrop, 1)
-ncvar_put(nc, var.Cc, rep(1, 12))
-ncvar_put(nc, var.crop_veg_class, 1)
-ncvar_put(nc, var.Tfactor, 0)
-ncvar_put(nc, var.carbon, soil$ocar[1])
-ncvar_put(nc, var.ph, soil$ph[1])
-ncvar_put(nc, var.mineralization_period, 12)
+ncvar_put(nc = nc, varid = var.Ncrop, vals = Ncrop.filled)
+ncvar_put(nc = nc, varid = var.Cc, vals = cc.filled)
+ncvar_put(nc = nc, varid = var.crop_veg_class, vals = veg.class.filled)
+ncvar_put(nc = nc, varid = var.Tfactor, vals = tfactor.filled)
 
 ncatt_put(
   nc = nc,

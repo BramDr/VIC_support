@@ -62,6 +62,11 @@ calcPhaseWOFOST <- function(Tair.dev, crop, Idvs = 0) {
     tsum1 <- (tsumtot - 100) / 2 + 100
     tsum2 <- (tsumtot - 100) / 2
     
+    if(tsumtot < 100){
+      tsum1 = tsumtot / 2
+      tsum2 = tsumtot / 2
+    }
+    
     tsum1 <- tsum1 / (1 - Idvs / 2)
     tsum2 <- tsum2 / (1 - Idvs / 2)
     
