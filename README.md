@@ -73,7 +73,8 @@ Z.D. Tessler, C.J. Vörösmarty, M. Grossberg, I. Gladkova, H. Aizenman, J.P.M. 
 
 **Global gridded flow direction and length**  
 [RVIC input data](https://rvic.readthedocs.io/en/latest/about/model-overview/):
-Hamman, J., Nijssen, B., Roberts, A., Craig, A., Maslowski, W., and Osinski, R. ( 2017), The coastal streamflow flux in the Regional Arctic System Model, J. Geophys. Res. Oceans, 122, 1683– 1701, doi:10.1002/2016JC012323. 
+Hamman, J., Nijssen, B., Roberts, A., Craig, A., Maslowski, W., and Osinski, R. ( 2017), The coastal streamflow flux in the Regional Arctic System Model, J. Geophys. Res. Oceans, 122, 1683– 1701, doi:10.1002/2016JC012323.  
+[HydroSHEDS/HYDRO1K](http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/hydro): Wu, H., Kimball, J. S., Li, H., Huang, M., Leung, L. R., and Adler, R. F. (2012), A new global river network database for macroscale hydrologic modeling, Water Resour. Res., 48, W09701, doi:10.1029/2012WR012313.  
 
 **Older VIC parameter files**  
 [VIC input parameters 2 degree](https://vic.readthedocs.io/en/master/Datasets/Datasets/):
@@ -100,3 +101,29 @@ N.H. Batjes, Harmonized soil property values for broad-scale modelling (WISE30se
 
 **Crop yield per country per year**  
 [FAOSTAT database](http://www.fao.org/faostat/en/#data)  
+
+**Global soil depth dataset**  
+[Global 1-km Gridded Thickness of Soil, Regolith, and Sedimentary Deposit Layers](https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1304):
+Pelletier, J. D., Broxton, P. D., Hazenberg, P., Zeng, X., Troch, P. A., Niu, G.-Y., Williams, Z., Brunke, M. A., and Gochis, D. (2016), A gridded global data set of soil, immobile regolith, and sedimentary deposit thicknesses for regional and global land surface modeling, J. Adv. Model. Earth Syst., 8, 41– 65, doi:10.1002/2015MS000526.  
+
+**Global 30 meter elevation dataset**  
+[SRTM void filled](https://doi.org/10.5066/F7F76B1X)  
+
+**MODIS datasets**  
+[MODIS 8-day LAI - MCD15A2H v006](https://doi.org/10.5067/MODIS/MCD15A2H.006)  
+[MODIS yearly landcover - MCD12Q1 v006](https://doi.org/10.5067/MODIS/MCD12Q1.006)  
+[MODIS daily albedo - MCD43A4 v006](https://doi.org/10.5067/MODIS/MCD43A3.006)  
+[MODIS 16-day NDVI - MOD13A1 v006](https://doi.org/10.5067/MODIS/MOD13A1.006)  
+
+**Crop stomatal resistance response**
+AINSWORTH, E.A. and ROGERS, A. (2007), The response of photosynthesis and stomatal conductance to rising '[CO2]': mechanisms and environmental interactions. Plant, Cell & Environment, 30: 258-270. https://doi.org/10.1111/j.1365-3040.2007.01641.x  
+
+**FACE experiment datasets**
+Kimball, B. A., Pinter Jr, P. J., LaMorte, R. L., Leavitt, S. W., Hunsaker, D. J., Wall, G. W., ... & White, J. W. (2017). Data from the Arizona FACE (free-air CO2 enrichment) experiments on wheat at ample and limiting levels of water and nitrogen. Open Data Journal for Agricultural Research, 3. https://doi.org/10.18174/odjar.v3i1.15826  
+Yang, L., Huang, J., Yang, H., Zhu, J., Liu, H., Dong, G., ... & Wang, Y. (2006). The impact of free-air CO2 enrichment (FACE) and N supply on yield formation of rice crops with large panicle. Field Crops Research, 98(2-3), 141-150. https://doi.org/10.1016/j.fcr.2005.12.014 **personal communication**  
+Hasegawa, T., Li, T., Yin, X. et al. Causes of variation among rice models in yield response to CO2 examined with Free-Air CO2 Enrichment and growth chamber experiments. Sci Rep 7, 14858 (2017). https://doi.org/10.1038/s41598-017-13582-y **personal communication**  
+
+**Weather datasets**
+[ERA5 0.25 degree historical reanalysis](https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5)  
+[ISIMIP3b 0.5 degree bias-adjusted climate models](https://www.isimip.org/protocol/3/):
+Lange, S.: Trend-preserving bias adjustment and statistical downscaling with ISIMIP3BASD (v1.0), Geosci. Model Dev., 12, 3055–3070, https://doi.org/10.5194/gmd-12-3055-2019, 2019.  
