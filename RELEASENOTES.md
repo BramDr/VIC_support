@@ -5,8 +5,21 @@ Release notes for the VIC supporting documentation.
   * Major releases are tagged and documented using a DOI
 
 ----
-### VIC-WOFOST.1.0.0
-Includes all inputs for the wofost modules as present in [VIC-WOFOST.1.0.0](https://github.com/wur-wsg/VIC/tree/VIC-WOFOST.1.0.0)
+### VIC-WOFOST.1.1.0 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5482542.svg)](https://doi.org/10.5281/zenodo.5482542)
+Includes all inputs for the modules as present in [VIC-WOFOST.1.1.0](https://github.com/wur-wsg/VIC/tree/VIC-WOFOST.1.1.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5482521.svg)](https://doi.org/10.5281/zenodo.5482521)
+
+1. Included scripts specifically for running VIC-WOFOST in the Indus river basin region
+2. Included scripts specifically for running VIC-WOFOST in several FACE experiments
+3. Added scripts related to co2 forcing and crop co2 responses
+4. Added scripts related to land use and vegetation parameters derived from MODIS for the Indus
+5. Added scripts related to elevation parameters derived from SRTM for the Indus
+6. Added scripts related to mineralization rate calculation at runtime
+7. Added scripts related to weather disaggregation for the Indus
+7. Added scripts related to soil depth parameters for the Indus
+
+
+### VIC-WOFOST.1.0.0 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4288819.svg)](https://doi.org/10.5281/zenodo.4288819)
+Includes all inputs for the wofost modules as present in [VIC-WOFOST.1.0.0](https://github.com/wur-wsg/VIC/tree/VIC-WOFOST.1.0.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4288939.svg)](https://doi.org/10.5281/zenodo.4288939)
 
 1. Added scripts related to variable land-use forcing (based on MIRCA2000).
 2. Added scripts related to crop parameter generation (including crop calibration).
