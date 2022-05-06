@@ -39,33 +39,36 @@ Klein Goldewijk, K., A. Beusen, J.Doelman and E. Stehfest (2017), Anthropogenic 
 
 **Thermo-electric database (including location, fuel-type and cooling system)**  
 Van Vliet, M. T., Wiberg, D., Leduc, S., & Riahi, K. (2016). Power-generation system vulnerability and adaptation to changes in climate and water resources. Nature Climate Change, 6(4), 375. doi:10.1038/nclimate2903  
-[EIA national energy data](https://www.eia.gov/)
+[EIA national energy data](https://www.eia.gov/)  
 
 **Global gridded livestock maps**  
 [FAO Gridded Livestock of the World maps](http://www.fao.org/livestock-systems/en/):
-Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., Vanwambeke, S.O., Wint, G.R. and Robinson, T.P. (2018). Global livestock distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010 (GLW 3). Nature Scientific Data 5:180227 doi:10.1038/sdata.2018.227.
+Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., Vanwambeke, S.O., Wint, G.R. and Robinson, T.P. (2018). Global livestock distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010 (GLW 3). Nature Scientific Data 5:180227 doi:10.1038/sdata.2018.227.  
 
 **Dam (including location, capacity and function)**  
 [Global Reservoir and Dam database v1.1](http://globaldamwatch.org/grand/):
-Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouzet, P. Döll, M. Endejan, K. Frenken, J. Magome, C. Nilsson, J.C. Robertson, R. Rodel, N. Sindorf, and D. Wisser. 2011. High-resolution mapping of the world’s reservoirs and dams for sustainable river-flow management. Frontiers in Ecology and the Environment 9 (9): 494-502. doi:10.1890/100125
+Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouzet, P. Döll, M. Endejan, K. Frenken, J. Magome, C. Nilsson, J.C. Robertson, R. Rodel, N. Sindorf, and D. Wisser. 2011. High-resolution mapping of the world’s reservoirs and dams for sustainable river-flow management. Frontiers in Ecology and the Environment 9 (9): 494-502. doi:10.1890/100125  
 
 **Global land-use dataset**  
 [MIRCA2000 v1.1](https://www.uni-frankfurt.de/45218031/data_download):
-Portmann, F. T., Siebert, S. & Döll, P. (2010): MIRCA2000 – Global monthly irrigated and rainfed crop areas around the year 2000: A new high-resolution data set for agricultural and hydrological modeling, Global Biogeochemical Cycles, 24, GB 1011, doi:10.1029/2008GB003435.
+Portmann, F. T., Siebert, S. & Döll, P. (2010): MIRCA2000 – Global monthly irrigated and rainfed crop areas around the year 2000: A new high-resolution data set for agricultural and hydrological modeling, Global Biogeochemical Cycles, 24, GB 1011, doi:10.1029/2008GB003435.  
 
 **Global gridded groundwater fraction for sectors**  
-Döll, P., Hoffmann-Dobrev, H., Portmann, F. T., Siebert, S., Eicker, A., Rodell, M., ... & Scanlon, B. R. (2012). Impact of water withdrawals from groundwater and surface water on continental water storage variations. Journal of Geodynamics, 59, 143-156. doi10.1016/j.jog.2011.05.001
+Döll, P., Hoffmann-Dobrev, H., Portmann, F. T., Siebert, S., Eicker, A., Rodell, M., ... & Scanlon, B. R. (2012). Impact of water withdrawals from groundwater and surface water on continental water storage variations. Journal of Geodynamics, 59, 143-156. doi10.1016/j.jog.2011.05.001  
 
 **Global pumping capacity**  
-Sutanudjaja, E. H., Van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H., Drost, N., ... & Karssenberg, D. (2018). PCR-GLOBWB 2: a 5 arcmin global hydrological and water resources model. Geoscientific Model Development, 11(6), 2429-2453, doi:10.5194/gmd-11-2429-2018..
+Sutanudjaja, E. H., Van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H., Drost, N., ... & Karssenberg, D. (2018). PCR-GLOBWB 2: a 5 arcmin global hydrological and water resources model. Geoscientific Model Development, 11(6), 2429-2453, doi:10.5194/gmd-11-2429-2018.  
 
 **Global irrigation efficiency**  
 [FAO irrigation water use](http://www.fao.org/nr/water/aquastat/water_use_agr/index.stm):
-Frenken, K., & Gillet, V. (2012). Irrigation water requirement and water withdrawal by country. FAO, Rome, Italy.
+Frenken, K., & Gillet, V. (2012). Irrigation water requirement and water withdrawal by country. FAO, Rome, Italy.  
+
+**Regional irrigation efficiency**  
+HUSSAIN, I., HUSSAIN, Z., SIAL, M. H., AKRAM, W., & FARHAN, M. F. (2011). WATER BALANCE, SUPPLY AND DEMAND AND IRRIGATION EFFICIENCY OF INDUS BASIN. Pakistan Economic and Social Review, 49(1), 13–38. http://www.jstor.org/stable/41762422  
 
 **Global gridded air temperature**  
 [WATCH forcing data ERA interim v5](http://www.eu-watch.org/data_availability):
-Weedon,  G.P.,  Balsamo,  G.,  Bellouin,  N.,  Gomes,  S.,  Best,  M.J.  and  Viterbo,  P.,  2014.  The  WFDEI meteorological  forcing  data  set:  WATCH  Forcing  Data  methodology  applied  to  ERA-Interim reanalysis data. Water Resources Research doi:10.1002/2014WR015638
+Weedon,  G.P.,  Balsamo,  G.,  Bellouin,  N.,  Gomes,  S.,  Best,  M.J.  and  Viterbo,  P.,  2014.  The  WFDEI meteorological  forcing  data  set:  WATCH  Forcing  Data  methodology  applied  to  ERA-Interim reanalysis data. Water Resources Research doi:10.1002/2014WR015638  
 
 **Global delta map**  
 [Global Delta Map](http://www.globaldeltarisk.net/data.html):
@@ -115,15 +118,21 @@ Pelletier, J. D., Broxton, P. D., Hazenberg, P., Zeng, X., Troch, P. A., Niu, G.
 [MODIS daily albedo - MCD43A4 v006](https://doi.org/10.5067/MODIS/MCD43A3.006)  
 [MODIS 16-day NDVI - MOD13A1 v006](https://doi.org/10.5067/MODIS/MOD13A1.006)  
 
-**Crop stomatal resistance response**
+**Crop stomatal resistance response**  
 AINSWORTH, E.A. and ROGERS, A. (2007), The response of photosynthesis and stomatal conductance to rising '[CO2]': mechanisms and environmental interactions. Plant, Cell & Environment, 30: 258-270. https://doi.org/10.1111/j.1365-3040.2007.01641.x  
 
-**FACE experiment datasets**
+**FACE experiment datasets**  
 Kimball, B. A., Pinter Jr, P. J., LaMorte, R. L., Leavitt, S. W., Hunsaker, D. J., Wall, G. W., ... & White, J. W. (2017). Data from the Arizona FACE (free-air CO2 enrichment) experiments on wheat at ample and limiting levels of water and nitrogen. Open Data Journal for Agricultural Research, 3. https://doi.org/10.18174/odjar.v3i1.15826  
 Yang, L., Huang, J., Yang, H., Zhu, J., Liu, H., Dong, G., ... & Wang, Y. (2006). The impact of free-air CO2 enrichment (FACE) and N supply on yield formation of rice crops with large panicle. Field Crops Research, 98(2-3), 141-150. https://doi.org/10.1016/j.fcr.2005.12.014 **personal communication**  
 Hasegawa, T., Li, T., Yin, X. et al. Causes of variation among rice models in yield response to CO2 examined with Free-Air CO2 Enrichment and growth chamber experiments. Sci Rep 7, 14858 (2017). https://doi.org/10.1038/s41598-017-13582-y **personal communication**  
 
-**Weather datasets**
+**River discharge data**  
+[Global Runoff Data Centre database](https://www.bafg.de/GRDC/EN/02_srvcs/21_tmsrs/riverdischarge_node.html)
+The Global Runoff Data Centre, 56068 Koblenz, Germany  
+Pakistan Water and Power Development Authority database  
+
+**Weather datasets**  
+[WFDEI 0.5 degree bias-adjusted historical reanalysis](https://rda.ucar.edu/datasets/ds314.2/)  
 [ERA5 0.25 degree historical reanalysis](https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5)  
 [ISIMIP3b 0.5 degree bias-adjusted climate models](https://www.isimip.org/protocol/3/):
 Lange, S.: Trend-preserving bias adjustment and statistical downscaling with ISIMIP3BASD (v1.0), Geosci. Model Dev., 12, 3055–3070, https://doi.org/10.5194/gmd-12-3055-2019, 2019.  

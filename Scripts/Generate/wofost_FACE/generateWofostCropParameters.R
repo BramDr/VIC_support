@@ -4,7 +4,7 @@ rm(list = ls())
 crop.file <- "./Saves/wofost_crop_mapping.csv"
 param.desc.file <- "../../../Data/Primary/WOFOST/Crop/cropParameterDescription_new.csv"
 in.dir <- "../../../Data/Transformed/WOFOST/"
-out.dir <- "../../../Data/WOFOST/Parameters/Crop/Indus_5min/single/"
+out.dir <- "./Parameters_base/"
 
 # Load
 crops <- read.csv(crop.file, stringsAsFactors = F)
@@ -18,7 +18,7 @@ in.files2 <- list.files(path = in.dir, pattern = ".DATp", full.names = T)
 i <- 4
 for (i in 1:nrow(crops)) {
   print(crops$name[i])
-  if(!(crops$name[i] %in% c("wheat", "rice", "maize"))){
+  if(!(crops$name[i] %in% c("soybean"))){
     next
   }
 
@@ -111,30 +111,7 @@ for (i in 1:nrow(crops)) {
       } else if (param.desc$name[k] == "CRITLAI") {
         value <- 3.2
       }
-
-      if (crops$name[i] == "rice") {
-        if (param.desc$name[k] == "TSUMEM") {
-          value <- 0
-        }
-        if (param.desc$name[k] == "CRITLAI") {
-          value <- 3.6
-        }
-        if (param.desc$name[k] == "DVSI") {
-          value <- 0.25
-        }
-        if (param.desc$name[k] == "TDWI") {
-          value <- 100
-        }
-      }
-      if (crops$name[i] == "maize") {
-        if (param.desc$name[k] == "MinStomResist") {
-          value <- 100
-        }
-        if (param.desc$name[k] == "MaxArchResist") {
-          value <- 5
-        }
-      }
-
+      
       if (is.na(value)) {
         next
       }
@@ -153,42 +130,7 @@ for (i in 1:nrow(crops)) {
       }
       
       if (param.desc$name[k] == "CO2AMAXTB") {
-        if (crops$name[i] %in% c("wheat", "rice")) {
-          values$Y <- c(0, 1, 1.4, 1.6, 1.6)
-        } else if(crops$name[i] == "maize") {
-          values$Y <- c(0, 1, 1, 1, 1)
-        }
-      }
-      if (param.desc$name[k] == "CO2EFFTB") {
-        if(crops$name[i] == "maize") {
-          values$Y <- c(0, 1, 1, 1, 1)
-        }
-      }
-      if (param.desc$name[k] == "CO2TRATB") {
-        if(crops$name[i] == "maize") {
-          values$Y <- c(0, 1, 0.74, 0.74, 0.74)
-        }
-      }
-      
-      if (crops$name[i] == "rice") {
-        if (param.desc$name[k] == "FRTB") {
-          values$Y <- c(0.2, 0.15, 0.1, 0.05, 0, 0)
-        }
-        if (param.desc$name[k] == "FLTB") {
-          values$Y <- c(0.4, 0.35, 0.3, 0.2, 0, 0, 0)
-        }
-        if (param.desc$name[k] == "FSTB") {
-          values$Y <- c(0.6, 0.65, 0.7, 0.5, 0.25, 0.15, 0, 0)
-        }
-        if (param.desc$name[k] == "FOTB") {
-          values$Y <- c(0, 0.3, 0.75, 0.85, 1, 1)
-        }
-      }
-      
-      if (crops$name[i] == "wheat") {
-        if (param.desc$name[k] == "TMPFTB") {
-          values$X <- c(0, 10, 15, 30, 35)
-        }
+        values$Y <- c(0, 1, 1.4, 1.6, 1.6)
       }
       
       for (j in 1:nrow(values)) {

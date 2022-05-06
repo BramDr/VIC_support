@@ -89,7 +89,7 @@ dp.fill <- fillMap(dp, na.map, getNearestMean)
 rough.fill <- fillMap(rough, na.map, getNearestMean)
 snow.rough.fill <- fillMap(snow.rough, na.map, getNearestMean)
 
-# Set third layer depth to contain 100 mm
+# Set third layer depth to contain 1000 mm
 depth.fill[, , 3] <- 1000 / max.moist.fill[,,3] * 1e-3
 
 # Calculate misc

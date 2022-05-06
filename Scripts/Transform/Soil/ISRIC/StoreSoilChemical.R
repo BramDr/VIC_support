@@ -48,21 +48,10 @@ agg.map <- function(map, factor) {
 for (i in 1:length(soil.files)) {
   soil.file <- soil.files[i]
   print(soil.file)
-  soil <- read.table(soil.file, sep = ",", header = T, stringsAsFactors = F)
 
   layer <- gsub(x = basename(soil.file), pattern = ".txt", replacement = "")
   layer <- gsub(x = layer, pattern = ".*wD", replacement = "")
   layer <- as.numeric(layer)
-
-  ocar <- get.char(map, mapping, soil, "ORGC")
-  ph <- get.char(map, mapping, soil, "PHAQ")
-  tnit <- get.char(map, mapping, soil, "TOTN")
-  cnrat <- get.char(map, mapping, soil, "CNrt")
-
-  ocar.agg <- agg.map(ocar, factor)
-  ph.agg <- agg.map(ph, factor)
-  tnit.agg <- agg.map(tnit, factor)
-  cnrat.agg <- agg.map(cnrat, factor)
 
   extent.print <- paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
 
@@ -70,6 +59,27 @@ for (i in 1:length(soil.files)) {
   out.ph.tmp <- gsub(out.ph, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
   out.tnit.tmp <- gsub(out.tnit, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
   out.cnrat.tmp <- gsub(out.cnrat, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  
+  if(file.exists(out.ocar.tmp) && file.exists(out.ph.tmp) && file.exists(out.tnit.tmp) && file.exists(out.cnrat.tmp)) {
+    next
+  }
+
+  soil <- read.table(soil.file, sep = ",", header = T, stringsAsFactors = F)
+  
+  ocar <- get.char(map, mapping, soil, "ORGC")
+  ph <- get.char(map, mapping, soil, "PHAQ")
+  tnit <- get.char(map, mapping, soil, "TOTN")
+  cnrat <- get.char(map, mapping, soil, "CNrt")
+  
+  ocar[ocar < 0] = NA
+  ph[ph < 0] = NA
+  tnit[tnit < 0] = NA
+  cnrat[cnrat < 0] = NA
+
+  ocar.agg <- agg.map(ocar, factor)
+  ph.agg <- agg.map(ph, factor)
+  tnit.agg <- agg.map(tnit, factor)
+  cnrat.agg <- agg.map(cnrat, factor)
 
   dir.create(dirname(out.ocar.tmp))
   dir.create(dirname(out.ph.tmp))

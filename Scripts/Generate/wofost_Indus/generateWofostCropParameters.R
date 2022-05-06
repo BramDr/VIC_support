@@ -18,7 +18,7 @@ in.files2 <- list.files(path = in.dir, pattern = ".DATp", full.names = T)
 i <- 4
 for (i in 1:nrow(crops)) {
   print(crops$name[i])
-  if(!(crops$name[i] %in% c("wheat", "rice"))){
+  if(!(crops$name[i] %in% c("wheat", "rice", "maize"))){
     next
   }
 
@@ -145,7 +145,21 @@ for (i in 1:nrow(crops)) {
       }
       
       if (param.desc$name[k] == "CO2AMAXTB") {
-        values$Y <- c(0, 1, 1.4, 1.6, 1.6)
+        if (crops$name[i] %in% c("wheat", "rice")) {
+          values$Y <- c(0, 1, 1.4, 1.6, 1.6)
+        } else if(crops$name[i] == "maize") {
+          values$Y <- c(0, 1, 1, 1, 1)
+        }
+      }
+      if (param.desc$name[k] == "CO2EFFTB") {
+        if(crops$name[i] == "maize") {
+          values$Y <- c(0, 1, 1, 1, 1)
+        }
+      }
+      if (param.desc$name[k] == "CO2TRATB") {
+        if(crops$name[i] == "maize") {
+          values$Y <- c(0, 1, 0.74, 0.74, 0.74)
+        }
       }
       
       if (crops$name[i] == "rice") {
