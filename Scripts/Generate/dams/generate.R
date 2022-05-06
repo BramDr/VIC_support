@@ -3,223 +3,68 @@ library(ncdf4)
 rm(list = ls())
 
 # Input
+id.file = "./Saves/idMap.RDS"
 gdam.file <- "Saves/globalDamsMerge.csv"
 ldam.file <- "Saves/localDamsMerge.csv"
 gdam.service.file <- "Saves/globalDamsService.RDS"
 ldam.service.file <- "Saves/localDamsService.RDS"
+gdam.service.frac.file <- "Saves/globalDamsServiceFraction.RDS"
+ldam.service.frac.file <- "Saves/localDamsServiceFraction.RDS"
 mask.file <- "../../../Data/Transformed/Routing/mask_30min_global.RDS"
 dams.out <- "../../../Data/VIC/Parameters/global/dam_params_global.nc"
 
 # Load
 mask <- readRDS(mask.file)
 
+id.map = readRDS(id.file)
 ldams <- read.csv(ldam.file, stringsAsFactors = F)
 gdams <- read.csv(gdam.file, stringsAsFactors = F)
-ldams.service <- readRDS(ldam.service.file)
+#ldams.service <- readRDS(ldam.service.file)
 gdams.service <- readRDS(gdam.service.file)
+#ldams.service.frac <- readRDS(ldam.service.frac.file)
+gdams.service.frac <- readRDS(gdam.service.frac.file)
 
 # Setup
 lons <- seq(from = -179.75, to = 179.75, by = 0.5)
 lats <- seq(from = -89.75, to = 89.75, by = 0.5)
 
-## Ndams
-nldams <- array(NA, dim = c(length(lons), length(lats)))
-ngdams <- array(NA, dim = c(length(lons), length(lats)))
-for (x in 1:length(lons)) {
-  for (y in 1:length(lats)) {
-    if (is.na(mask[x, y])) {
-      next
-    }
-    nldams[x, y] <- 0
-    ngdams[x, y] <- 0
-  }
-}
-for (i in 1:nrow(ldams)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == lons)
-  y <- which(ldams$MODEL_LAT_DD[i] == lats)
-  if (is.na(mask[x, y])) {
-    next
-  }
-  nldams[x, y] <- nldams[x, y] + 1
-}
+gdams$MODEL_X <- NA
+gdams$MODEL_Y <- NA
 for (i in 1:nrow(gdams)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == lons)
-  y <- which(gdams$MODEL_LAT_DD[i] == lats)
-  if (is.na(mask[x, y])) {
-    next
-  }
-  ngdams[x, y] <- ngdams[x, y] + 1
+  gdams$MODEL_X[i] <- which(gdams$MODEL_LONG_DD[i] == lons)
+  gdams$MODEL_Y[i] <- which(gdams$MODEL_LAT_DD[i] == lats)
 }
-image.plot(nldams)
-image.plot(ngdams)
+ldams$MODEL_X <- NA
+ldams$MODEL_Y <- NA
+for (i in 1:nrow(ldams)) {
+  ldams$MODEL_X[i] <- which(ldams$MODEL_LONG_DD[i] == lons)
+  ldams$MODEL_Y[i] <- which(ldams$MODEL_LAT_DD[i] == lats)
+}
+
+ndamtypes <- nrow(gdams) + nrow(ldams)
+for(i in 1:nrow(gdams)){
+  gdams$MODEL_AREA_FRAC[i] = min(gdams$MODEL_AREA_FRAC[i], 1)
+}
+for(i in 1:nrow(ldams)){
+  ldams$MODEL_AREA_FRAC[i] = min(ldams$MODEL_AREA_FRAC[i], 1)
+}
 
 ## Dam info
-ndamtypes <- max(c(nldams), c(ngdams), 1, na.rm = T)
-lyear <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-lcap <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-linflow.frac <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-gyear <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-gcap <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-ginflow.frac <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-for (x in 1:length(lons)) {
-  for (y in 1:length(lats)) {
-    if (is.na(mask[x, y])) {
-      next
-    }
-    lyear[x, y, ] <- 0
-    lcap[x, y, ] <- 0
-    linflow.frac[x, y, ] <- 0
-    gyear[x, y, ] <- 0
-    gcap[x, y, ] <- 0
-    ginflow.frac[x, y, ] <- 0
-  }
+type = c(rep(1, nrow(gdams)), rep(0, nrow(ldams)))
+year = c(gdams$YEAR, ldams$YEAR)
+cap = c(gdams$CAP_MCM, ldams$CAP_MCM)
+inflow.frac = c(gdams$MODEL_AREA_FRAC, ldams$MODEL_AREA_FRAC)
+nservice = c(apply(X = gdams.service, MARGIN = 3, FUN = function(x){sum(!is.na(x))}), rep(0, nrow(ldams)))
+id = c()
+for(i in 1:nrow(gdams)){
+  id = c(id, id.map[gdams$MODEL_X[i], gdams$MODEL_Y[i]])
 }
-for (i in 1:nrow(ldams)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == lons)
-  y <- which(ldams$MODEL_LAT_DD[i] == lats)
-  z <- 1
-
-  if (is.na(mask[x, y])) {
-    next
-  }
-  lyear[x, y, z] <- ldams$YEAR[i]
-  lcap[x, y, z] <- ldams$CAP_MCM[i]
-  linflow.frac[x, y, z] <- ldams$MODEL_AREA_FRAC[i]
+for(i in 1:nrow(ldams)){
+  id = c(id, id.map[ldams$MODEL_X[i], ldams$MODEL_Y[i]])
 }
-for (i in 1:nrow(gdams)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == lons)
-  y <- which(gdams$MODEL_LAT_DD[i] == lats)
-  z <- 1
 
-  if (is.na(mask[x, y])) {
-    next
-  }
-  gyear[x, y, z] <- gdams$YEAR[i]
-  gcap[x, y, z] <- gdams$CAP_MCM[i]
-  ginflow.frac[x, y, z] <- gdams$MODEL_AREA_FRAC[i]
-}
-image.plot(lyear[, , 1])
-image.plot(lcap[, , 1])
-image.plot(linflow.frac[, , 1])
-image.plot(gyear[, , 1])
-image.plot(gcap[, , 1])
-image.plot(ginflow.frac[, , 1])
-
-# Ndamservice
-nlservice <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-ngservice <- array(NA, dim = c(length(lons), length(lats), ndamtypes))
-for (x in 1:length(lons)) {
-  for (y in 1:length(lats)) {
-    if (is.na(mask[x, y])) {
-      next
-    }
-    nlservice[x, y, ] <- 0
-    ngservice[x, y, ] <- 0
-  }
-}
-for (i in 1:length(ldams.service)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == lons)
-  y <- which(ldams$MODEL_LAT_DD[i] == lats)
-  z <- 1
-
-  if (is.na(mask[x, y])) {
-    next
-  }
-  nlservice[x, y, z] <- nlservice[x, y, z] + nrow(ldams.service[[i]])
-}
-for (i in 1:length(gdams.service)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == lons)
-  y <- which(gdams$MODEL_LAT_DD[i] == lats)
-  z <- 1
-
-  if (is.na(mask[x, y])) {
-    next
-  }
-  ngservice[x, y, z] <- ngservice[x, y, z] + nrow(gdams.service[[i]])
-}
-image.plot(nlservice[, , 1])
-image.plot(ngservice[, , 1])
-
-# Service id
-service.id <- array(NA, dim = c(length(lons), length(lats)))
-id.counter <- 1
-for (x in 1:dim(service.id)[1]) {
-  for (y in 1:dim(service.id)[2]) {
-    if (is.na(mask[x, y])) {
-      next
-    }
-
-    service.id[x, y] <- id.counter
-    id.counter <- id.counter + 1
-  }
-}
-image.plot(service.id)
-
-# Dam service info
-ndamservice <- max(c(nlservice), c(ngservice), 1, na.rm = T)
-lservice <- array(NA, dim = c(length(lons), length(lats), ndamservice, ndamtypes))
-gservice <- array(NA, dim = c(length(lons), length(lats), ndamservice, ndamtypes))
-lservice.frac <- array(NA, dim = c(length(lons), length(lats), ndamservice, ndamtypes))
-gservice.frac <- array(NA, dim = c(length(lons), length(lats), ndamservice, ndamtypes))
-for (x in 1:length(lons)) {
-  for (y in 1:length(lats)) {
-    if (is.na(mask[x, y])) {
-      next
-    }
-    lservice[x, y, , ] <- 0
-    lservice.frac[x, y, , ] <- 0
-    gservice[x, y, , ] <- 0
-    gservice.frac[x, y, , ] <- 0
-  }
-}
-for (i in 1:length(ldams.service)) {
-  x <- which(ldams$MODEL_LONG_DD[i] == lons)
-  y <- which(ldams$MODEL_LAT_DD[i] == lats)
-  z <- 1
-
-  if (is.na(mask[x, y])) {
-    next
-  }
-
-  if (nrow(ldams.service[[i]]) <= 0) {
-    next
-  }
-
-  for (j in 1:nrow(ldams.service[[i]])) {
-    s.x <- ldams.service[[i]]$X[j]
-    s.y <- ldams.service[[i]]$Y[j]
-    s.frac <- ldams.service[[i]]$FRAC[j]
-    s.id <- service.id[s.x, s.y]
-    lservice[x, y, j, z] <- s.id
-    lservice.frac[x, y, j, z] <- s.frac
-  }
-}
-for (i in 1:length(gdams.service)) {
-  x <- which(gdams$MODEL_LONG_DD[i] == lons)
-  y <- which(gdams$MODEL_LAT_DD[i] == lats)
-  z <- 1
-
-  if (is.na(mask[x, y])) {
-    next
-  }
-
-  if (nrow(gdams.service[[i]]) <= 0) {
-    next
-  }
-
-  for (j in 1:nrow(gdams.service[[i]])) {
-    s.x <- gdams.service[[i]]$X[j]
-    s.y <- gdams.service[[i]]$Y[j]
-    s.frac <- gdams.service[[i]]$FRAC[j]
-    s.id <- service.id[s.x, s.y]
-    gservice[x, y, j, z] <- s.id
-    gservice.frac[x, y, j, z] <- s.frac
-  }
-}
-image.plot(lservice[, , 1, 1])
-image.plot(lservice.frac[, , 1, 1])
-image.plot(gservice[, , 1, 1])
-image.plot(gservice.frac[, , 1, 1])
+#service = abind(gdams.service, ldams.service, along = 3)
+#service.frac = abind(gdams.service.frac, ldams.service.frac, along = 3)
 
 # Create
 dim.lon <- ncdim_def(
@@ -240,132 +85,84 @@ dim.dam <- ncdim_def(
   vals = 1:ndamtypes,
   longname = "Dam class"
 )
-dim.service <- ncdim_def(
-  name = "dam_service",
-  units = "#",
-  vals = 1:ndamservice,
-  longname = "Dam service class"
-)
 
-var.nldam <- ncvar_def(
-  name = "Ndam_local",
-  units = "#",
+var.id.map <- ncvar_def(
+  name = "id_map",
+  units = "ID",
   dim = list(dim.lon, dim.lat),
   missval = -1,
-  longname = "Number of local dams in the grid cell",
+  longname = "ID used to identify dam cell",
+  prec = "integer",
   compression = 9
 )
-var.ngdam <- ncvar_def(
-  name = "Ndam_global",
+var.id <- ncvar_def(
+  name = "id",
+  units = "ID",
+  dim = list(dim.dam),
+  missval = -1,
+  longname = "ID used to identify dam cell",
+  prec = "integer",
+  compression = 9
+)
+var.type <- ncvar_def(
+  name = "type",
+  units = "global/local",
+  dim = list(dim.dam),
+  missval = -1,
+  longname = "1 = global, 0 = local", 
+  prec = "integer",
+  compression = 9
+)
+var.year <- ncvar_def(
+  name = "year",
+  units = "years AD",
+  dim = list(dim.dam),
+  missval = -1,
+  longname = "Building year of dam",
+  prec = "integer",
+  compression = 9
+)
+var.capacity <- ncvar_def(
+  name = "capacity",
+  units = "hm3",
+  dim = list(dim.dam),
+  missval = -1,
+  longname = "Capacity of dam",
+  compression = 9
+)
+var.inflow.frac <- ncvar_def(
+  name = "inflow_fraction",
+  units = "-",
+  dim = list(dim.dam),
+  missval = -1,
+  longname = "Fraction of inflow going to the dam reservoir",
+  compression = 9
+)
+var.nservice <- ncvar_def(
+  name = "Nservice",
   units = "#",
-  dim = list(dim.lon, dim.lat),
+  dim = list(dim.dam),
   missval = -1,
-  longname = "Number of global dams in the grid cell",
-  compression = 9
-)
-var.lyear <- ncvar_def(
-  name = "year_local",
-  units = "years AD",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Building year of local dam",
-  compression = 9
-)
-var.gyear <- ncvar_def(
-  name = "year_global",
-  units = "years AD",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Building year of global dam",
-  compression = 9
-)
-var.lcapacity <- ncvar_def(
-  name = "capacity_local",
-  units = "hm3",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Capacity of local dam",
-  compression = 9
-)
-var.gcapacity <- ncvar_def(
-  name = "capacity_global",
-  units = "hm3",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Capacity of global dam",
-  compression = 9
-)
-var.linflow.frac <- ncvar_def(
-  name = "inflow_fraction_local",
-  units = "-",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Fraction of inflow going to the local dam reservoir",
-  compression = 9
-)
-var.ginflow.frac <- ncvar_def(
-  name = "inflow_fraction_global",
-  units = "-",
-  dim = list(dim.lon, dim.lat, dim.dam),
-  missval = -1,
-  longname = "Fraction of inflow going to the global dam reservoir",
+  longname = "Numer of service cells for dam",
+  prec = "integer",
   compression = 9
 )
 
-var.service.id <- ncvar_def(
-  name = "service_id",
+var.service <- ncvar_def(
+  name = "service",
   units = "ID",
-  dim = list(dim.lon, dim.lat),
-  missval = -1,
-  longname = "ID used to identify servicing cell",
-  compression = 9
-)
-var.nlservice <- ncvar_def(
-  name = "Nservice_local",
-  units = "#",
   dim = list(dim.lon, dim.lat, dim.dam),
   missval = -1,
-  longname = "Numer of service cells for local dam",
+  longname = "Service cell ID for dam",
+  prec = "integer",
   compression = 9
 )
-var.ngservice <- ncvar_def(
-  name = "Nservice_global",
-  units = "#",
+var.serve.fac <- ncvar_def(
+  name = "service_fraction",
+  units = "ID",
   dim = list(dim.lon, dim.lat, dim.dam),
   missval = -1,
-  longname = "Numer of service cells for global dam",
-  compression = 9
-)
-var.lservice <- ncvar_def(
-  name = "service_local",
-  units = "ID",
-  dim = list(dim.lon, dim.lat, dim.service, dim.dam),
-  missval = -1,
-  longname = "Service cell ID for local dam",
-  compression = 9
-)
-var.gservice <- ncvar_def(
-  name = "service_global",
-  units = "ID",
-  dim = list(dim.lon, dim.lat, dim.service, dim.dam),
-  missval = -1,
-  longname = "Service cell ID for global dam",
-  compression = 9
-)
-var.lserve.fac <- ncvar_def(
-  name = "service_fraction_local",
-  units = "ID",
-  dim = list(dim.lon, dim.lat, dim.service, dim.dam),
-  missval = -1,
-  longname = "Fraction of demand for service cell of local dam",
-  compression = 9
-)
-var.gserve.fac <- ncvar_def(
-  name = "service_fraction_global",
-  units = "ID",
-  dim = list(dim.lon, dim.lat, dim.service, dim.dam),
-  missval = -1,
-  longname = "Fraction of demand for service cell of globak dam",
+  longname = "Fraction of demand for service cell of dam",
   compression = 9
 )
 
@@ -373,21 +170,15 @@ dir.create(dirname(dams.out))
 nc <- nc_create(
   dams.out,
   list(
-    var.service.id,
-    var.nldam,
-    var.lyear,
-    var.lcapacity,
-    var.linflow.frac,
-    var.nlservice,
-    var.lservice,
-    var.lserve.fac,
-    var.ngdam,
-    var.gyear,
-    var.gcapacity,
-    var.ginflow.frac,
-    var.ngservice,
-    var.gservice,
-    var.gserve.fac
+    var.id.map,
+    var.id,
+    var.type,
+    var.year,
+    var.capacity,
+    var.inflow.frac,
+    var.nservice,
+    var.service,
+    var.serve.fac
   )
 )
 nc_close(nc)
@@ -401,22 +192,24 @@ ncatt_put(
   attval = "Dam parameters for VIC. Created by Bram Droppers"
 )
 
-ncvar_put(nc, var.service.id, service.id)
+ncvar_put(nc, var.id.map, id.map)
+ncvar_put(nc, var.id, id)
+ncvar_put(nc, var.type, type)
+ncvar_put(nc, var.year, year)
+ncvar_put(nc, var.capacity, cap)
+ncvar_put(nc, var.inflow.frac, inflow.frac)
+ncvar_put(nc, var.nservice, nservice)
 
-ncvar_put(nc, var.nldam, nldams)
-ncvar_put(nc, var.lyear, lyear)
-ncvar_put(nc, var.lcapacity, lcap)
-ncvar_put(nc, var.linflow.frac, linflow.frac)
-ncvar_put(nc, var.nlservice, nlservice)
-ncvar_put(nc, var.lservice, lservice)
-ncvar_put(nc, var.lserve.fac, lservice.frac)
+ncvar_put(nc, var.service, gdams.service, start = c(1,1,1), count = c(-1,-1,nrow(gdams)))
+ncvar_put(nc, var.serve.fac, gdams.service.frac, start = c(1,1,1), count = c(-1,-1,nrow(gdams)))
 
-ncvar_put(nc, var.ngdam, ngdams)
-ncvar_put(nc, var.gyear, gyear)
-ncvar_put(nc, var.ginflow.frac, ginflow.frac)
-ncvar_put(nc, var.gcapacity, gcap)
-ncvar_put(nc, var.ngservice, ngservice)
-ncvar_put(nc, var.gservice, gservice)
-ncvar_put(nc, var.gserve.fac, gservice.frac)
+ldam.seq = c(seq(from = 1, to = nrow(ldams), by = 100), nrow(ldams))
+for(i in 2:length(ldam.seq)){
+  ldam.from = ldam.seq[i - 1]
+  ldam.to = ldam.seq[i]
+  ldam.count = ldam.to - ldam.from + 1
+  ncvar_put(nc, var.service, rep(NA, length(lons) * length(lats) * ldam.count), start = c(1,1,nrow(gdams) + ldam.from), count = c(-1,-1,ldam.count))
+  ncvar_put(nc, var.serve.fac, rep(NA, length(lons) * length(lats) * ldam.count), start = c(1,1,nrow(gdams) + ldam.from), count = c(-1,-1,ldam.count))
+}
 
 nc_close(nc)

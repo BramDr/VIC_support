@@ -1,4 +1,8 @@
 library(ncdf4)
+library(here)
+
+source("/home/bram/VIC_support/Scripts/Support/generateSoilFunctions.R")
+source("/home/bram/VIC_support/Scripts/Support/generateElevationFunctions.R")
 
 misc.vars <- c(
   "annual_prec", "avg_T", "run_cell"

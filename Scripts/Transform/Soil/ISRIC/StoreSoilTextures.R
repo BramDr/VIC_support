@@ -45,31 +45,42 @@ agg.map <- function(map, factor) {
   return(as.matrix(r.agg))
 }
 
+i = 1
 for (i in 1:length(soil.files)) {
   soil.file <- soil.files[i]
   print(soil.file)
-  soil <- read.table(soil.file, sep = ",", header = T, stringsAsFactors = F)
 
   layer <- gsub(x = basename(soil.file), pattern = ".txt", replacement = "")
   layer <- gsub(x = layer, pattern = ".*wD", replacement = "")
   layer <- as.numeric(layer)
 
+  extent.print <- paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
+  
+  out.clay.tmp <- gsub(out.clay, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.sand.tmp <- gsub(out.sand, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.silt.tmp <- gsub(out.silt, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  out.bulk.tmp <- gsub(out.bulk, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
+  
+  if(file.exists(out.clay.tmp) && file.exists(out.sand.tmp) && file.exists(out.silt.tmp) && file.exists(out.bulk.tmp)) {
+    next
+  }
+  
+  soil <- read.table(soil.file, sep = ",", header = T, stringsAsFactors = F)
+
   clay <- get.char(map, mapping, soil, "CLPC")
   sand <- get.char(map, mapping, soil, "SDTO")
   silt <- get.char(map, mapping, soil, "STPC")
   bulk <- get.char(map, mapping, soil, "BULK")
+  
+  clay[clay < 0] = NA
+  sand[sand < 0] = NA
+  silt[silt < 0] = NA
+  bulk[bulk < 0] = NA
 
   clay.agg <- agg.map(clay, factor)
   sand.agg <- agg.map(sand, factor)
   silt.agg <- agg.map(silt, factor)
   bulk.agg <- agg.map(bulk, factor)
-
-  extent.print <- paste0(extent.isel[1], "_", extent.isel[2], "_", extent.isel[3], "_", extent.isel[4])
-
-  out.clay.tmp <- gsub(out.clay, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.sand.tmp <- gsub(out.sand, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.silt.tmp <- gsub(out.silt, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
-  out.bulk.tmp <- gsub(out.bulk, pattern = "_30min", replacement = paste0("_", layer, "_", extent.print, "_30min"))
 
   dir.create(dirname(out.clay.tmp))
   dir.create(dirname(out.sand.tmp))

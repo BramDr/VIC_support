@@ -129,9 +129,9 @@ trans.map <- function(map) {
 }
 agg.layers <- function(maps) {
   agg.map <- array(NA, dim = c(length(out.lats), length(out.lons), 3))
-  maps[, , 1] <- maps[, , 1] * 0.5
-  agg.map[, , 1] <- apply(X = maps[, , 1], MARGIN = c(1, 2), FUN = sum) / 0.5
-  agg.map[, , 2] <- apply(X = maps[, , 1:5], MARGIN = c(1, 2), FUN = sum) / 4.5
+  maps[, , 2] <- maps[, , 2] * 0.5
+  agg.map[, , 1] <- apply(X = maps[, , 1:2], MARGIN = c(1, 2), FUN = sum) / 1.5
+  agg.map[, , 2] <- apply(X = maps[, , 2:5], MARGIN = c(1, 2), FUN = sum) / 3.5
   agg.map[, , 3] <- agg.map[, , 2]
   agg.map[agg.map == 0] <- NA
   return(trans.map(agg.map))
